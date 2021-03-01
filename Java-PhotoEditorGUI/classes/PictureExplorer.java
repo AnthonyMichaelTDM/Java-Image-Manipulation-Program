@@ -66,6 +66,8 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     private JButton saveButton;
     /** load button */
     private JButton loadButton;
+    /** ask for confirmation checkbox */
+    private JCheckBox askForConfirmationCheckBox;
 
     //side panel
     private JPanel utilityPanel = new JPanel();
@@ -104,6 +106,9 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     private JMenuItem twoHundred;
     /* 500% zoom level */
     private JMenuItem fiveHundred;
+
+    /** confirmation frame */
+    private PictureConfirmation pictureConfirmation;
 
     /** The picture being explored */
     private DigitalPicture picture;
@@ -281,6 +286,9 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         // show the picture in the frame at the size it needs to be
         pictureFrame.pack();
         pictureFrame.setVisible(true);
+
+        //initialize the confirmation panel used by some of the tools
+        pictureConfirmation = new PictureConfirmation();
     }
 
     /**
@@ -358,8 +366,14 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         redoLabel.setFont(labelFont);
         undoLabel.setFont(labelFont);
 
+        //set up askForConfirmationCheckBox
+        askForConfirmationCheckBox = new JCheckBox("ask for confirmation?");
+        askForConfirmationCheckBox.setSelected(true);
+
         // add the items to the vertical box and the box to the panel
         hBox.add(Box.createHorizontalGlue());
+        hBox.add(askForConfirmationCheckBox);
+        hBox.add(Box.createHorizontalStrut(10));
         hBox.add(undoButton);
         hBox.add(undoLabel);
         hBox.add(Box.createHorizontalStrut(10));
@@ -723,14 +737,14 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         confirmButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     //use the removeColorChannels method from the Picture class
-                    Picture removed = new Picture(picture.getBufferedImage());
+                    Picture removed = new Picture(picture.getHeight(), picture.getWidth());
+                    removed.copyPicture(new SimplePicture(picture.getBufferedImage()));
                     removed.removeColorChannels(
                         redRadioButton.isSelected(), 
                         greenRadioButton.isSelected(), 
                         blueRadioButton.isSelected()
                     );
-                    picture = new Picture(removed);
-                    updateImage();
+                    pictureConfirmation.updateConfPanelImage(removed);
                 }
             });
 
@@ -795,14 +809,14 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         confirmButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     //use the trim method from the Picture class
-                    Picture trimmed = new Picture(picture.getBufferedImage());
+                    Picture trimmed = new Picture(picture.getHeight(), picture.getWidth());
+                    trimmed.copyPicture(new SimplePicture(picture.getBufferedImage()));
                     trimmed.trimColor(
                         colorBox.getSelectedIndex(), 
                         (int) minSlider.getValue(), 
                         (int) maxSlider.getValue()
                     );
-                    picture = new Picture(trimmed);
-                    updateImage();
+                    pictureConfirmation.updateConfPanelImage(trimmed);
                 }
             });
         //handle min slider changing value
@@ -870,14 +884,14 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         confirmButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     //use the negate method from the Picture class
-                    Picture negated = new Picture(picture.getBufferedImage());
+                    Picture negated = new Picture(picture.getHeight(), picture.getWidth());
+                    negated.copyPicture(new SimplePicture(picture.getBufferedImage()));
                     negated.negateColorChannels(
                         negateRedRadioButton.isSelected(), 
                         negateGreebRadioButton.isSelected(), 
                         negateBlueRadioButton.isSelected()
                     );
-                    picture = new Picture(negated);
-                    updateImage();
+                    pictureConfirmation.updateConfPanelImage(negated);
                 }
             });
 
@@ -912,10 +926,10 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         confirmButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     //use the grayscale method from the Picture class
-                    Picture grayscaled = new Picture(picture.getBufferedImage());
+                    Picture grayscaled = new Picture(picture.getHeight(), picture.getWidth());
+                    grayscaled.copyPicture(new SimplePicture(picture.getBufferedImage()));
                     grayscaled.grayscale();
-                    picture = new Picture(grayscaled);
-                    updateImage();
+                    pictureConfirmation.updateConfPanelImage(grayscaled);
                 }
             });
 
@@ -987,14 +1001,14 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         confirmButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     //use the replaceColorWithColor method from the Picture class
-                    Picture colorReplaced = new Picture(picture.getBufferedImage());
+                    Picture colorReplaced = new Picture(picture.getHeight(), picture.getWidth());
+                    colorReplaced.copyPicture(new SimplePicture(picture.getBufferedImage()));
                     colorReplaced.replaceColorWithColor(
                         replaceColorPanel.getBackground(), 
                         setColorPanel.getBackground(), 
                         toleranceSlider.getValue()
                     );
-                    picture = new Picture(colorReplaced);
-                    updateImage();
+                    pictureConfirmation.updateConfPanelImage(colorReplaced);
                 }
             });
         //handle colorToReplaceButton press
@@ -1072,6 +1086,8 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         JCheckBox autoTolerance = new JCheckBox(String.format("<html><div WIDTH=%d>%s</div></html>", 100, "automatically find a decent tolerance?"));
         //button to confirm changes
         JButton confirmButton = new JButton("confirm");
+        //checkbox, toggle grayscaling
+        JCheckBox grayscaleCheckBox = new JCheckBox("grayscale output?");
 
         //config panel components
         String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "detect edges with 1 of 3 algorithms");
@@ -1096,8 +1112,11 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         algorithmSelectionPanel.add(BorderLayout.SOUTH, algorithmPanels);
         algorithmSelectionPanel.add(BorderLayout.SOUTH, autoTolerance);
         algorithmSelectionPanel.add(BorderLayout.SOUTH, explainationLabel);
-
-        JPanel tolerancePanel = new JPanel(new GridLayout(2,1));
+        
+        grayscaleCheckBox.setVisible(false);
+        grayscaleCheckBox.setSelected(false);
+        JPanel tolerancePanel = new JPanel(new GridLayout(3,1));
+        tolerancePanel.add(grayscaleCheckBox);
         tolerancePanel.add(toleranceLabel);
         tolerancePanel.add(toleranceSlider);
 
@@ -1135,7 +1154,8 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         confirmButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     //use one of the edgeDetection methods from the Picture class
-                    Picture edged = new Picture(picture.getBufferedImage());
+                    Picture edged = new Picture(picture.getHeight(), picture.getWidth());
+                    edged.copyPicture(new SimplePicture(picture.getBufferedImage()));
                     switch (algorithmSelection.getSelectedIndex()) 
                     {
                         case 1: 
@@ -1149,10 +1169,14 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
                         break;
                         default:
                         edged.edgeDetection(toleranceSlider.getValue());
+                        break;
                     }
-                    edged.grayscale();
-                    picture = new Picture(edged);
-                    updateImage();
+                    //grayscale image if box is checked
+                    if (grayscaleCheckBox.isSelected()) {
+                        edged.grayscale();
+                    }
+                    //save the new image (ask first)
+                    pictureConfirmation.updateConfPanelImage(edged);
                 }
             });
         //handle the combo box changing selected value
@@ -1163,16 +1187,19 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
                     explainationLabel.setVisible(true);
                     autoTolerance.setVisible(false);
                     autoTolerance.setSelected(false);
+                    grayscaleCheckBox.setVisible(false);
 
                     if (algorithmSelection.getSelectedIndex() == 1) { //add the things for the second edge detection algorithm
                         algorithmPanels.setVisible(true);
                         explainationLabel.setVisible(false);
                         autoTolerance.setVisible(false);
                         autoTolerance.setSelected(false);
+                        grayscaleCheckBox.setVisible(false);
                     } else if (algorithmSelection.getSelectedIndex() == 2) {
                         algorithmPanels.setVisible(false);
                         explainationLabel.setVisible(false);
                         autoTolerance.setVisible(true);
+                        grayscaleCheckBox.setVisible(true);
                     }
                 }
             });
@@ -1559,6 +1586,98 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
 
         public Component getFirstComponent(Container focusCycleRoot) {
             return saveButton;
+        }
+    }
+
+    /**
+     * class for creating a confirmation box that displays 
+     * a preview of the image 
+     * and asks user for confirmation before setting that temp image to the picture
+     */
+    private class PictureConfirmation {
+        /** picture to display */
+        private DigitalPicture tempPicture;
+        /** frame used to hold all of this */
+        private JFrame tempFrame;
+        /** ImageIcon used to display the picture in the label*/
+        private ImageIcon tempImageIcon = new ImageIcon();
+        /** Label used to display the picture */
+        private JLabel imageLabel;
+        /** button used to save the tempPicture as the explorers picture */
+        private JButton applyButton;
+
+        /** constructor */
+        public PictureConfirmation() 
+        {
+            this.initFrame();
+        }
+
+        /**
+         * A method to update the picture frame image with the image  
+         * in the picture 
+         */
+        public void updateConfPanelImage(DigitalPicture temp)
+        {
+            //if the ask for confirmation box is unchecked, update the image, and return
+            if (!askForConfirmationCheckBox.isSelected()) {
+                picture = new Picture(temp.getBufferedImage());
+                tempFrame.setVisible(false);
+                updateImage();
+                tempFrame.dispose();
+                return;
+            }
+
+            this.initFrame();
+            tempPicture = new SimplePicture(temp.getBufferedImage());
+            // only do this if there is a picture
+            if (tempPicture != null)
+            {
+                // set the image for the image icon from the picture
+                tempImageIcon.setImage(temp.getImage());
+
+                // set the title of the frame to the title of the picture
+                tempFrame.setTitle(picture.getTitle());
+
+                //make the frame visible 
+                tempFrame.setVisible(true);
+            }
+        }
+
+        /**
+         * A method to initialize the picture frame
+         */
+        private void initFrame()
+        {
+            //init things
+            tempFrame = new JFrame();
+            applyButton = new JButton("apply");
+            tempImageIcon.setImage((new Picture(picture.getBufferedImage())).getImage());
+            imageLabel = new JLabel(tempImageIcon);
+
+            // add the labels to the frame
+            tempFrame.getContentPane().add(BorderLayout.CENTER, this.imageLabel);
+            // add the button to the frame
+            applyButton.setPreferredSize(new Dimension(50,20));
+            tempFrame.getContentPane().add(BorderLayout.SOUTH, this.applyButton);
+
+            // pack the frame (set the size to as big as it needs to be)
+            tempFrame.pack();
+
+            //set frame configs mode
+            tempFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+            // make the frame invisible
+            tempFrame.setVisible(false);
+
+            //handle apply button press
+            applyButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) {
+                        picture = new Picture(tempPicture.getBufferedImage());
+                        tempFrame.setVisible(false);
+                        updateImage();
+                        tempFrame.dispose();
+                    }
+                });
         }
     }
 
