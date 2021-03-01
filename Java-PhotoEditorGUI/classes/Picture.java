@@ -1,3 +1,4 @@
+
 import java.awt.*;
 import java.awt.font.*;
 import java.awt.geom.*;
@@ -772,14 +773,12 @@ public class Picture extends SimplePicture
     public void bolden(int edgeDist)
     {
         Pixel currentPixel = null;
-        Pixel[][] pixels = this.getPixels2D();
-        Color currentColor = null;
+        Pixel[][] pixels = this/*tempCopyPicture*/.getPixels2D();
 
         Color background = pixels[1][1].getColor();
 
         Color invertedBackground = new Color(255 - background.getRed(), 255 - background.getGreen(), 255 - background.getBlue());
 
-        
         int countBack = 0;
         int countInvertBack = 0;
         int numPixels = pixels.length * pixels[0].length;
@@ -803,13 +802,14 @@ public class Picture extends SimplePicture
                 }
             }
         }
+        
         return;
     }
 
     /** Method to show large changes in color
      * made for making light writing show up better on a plain background
      * this method should fill in lines
-     * @param edgeDist the distance for finding edges
+     * sets up and handles bolden2Iter
      */
     public void bolden2()
     {
@@ -819,11 +819,9 @@ public class Picture extends SimplePicture
 
         Pixel currentPixel = null;
         Pixel[][] pixels = tempCopyPicture.getPixels2D();
-        Color currentColor = null;
 
         Color background = pixels[1][1].getColor();
-
-        Color invertedBackground = new Color(255 - background.getRed(), 255 - background.getGreen(), 255 - background.getBlue());
+        //Color invertedBackground = new Color(255 - background.getRed(), 255 - background.getGreen(), 255 - background.getBlue());
 
         int countBack = 0;
         int countInvertBack = 0;
@@ -835,25 +833,25 @@ public class Picture extends SimplePicture
             for (int col = 0; col < pixels[0].length; col++)
             {
                 currentPixel = pixels[row][col];
-
+                //optimization: change this to only count, not apply colors
                 if (currentPixel.colorDistance(background) > edgeDist)
                 {
-                    currentPixel.setColor(invertedBackground);
+                    //currentPixel.setColor(invertedBackground);
                     countInvertBack ++;
                 }
                 else {
-                    currentPixel.setColor(background);
+                    //currentPixel.setColor(background);
                     countBack ++;
                 }
             }
         }
 
         //if (countInvertBack > 7 * countBack || countBack > 7 * countInvertBack) {
-        int edgeRat = Math.abs(countInvertBack - countBack);
+        int edgeDiff = Math.abs(countInvertBack - countBack);
         int newEdgeDist = 1;//edgeDist + 5;
         //if (newEdgeDist >=255) newEdgeDist = 5;
         //else if (newEdgeDist < 5) newEdgeDist = 255;
-        this.bolden2(newEdgeDist, 1,edgeDist, edgeRat);
+        this.bolden2Iter(pixels, newEdgeDist, 1,edgeDist, edgeDiff, edgeDist, edgeDiff, 0);
         return;
         //} else this.copyPicture(new Picture(tempCopyPicture));
     }
@@ -863,22 +861,28 @@ public class Picture extends SimplePicture
      * made for making light writing show up better on a plain background
      * should try and find an optimal tolerance for the user
      * this method should fill in lines
+     * 
+     * iterates to find the best tolerance
+     * should only ever be called in bolden2
+     * 
+     * @param pixels the pixels for it to analyze
      * @param edgeDist the distance for finding edges
      * @param i iterations, used to prevent infinite loops
-     * @param bestEdgeSoFar the value for edgeDist that, as of now, has produced the best results
-     * @param bestEdgeDifference the difference bewteen forground and background pixels in the best edge
+     * @param bestEdgeDist the value for edgeDist that, as of now, has produced the best results
+     * @param bestEdgeDiff the difference bewteen forground and background pixels in the best edge
+     * @param lastEdge the last edgeDist used
+     * @param lastDiff the difference resulting from the lastEdge 
      */
-    private void bolden2(int edgeDist, int i, int bestEdgeSoFar, int bestEdgeDifference)
+    private void bolden2Iter(Pixel[][] pixels, int edgeDist, int i, int bestEdgeDist, int bestEdgeDiff, int lastEdgeDist, int lastEdgeDiff, int x)
     {
-        Picture tempCopyPicture = new Picture(this);
-
+        //optimization, have these bits just be passed by the handler, reduce ram usage?
+        //bruh, this optimization cut ram usage (for this tool) to like ... a fourth what it was 
+        //Picture tempCopyPicture = new Picture(this);
+        //Pixel[][] pixels = tempCopyPicture.getPixels2D();
+        
         Pixel currentPixel = null;
-        Pixel[][] pixels = tempCopyPicture.getPixels2D();
-        Color currentColor = null;
-
         Color background = pixels[1][1].getColor();
-
-                Color invertedBackground = new Color(255 - background.getRed(), 255 - background.getGreen(), 255 - background.getBlue());
+        //Color invertedBackground = new Color(255 - background.getRed(), 255 - background.getGreen(), 255 - background.getBlue());
 
         int countBack = 0;
         int countInvertBack = 0;
@@ -890,32 +894,33 @@ public class Picture extends SimplePicture
             for (int col = 0; col < pixels[0].length; col++)
             {
                 currentPixel = pixels[row][col];
-
+                //optimization 1: change this to only count, not apply colors
                 if (currentPixel.colorDistance(background) > edgeDist)
                 {
-                    currentPixel.setColor(invertedBackground);
+                    //currentPixel.setColor(invertedBackground);
                     countInvertBack ++;
                 }
                 else {
-                    currentPixel.setColor(background);
+                    //currentPixel.setColor(background);
                     countBack ++;
                 }
             }
         }
-
+        
+        //iterate to find best edge dist
         if ( i < 25) {
             int newEdgeDist = edgeDist + 10;
 
-            int edgeRat = Math.abs(countBack - countInvertBack);
-            if (edgeRat < bestEdgeDifference) {bestEdgeDifference = edgeRat; bestEdgeSoFar = edgeDist;}
+            int edgeDiff = Math.abs(countBack - countInvertBack);
+            if (edgeDiff < bestEdgeDiff) {bestEdgeDiff = edgeDiff; bestEdgeDist = edgeDist;}
 
             if (newEdgeDist >=255) newEdgeDist = 5;
             else if (newEdgeDist < 5) newEdgeDist = 255;
-
-            this.bolden2(newEdgeDist, i + 1, bestEdgeSoFar, bestEdgeDifference);
+            
+            this.bolden2Iter(pixels, newEdgeDist, i + 1, bestEdgeDist, bestEdgeDiff, edgeDist, edgeDiff, x);
             return;
         }
-        else this.bolden(bestEdgeSoFar);
+        else this.bolden(bestEdgeDist); //finally, actually apply the best edge dist
         return;
     }
 

@@ -18,7 +18,7 @@ import java.beans.PropertyChangeEvent;
  * Originally created for the Jython Environment for Students (JES). 
  * Modified to work with DrJava by Barbara Ericson
  * Also modified to show row and columns by Barbara Ericson
- * Modified to be a fully gui based Image Manipulation program by
+ * Modified to be a fully gui based Image Manipulation program by Anthony Rubick
  * 
  * @author Anthony Rubick
  */
