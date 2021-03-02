@@ -3,8 +3,8 @@ import javax.swing.JFrame;
 import java.awt.Color;
   
 /**
- * A class to make working with a color chooser easier
- * for students.  It uses a JColorChooser to let the user
+ * A class to make working with a color chooser easier.
+ * It uses a JColorChooser to let the user
  * pick a color and returns the chosen color object.
  * based on work by Barbara Ericson ericson@cc.gatech.edu
  * 

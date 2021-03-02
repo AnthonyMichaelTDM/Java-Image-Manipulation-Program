@@ -1664,7 +1664,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
             tempFrame.pack();
 
             //set frame configs mode
-            tempFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            tempFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
             // make the frame invisible
             tempFrame.setVisible(false);
