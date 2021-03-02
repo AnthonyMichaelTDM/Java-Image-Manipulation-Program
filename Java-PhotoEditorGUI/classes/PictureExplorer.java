@@ -88,6 +88,8 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     private JMenu filtersMenu;
     //filters menu items
     private JMenuItem edgeDetection;
+    private JMenuItem brighten;
+    private JMenuItem darken;
     /** zoom menu */
     private JMenu zoomMenu;
     /* zoom to fit level */
@@ -237,10 +239,16 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         /** filters menu */
         filtersMenu = new JMenu("Filters");
         edgeDetection = new JMenuItem("Edge Detection");
+        brighten = new JMenuItem("Brighten Picture");
+        darken = new JMenuItem("Darken Picture");
         // add the action listeners
         edgeDetection.addActionListener(this);
+        brighten.addActionListener(this);
+        darken.addActionListener(this);
         // add the menu items to the menu
         filtersMenu.add(edgeDetection);
+        filtersMenu.add(brighten);
+        filtersMenu.add(darken);
         menuBar.add(filtersMenu);
 
         // set the menu bar to this menu
@@ -1055,6 +1063,12 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
             case 1: //Edge Detection tool selected
             panel = edgeDetectionToolPanel();
             return panel;
+            case 2: //brighten tool selected
+            panel = brightenToolPanel();
+            return panel;
+            case 3: //darken tool selected
+            panel = darkenToolPanel();
+            return panel;
             default: //a tool not accounted for selected
             currentTool[0] = 0;
             currentTool[1] = 0;
@@ -1212,7 +1226,81 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
             });
         return panel;
     }
+    
+    /**
+     * method to handle the grayscale tool panel,
+     * as well as ActionEvents having to do with the UI of this panel
+     */
+    public JPanel brightenToolPanel() 
+    {
+        //panels
+        JPanel panel = defaultUtilityPanel();
+        //title label
+        JLabel titleLable = new JLabel();
+        //button to confirm changes
+        JButton confirmButton = new JButton("confirm");
 
+        //config panel components
+        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "brighten the image");
+        Font titleFont = new Font(titleLable.getFont().getName(),
+                titleLable.getFont().getStyle(),18);
+        titleLable.setFont(titleFont);
+        titleLable.setText(titleText);
+
+        //add components to the panel
+        panel.add(BorderLayout.NORTH, titleLable);
+        panel.add(BorderLayout.SOUTH, confirmButton);
+
+        //handle confirm button press
+        confirmButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    //use the brighten method from the Picture class
+                    Picture brightened = new Picture(picture.getHeight(), picture.getWidth());
+                    brightened.copyPicture(new SimplePicture(picture.getBufferedImage()));
+                    brightened.brighten();
+                    pictureConfirmation.updateConfPanelImage(brightened);
+                }
+            });
+
+        return panel;
+    }
+    /**
+     * method to handle the grayscale tool panel,
+     * as well as ActionEvents having to do with the UI of this panel
+     */
+    public JPanel darkenToolPanel() 
+    {
+        //panels
+        JPanel panel = defaultUtilityPanel();
+        //title label
+        JLabel titleLable = new JLabel();
+        //button to confirm changes
+        JButton confirmButton = new JButton("confirm");
+
+        //config panel components
+        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "darken the image");
+        Font titleFont = new Font(titleLable.getFont().getName(),
+                titleLable.getFont().getStyle(),18);
+        titleLable.setFont(titleFont);
+        titleLable.setText(titleText);
+
+        //add components to the panel
+        panel.add(BorderLayout.NORTH, titleLable);
+        panel.add(BorderLayout.SOUTH, confirmButton);
+
+        //handle confirm button press
+        confirmButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    //use the darken method from the Picture class
+                    Picture darkened = new Picture(picture.getHeight(), picture.getWidth());
+                    darkened.copyPicture(new SimplePicture(picture.getBufferedImage()));
+                    darkened.darken();
+                    pictureConfirmation.updateConfPanelImage(darkened);
+                }
+            });
+
+        return panel;
+    }
     ///////////////next tool type (idk, image manipulation, fun, some other groups)///////////////
     //****************************************//
     //               Event Listeners          //
@@ -1544,6 +1632,15 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         {
             currentTool[1] = 1;
         }
+        if (a.getSource() == brighten)
+        {
+            currentTool[1] = 2;
+        }
+        if (a.getSource() == darken)
+        {
+            currentTool[1] = 3;
+        }
+        
 
         updateUtilityPanel(currentTool);
     }

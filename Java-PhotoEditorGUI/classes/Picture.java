@@ -184,7 +184,7 @@ public class Picture extends SimplePicture
      * @param colorToSet the color to replace with
      * @param tolerance (FUTURE) will allow the user to set a tolerance, replacing all colors within this distance of colorToReplace
      */
-    public void replaceColorWithColor (Color colorToReplace, Color colorToSet, int tolerance)
+    public void replaceColorWithColor(Color colorToReplace, Color colorToSet, int tolerance)
     {
         Pixel[][] pixels = this.getPixels2D();
         for (Pixel[] rowArray : pixels)
@@ -200,6 +200,35 @@ public class Picture extends SimplePicture
         }
     }
 
+    /**
+     * brightens an image
+     */
+    public void brighten() 
+    {
+        Pixel[][] pixels = this.getPixels2D();
+        for (Pixel[] rowArray : pixels)
+        {
+            for (Pixel pixelObj : rowArray)
+            {
+                pixelObj.setColor(pixelObj.getColor().brighter());
+            }
+        }
+    }
+    
+    /**
+     * darkens an image
+     */
+    public void darken() 
+    {
+        Pixel[][] pixels = this.getPixels2D();
+        for (Pixel[] rowArray : pixels)
+        {
+            for (Pixel pixelObj : rowArray)
+            {
+                pixelObj.setColor(pixelObj.getColor().darker());
+            }
+        }
+    }
     ////////////////////// methods ///////////////////////////////////////
 
     /**
@@ -777,8 +806,15 @@ public class Picture extends SimplePicture
 
         Color background = pixels[1][1].getColor();
 
+        //complementary color scheme
         Color invertedBackground = new Color(255 - background.getRed(), 255 - background.getGreen(), 255 - background.getBlue());
 
+        //experimental triadic colorscheme
+        /*float[] triad = new float[3]; 
+        triad = Color.RGBtoHSB(background.getRed(),background.getGreen(),background.getBlue(), triad);
+        triad[0] = Math.abs((triad[0] + 1/3) - 1);
+        Color triadColor = Color.getHSBColor(triad[0],triad[1], triad[2]);*/
+        
         int countBack = 0;
         int countInvertBack = 0;
         int numPixels = pixels.length * pixels[0].length;
@@ -790,19 +826,29 @@ public class Picture extends SimplePicture
             for (int col = 0; col < pixels[0].length; col++)
             {
                 currentPixel = pixels[row][col];
-
+                //commented out code is what i had for the 2 color color scheme
                 if (Pixel.colorDistance(currentPixel.getColor(), background) > edgeDist)
                 {
                     currentPixel.setColor(invertedBackground);
                     countInvertBack ++;
-                }
-                else {
+                    //experimental triadic colorscheme
+                    /*if (Pixel.colorDistance(currentPixel.getColor(), background) > Pixel.colorDistance(currentPixel.getColor(), triadColor))
+                    {
+                        currentPixel.setColor(triadColor);
+                    } else {   
+                        currentPixel.setColor(invertedBackground);
+                    }*/
+                } 
+                else 
+                {
                     currentPixel.setColor(background);
                     countBack ++;
+                    //experimental triadic colorscheme
+                    //currentPixel.setColor(background);
                 }
             }
         }
-        
+
         return;
     }
 
@@ -879,7 +925,7 @@ public class Picture extends SimplePicture
         //bruh, this optimization cut ram usage (for this tool) to like ... a fourth what it was 
         //Picture tempCopyPicture = new Picture(this);
         //Pixel[][] pixels = tempCopyPicture.getPixels2D();
-        
+
         Pixel currentPixel = null;
         Color background = pixels[1][1].getColor();
         //Color invertedBackground = new Color(255 - background.getRed(), 255 - background.getGreen(), 255 - background.getBlue());
@@ -906,7 +952,7 @@ public class Picture extends SimplePicture
                 }
             }
         }
-        
+
         //iterate to find best edge dist
         if ( i < 25) {
             int newEdgeDist = edgeDist + 10;
@@ -916,7 +962,7 @@ public class Picture extends SimplePicture
 
             if (newEdgeDist >=255) newEdgeDist = 5;
             else if (newEdgeDist < 5) newEdgeDist = 255;
-            
+
             this.bolden2Iter(pixels, newEdgeDist, i + 1, bestEdgeDist, bestEdgeDiff, edgeDist, edgeDiff, x);
             return;
         }
