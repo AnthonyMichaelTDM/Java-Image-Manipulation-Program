@@ -1,4 +1,4 @@
-
+import java.awt.Color;
 /**
  * a main class, for testing and running the program
  *
@@ -13,10 +13,12 @@ public class Main
         pix.explore();
         
         
+        Color color = new Color(-16645117);
+        System.out.println(color.toString());
+        float[] hsbValues = new float[3];
+        float[] fnsHSBvalues = new float[3];
+        fnsHSBvalues = Color.RGBtoHSB(color.getRed(),color.getGreen(),color.getBlue(), fnsHSBvalues);
+        System.out.println(fnsHSBvalues[0] + " + " + fnsHSBvalues[1] + " + " + fnsHSBvalues[2]);
         
-        //System.out.println(color.toString());
-        //Color color1 = new Color(-6328001);
-        //System.out.println(color1.toString());
-        //ColorChooser.pickAColor();
     }
 }

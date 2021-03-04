@@ -90,6 +90,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     private JMenuItem edgeDetection;
     private JMenuItem brighten;
     private JMenuItem darken;
+    private JMenuItem simplifyColors;
     /** zoom menu */
     private JMenu zoomMenu;
     /* zoom to fit level */
@@ -241,14 +242,17 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         edgeDetection = new JMenuItem("Edge Detection");
         brighten = new JMenuItem("Brighten Picture");
         darken = new JMenuItem("Darken Picture");
+        simplifyColors = new JMenuItem("simplify picture colors");
         // add the action listeners
         edgeDetection.addActionListener(this);
         brighten.addActionListener(this);
         darken.addActionListener(this);
+        simplifyColors.addActionListener(this);
         // add the menu items to the menu
         filtersMenu.add(edgeDetection);
         filtersMenu.add(brighten);
         filtersMenu.add(darken);
+        filtersMenu.add(simplifyColors);
         menuBar.add(filtersMenu);
 
         // set the menu bar to this menu
@@ -1069,6 +1073,9 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
             case 3: //darken tool selected
             panel = darkenToolPanel();
             return panel;
+            case 4: //simplify tool selected
+            panel = simplifyColorToolPanel();
+            return panel;
             default: //a tool not accounted for selected
             currentTool[0] = 0;
             currentTool[1] = 0;
@@ -1126,7 +1133,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         algorithmSelectionPanel.add(BorderLayout.SOUTH, algorithmPanels);
         algorithmSelectionPanel.add(BorderLayout.SOUTH, autoTolerance);
         algorithmSelectionPanel.add(BorderLayout.SOUTH, explainationLabel);
-        
+
         grayscaleCheckBox.setVisible(false);
         grayscaleCheckBox.setSelected(false);
         JPanel tolerancePanel = new JPanel(new GridLayout(3,1));
@@ -1226,7 +1233,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
             });
         return panel;
     }
-    
+
     /**
      * method to handle the grayscale tool panel,
      * as well as ActionEvents having to do with the UI of this panel
@@ -1264,6 +1271,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
 
         return panel;
     }
+
     /**
      * method to handle the grayscale tool panel,
      * as well as ActionEvents having to do with the UI of this panel
@@ -1301,6 +1309,62 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
 
         return panel;
     }
+
+    /**
+     * method to handle the edge detection tool panel,
+     * as well as ActionEvents having to do with the UI of this panel
+     */
+    public JPanel simplifyColorToolPanel() 
+    {
+        //panels
+        JPanel panel = defaultUtilityPanel();
+        //title label
+        JLabel titleLable = new JLabel();
+        //button to confirm changes
+        JButton confirmButton = new JButton("confirm");
+        //checkbox, toggle grayscaling
+        JCheckBox grayscaleCheckBox = new JCheckBox("grayscale output?");
+
+        //config panel components
+        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "simplify image to a certain number of balanced colors");
+        Font titleFont = new Font(titleLable.getFont().getName(),
+                titleLable.getFont().getStyle(),18);
+        titleLable.setFont(titleFont);
+        titleLable.setText(titleText);
+
+        grayscaleCheckBox.setSelected(false);
+        
+        JPanel toolConfigPanel = new JPanel();
+        toolConfigPanel.setPreferredSize(new Dimension(150,300));
+        toolConfigPanel.add(BorderLayout.NORTH, new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", 100,"this method simplifies an image to five colors, \n the colors are based off of the background color (color of the top left pixel) \n and are equidistant from eachother on the color wheel")));
+        toolConfigPanel.add(BorderLayout.SOUTH, grayscaleCheckBox);
+
+        //add components to the panel
+        panel.add(BorderLayout.NORTH, titleLable);
+        panel.add(BorderLayout.CENTER, toolConfigPanel);
+        panel.add(BorderLayout.SOUTH, confirmButton);
+        
+        //handle confirm button press
+        confirmButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    //use one of the edgeDetection methods from the Picture class
+                    Picture simplified = new Picture(picture.getHeight(), picture.getWidth());
+                    simplified.copyPicture(new SimplePicture(picture.getBufferedImage()));
+                    
+                    simplified.simplifyColors();
+
+                    //grayscale image if box is checked
+                    if (grayscaleCheckBox.isSelected()) {
+                        simplified.grayscale();
+                    }
+                    //save the new image (ask first)
+                    pictureConfirmation.updateConfPanelImage(simplified);
+                }
+            });
+        
+        return panel;
+    }
+
     ///////////////next tool type (idk, image manipulation, fun, some other groups)///////////////
     //****************************************//
     //               Event Listeners          //
@@ -1640,7 +1704,10 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         {
             currentTool[1] = 3;
         }
-        
+        if (a.getSource() == simplifyColors)
+        {
+            currentTool[1] = 4;
+        }
 
         updateUtilityPanel(currentTool);
     }

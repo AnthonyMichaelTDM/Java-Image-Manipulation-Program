@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.text.*;
 import java.util.*;
 import java.util.List; // resolves problem with java.awt.List and java.util.List
+import java.util.ArrayList;
 
 /**
  * A class that represents a picture.  This class inherits from 
@@ -214,7 +215,7 @@ public class Picture extends SimplePicture
             }
         }
     }
-    
+
     /**
      * darkens an image
      */
@@ -228,6 +229,91 @@ public class Picture extends SimplePicture
                 pixelObj.setColor(pixelObj.getColor().darker());
             }
         }
+    }
+
+    /** 
+     * this method simplifies an image to five colors, 
+     * the colors are based off of the background color (color of the top left pixel) 
+     * and are equidistant from eachother on the color wheel
+     * uses the 5 number summary of all the pixels color values (as integers) to balance the image better
+     * 
+     */
+    public void simplifyColors()
+    {
+        Pixel currentPixel = null;
+        Pixel[][] pixels = this/*tempCopyPicture*/.getPixels2D();
+
+        Color background = pixels[1][1].getColor();
+        //if the background colors saturation, or brightness is really low, increase it
+        if (true) {
+            float[] bgHSBval = new float[3];
+            Color.RGBtoHSB(background.getRed(),background.getGreen(),background.getBlue(), bgHSBval);
+            if (Math.abs(bgHSBval[1]) < 0.3) {
+                bgHSBval[1] = 0.3f;
+            }
+            if (Math.abs(bgHSBval[2]) < 0.3) {
+                bgHSBval[2] = 0.3f;
+            }
+            background = Color.getHSBColor(bgHSBval[0], bgHSBval[1], bgHSBval[2]);
+        }
+
+        // get 5 number summary of the image
+        //get an array list of the integer representations of all the pixels color values
+        ArrayList<Integer> pictureColors = new ArrayList<Integer>();
+        for (Pixel[] rowArray : pixels) {
+            for (Pixel pixelObj : rowArray) {
+                pictureColors.add(pixelObj.getColor().getRGB());
+            }
+        }
+        //sort the array
+        Collections.sort(pictureColors);
+        //find the median
+        int med = pictureColors.get( (int)(pictureColors.size() / 2.0));
+        //find the min and max
+        int min = Collections.min(pictureColors);
+        int max = Collections.max(pictureColors);
+        // find q1 and q3
+        int q1 = pictureColors.get( (int)(pictureColors.size() / 4.0));
+        int q3 = pictureColors.get( (int)(pictureColors.size() * (3.0 / 5.0) ));
+
+        int[] fiveNumSum = {min, q1, med, q3, max};
+        Color[] fiveNumSumColors = { (new Color(min)) , (new Color(q1)) , (new Color(med)) , (new Color(q3)) , (new Color(max)) };
+
+        //generate 5 colors
+        Color[] colors = new Color[5];
+        float[] hsbValues = new float[3];
+        hsbValues = Color.RGBtoHSB(background.getRed(),background.getGreen(),background.getBlue(), hsbValues);
+
+        for(int i=0; i<colors.length; i++) {
+            float[] fnsHSBvalues = new float[3];
+            fnsHSBvalues = Color.RGBtoHSB(background.getRed(),background.getGreen(),background.getBlue(), fnsHSBvalues);
+            colors[i] = Color.getHSBColor((float)(hsbValues[0] + (0.2*i))%1, fnsHSBvalues[1], fnsHSBvalues[2]);
+        }
+        /*
+        colors[0] = Color.getHSBColor(hsbValues[0],hsbValues[1], hsbValues[2]);
+        colors[1] = Color.getHSBColor((float)(hsbValues[0]+0.2)%1,hsbValues[1], hsbValues[2]);
+        colors[2] = Color.getHSBColor((float)(hsbValues[0]+0.4)%1,hsbValues[1], hsbValues[2]);
+        colors[3] = Color.getHSBColor((float)(hsbValues[0]+0.6)%1,hsbValues[1], hsbValues[2]);
+        colors[4] = Color.getHSBColor((float)(hsbValues[0]+0.8)%1,hsbValues[1], hsbValues[2]);
+         */
+        //recolor image
+        for (int row = 0; row < pixels.length; row++)
+        {
+            for (int col = 0; col < pixels[0].length; col++)
+            {
+                currentPixel = pixels[row][col];
+
+                //parse the fiveNumSum colors and compare to background
+                int fmsBestIndex = 0;
+                for (int e = 1; e < fiveNumSumColors.length; e++) {
+                    if (currentPixel.colorDistance(fiveNumSumColors[e]) < currentPixel.colorDistance(fiveNumSumColors[fmsBestIndex])) fmsBestIndex = e;
+                }
+
+                currentPixel.setColor(colors[fmsBestIndex]);
+            }
+        }
+
+        return;
     }
     ////////////////////// methods ///////////////////////////////////////
 
@@ -809,12 +895,6 @@ public class Picture extends SimplePicture
         //complementary color scheme
         Color invertedBackground = new Color(255 - background.getRed(), 255 - background.getGreen(), 255 - background.getBlue());
 
-        //experimental triadic colorscheme
-        /*float[] triad = new float[3]; 
-        triad = Color.RGBtoHSB(background.getRed(),background.getGreen(),background.getBlue(), triad);
-        triad[0] = Math.abs((triad[0] + 1/3) - 1);
-        Color triadColor = Color.getHSBColor(triad[0],triad[1], triad[2]);*/
-        
         int countBack = 0;
         int countInvertBack = 0;
         int numPixels = pixels.length * pixels[0].length;
@@ -826,25 +906,15 @@ public class Picture extends SimplePicture
             for (int col = 0; col < pixels[0].length; col++)
             {
                 currentPixel = pixels[row][col];
-                //commented out code is what i had for the 2 color color scheme
                 if (Pixel.colorDistance(currentPixel.getColor(), background) > edgeDist)
                 {
                     currentPixel.setColor(invertedBackground);
                     countInvertBack ++;
-                    //experimental triadic colorscheme
-                    /*if (Pixel.colorDistance(currentPixel.getColor(), background) > Pixel.colorDistance(currentPixel.getColor(), triadColor))
-                    {
-                        currentPixel.setColor(triadColor);
-                    } else {   
-                        currentPixel.setColor(invertedBackground);
-                    }*/
                 } 
                 else 
                 {
                     currentPixel.setColor(background);
                     countBack ++;
-                    //experimental triadic colorscheme
-                    //currentPixel.setColor(background);
                 }
             }
         }
