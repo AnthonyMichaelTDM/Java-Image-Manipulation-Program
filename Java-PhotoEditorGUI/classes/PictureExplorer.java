@@ -361,7 +361,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      * @param labelFont the font for the labels
      * @return the image option panel
      */
-    public JPanel createImageOptionPanel(Font labelFont) {
+    private JPanel createImageOptionPanel(Font labelFont) {
         // create a Image Option panel
         JPanel imgageOptionPanel = new JPanel();
         imgageOptionPanel.setLayout(new FlowLayout());
@@ -711,7 +711,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      * method to handle the remove tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
-    public JPanel removeColorToolPanel() 
+    private JPanel removeColorToolPanel() 
     {
         //panels
         JPanel panel = defaultUtilityPanel();
@@ -767,7 +767,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      * method to handle the trim tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
-    public JPanel trimColorToolPanel() 
+    private JPanel trimColorToolPanel() 
     {
         //panels
         JPanel panel = defaultUtilityPanel();
@@ -858,7 +858,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      * method to handle the negate tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
-    public JPanel negateToolPanel() 
+    private JPanel negateToolPanel() 
     {
         //panels
         JPanel panel = defaultUtilityPanel();
@@ -914,7 +914,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      * method to handle the grayscale tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
-    public JPanel grayscaleToolPanel() 
+    private JPanel grayscaleToolPanel() 
     {
         //panels
         JPanel panel = defaultUtilityPanel();
@@ -952,7 +952,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      * method to handle the replace color with color tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
-    public JPanel replaceColorWithColorToolPanel() 
+    private JPanel replaceColorWithColorToolPanel() 
     {
         //panels
         JPanel panel = defaultUtilityPanel();
@@ -1087,7 +1087,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      * method to handle the edge detection tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
-    public JPanel edgeDetectionToolPanel() 
+    private JPanel edgeDetectionToolPanel() 
     {
         //panels
         JPanel panel = defaultUtilityPanel();
@@ -1238,7 +1238,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      * method to handle the grayscale tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
-    public JPanel brightenToolPanel() 
+    private JPanel brightenToolPanel() 
     {
         //panels
         JPanel panel = defaultUtilityPanel();
@@ -1276,7 +1276,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      * method to handle the grayscale tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
-    public JPanel darkenToolPanel() 
+    private JPanel darkenToolPanel() 
     {
         //panels
         JPanel panel = defaultUtilityPanel();
@@ -1314,7 +1314,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      * method to handle the edge detection tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
-    public JPanel simplifyColorToolPanel() 
+    private JPanel simplifyColorToolPanel() 
     {
         //panels
         JPanel panel = defaultUtilityPanel();
