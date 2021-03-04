@@ -187,7 +187,7 @@ public class PictureTester
     /** method to test negate()*/
     public static void testNegate()
     {
-        Picture beach = new Picture("WPflag.png");
+        Picture beach = new Picture("beach.jpg");
         beach.explore();
         beach.negate();
         beach.explore();
