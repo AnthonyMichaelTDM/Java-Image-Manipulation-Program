@@ -70,7 +70,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     private JCheckBox askForConfirmationCheckBox;
 
     //side panel
-    private JPanel utilityPanel = new JPanel();
+    private JPanel toolUtilityPanel;
 
     //menu bar components
     /**menu bar*/
@@ -111,10 +111,10 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     private JMenuItem fiveHundred;
 
     /** confirmation frame */
-    private PictureConfirmation pictureConfirmation;
+    static PictureConfirmation pictureConfirmation;
 
     /** The picture being explored */
-    private DigitalPicture picture;
+    static DigitalPicture picture;
 
     /** The image icon used to display the picture */
     private ImageIcon scrollImageIcon;
@@ -126,7 +126,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     private double zoomFactor;
 
     /** the color currently selected */
-    private Color selectedPixelColor;
+    static Color selectedPixelColor;
 
     /** the number system to use, 0 means starting at 0, 1 means starting at 1 */
     private int numberBase=0;
@@ -308,8 +308,8 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      */
     private void createSidePanel() 
     {
-        utilityPanel = defaultUtilityPanel();
-        pictureFrame.getContentPane().add(BorderLayout.WEST,utilityPanel);
+        toolUtilityPanel = ToolUtilityPanelHandler.defaultToolUtilityPanel();
+        pictureFrame.getContentPane().add(BorderLayout.WEST,toolUtilityPanel);
         repaint();
     }
 
@@ -629,19 +629,8 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         pictureFrame.repaint();
     }
     //*************************************************//
-    //               Utility Panel Management          //
+    //               Tool Utility Panel Management          //
     //*************************************************//
-    /**
-     * creates and returns a blank panel
-     * @return a default panel for the utility panel
-     */
-    public JPanel defaultUtilityPanel() 
-    {
-        JPanel panel = new JPanel();
-        panel.setBackground(Color.gray);
-        panel.setPreferredSize(new Dimension(150,100));
-        return panel;
-    }
 
     /**
      * uses one of the various __ToolUtilityPanel methods to create set
@@ -650,722 +639,14 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      */
     public void updateUtilityPanel(int[] tool)
     {
-        currentTool = tool;
-        JPanel panel;
-
-        //create the appropriate panel based on the passed tool
-        switch (tool[0]) {
-            case 1: //color management tool is selected
-            panel = colorManagementToolUtilityPanel(tool[1]);
-            break;
-            case 2: // filters tool is selected
-            panel = filtersToolUtilityPanel(tool[1]);
-            break;
-            default: panel = defaultUtilityPanel();
-        }
-
         //set that created panel to the utilityPanel
-        pictureFrame.getContentPane().remove(utilityPanel);
-        utilityPanel = panel;
-        pictureFrame.getContentPane().add(BorderLayout.WEST,utilityPanel);
+        pictureFrame.getContentPane().remove(toolUtilityPanel);
+        toolUtilityPanel = ToolUtilityPanelHandler.updateToolUtilityPanel(tool);
+        pictureFrame.getContentPane().add(BorderLayout.WEST,toolUtilityPanel);
         pictureFrame.pack();
         repaint();
     }
-    ///////////////Color Tools///////////////
-    /**
-     * creates and returns the panel associated with the passed integer
-     * @param tool the integer associated with the color tool the panel is being created for
-     * @return the panel associated with the tool passed
-     */
-    public JPanel colorManagementToolUtilityPanel(int tool)
-    {
-        JPanel panel = defaultUtilityPanel();
-        if (currentTool[0] != 1)
-        {
-            return panel;
-        }
-        switch (tool) {
-            case 1: //Remove Color Channel tool selected
-            panel = removeColorToolPanel();
-            return panel;
-            case 2: //Trim Color Channel tool selected
-            panel = trimColorToolPanel();
-            return panel;
-            case 3: //Negate Color Channel tool selected
-            panel = negateToolPanel();
-            return panel;
-            case 4: //Gray Scale tool selected
-            panel = grayscaleToolPanel();
-            return panel;
-            case 5: //set color to color tool selected
-            panel = replaceColorWithColorToolPanel();
-            return panel;
-            default: //a tool not accounted for selected
-            currentTool[0] = 0;
-            currentTool[1] = 0;
-            return panel;
-        }
-    }
-
-    /**
-     * method to handle the remove tool panel,
-     * as well as ActionEvents having to do with the UI of this panel
-     */
-    private JPanel removeColorToolPanel() 
-    {
-        //panels
-        JPanel panel = defaultUtilityPanel();
-        //title label
-        JLabel titleLable = new JLabel();
-        //radio buttons, to select the channels
-        JRadioButton redRadioButton = new JRadioButton("remove red");
-        JRadioButton greenRadioButton = new JRadioButton("remove green");
-        JRadioButton blueRadioButton = new JRadioButton("remove blue");
-        //button to confirm changes
-        JButton confirmButton = new JButton("confirm");
-
-        //config panel components
-        redRadioButton.setSelected(false);
-        greenRadioButton.setSelected(false);
-        blueRadioButton.setSelected(false);
-
-        JPanel toolConfigPanel = new JPanel(new GridLayout(3,1));
-        toolConfigPanel.setPreferredSize(new Dimension(150,300));
-        toolConfigPanel.add(redRadioButton);
-        toolConfigPanel.add(greenRadioButton);
-        toolConfigPanel.add(blueRadioButton);
-
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "remove one or more color channels");
-        Font titleFont = new Font(titleLable.getFont().getName(),
-                titleLable.getFont().getStyle(),18);
-        titleLable.setFont(titleFont);
-        titleLable.setText(titleText);
-        //add components to the panel
-        panel.add(BorderLayout.NORTH, titleLable);
-        panel.add(BorderLayout.CENTER, toolConfigPanel);
-        panel.add(BorderLayout.SOUTH, confirmButton);
-
-        //handle confirm button press
-        confirmButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    //use the removeColorChannels method from the Picture class
-                    Picture removed = new Picture(picture.getHeight(), picture.getWidth());
-                    removed.copyPicture(new SimplePicture(picture.getBufferedImage()));
-                    removed.removeColorChannels(
-                        redRadioButton.isSelected(), 
-                        greenRadioButton.isSelected(), 
-                        blueRadioButton.isSelected()
-                    );
-                    pictureConfirmation.updateConfPanelImage(removed);
-                }
-            });
-
-        return panel;
-    }
-
-    /**
-     * method to handle the trim tool panel,
-     * as well as ActionEvents having to do with the UI of this panel
-     */
-    private JPanel trimColorToolPanel() 
-    {
-        //panels
-        JPanel panel = defaultUtilityPanel();
-
-        // panel components
-
-        //title label
-        JLabel titleLable = new JLabel();
-        //color comboBox
-        JComboBox colorBox = new JComboBox(new String[]{"red","green","blue"});
-        //confirm button
-        JButton confirmButton = new JButton("confirm");
-        //min slider
-        JLabel minLabel = new JLabel("min value (0-255)");
-        JSlider minSlider = new JSlider(0,255,0);
-        JLabel minValueLabel = new JLabel();
-        //max slider
-        JLabel maxLabel = new JLabel("max value (0-255)");
-        JSlider maxSlider = new JSlider(0,255,255);
-        JLabel maxValueLabel = new JLabel();
-
-        // config panel components
-        //title
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "trim a color channel");
-        Font titleFont = new Font(titleLable.getFont().getName(),
-                titleLable.getFont().getStyle(),18);
-        titleLable.setFont(titleFont);
-        titleLable.setText(titleText);
-        //sliders
-        minSlider.setMinorTickSpacing(5);
-        minSlider.setMajorTickSpacing(10);
-        maxSlider.setMinorTickSpacing(5);
-        maxSlider.setMajorTickSpacing(10);
-        //slider panel
-        JPanel toolConfigPanel = new JPanel(new GridLayout(7,1));
-        toolConfigPanel.setPreferredSize(new Dimension(150,300));
-        toolConfigPanel.add(colorBox);
-        toolConfigPanel.add(minLabel);
-        toolConfigPanel.add(minSlider);
-        toolConfigPanel.add(minValueLabel);
-        toolConfigPanel.add(maxLabel);
-        toolConfigPanel.add(maxSlider);
-        toolConfigPanel.add(maxValueLabel);
-
-        // add components to panel
-        panel.add(BorderLayout.NORTH, titleLable);
-        panel.add(BorderLayout.CENTER, toolConfigPanel);
-        panel.add(BorderLayout.SOUTH, confirmButton);
-
-        //handle confirm button press
-        confirmButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    //use the trim method from the Picture class
-                    Picture trimmed = new Picture(picture.getHeight(), picture.getWidth());
-                    trimmed.copyPicture(new SimplePicture(picture.getBufferedImage()));
-                    trimmed.trimColor(
-                        colorBox.getSelectedIndex(), 
-                        (int) minSlider.getValue(), 
-                        (int) maxSlider.getValue()
-                    );
-                    pictureConfirmation.updateConfPanelImage(trimmed);
-                }
-            });
-        //handle min slider changing value
-        minSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent evt) {
-                    //update minValueLabel
-                    minValueLabel.setText("min = " + minSlider.getValue());
-
-                    if (minSlider.getValue() >= maxSlider.getValue()) minSlider.setValue(maxSlider.getValue());
-                }
-            });
-        //handle max slider changing value
-        maxSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent evt) {
-                    //update maxValueLabel
-                    maxValueLabel.setText("max = " + maxSlider.getValue());
-
-                    if (maxSlider.getValue() <= minSlider.getValue()) maxSlider.setValue(minSlider.getValue());
-                }
-            });
-
-        //return the panel
-        return panel;
-    }
-
-    /**
-     * method to handle the negate tool panel,
-     * as well as ActionEvents having to do with the UI of this panel
-     */
-    private JPanel negateToolPanel() 
-    {
-        //panels
-        JPanel panel = defaultUtilityPanel();
-        //title label
-        JLabel titleLable = new JLabel();
-        //radio buttons, to select the channels
-        JRadioButton negateRedRadioButton = new JRadioButton("negate red");
-        JRadioButton negateGreebRadioButton = new JRadioButton("negate green");
-        JRadioButton negateBlueRadioButton = new JRadioButton("negate blue");
-        //button to confirm changes
-        JButton confirmButton = new JButton("confirm");
-
-        //config panel components
-        negateRedRadioButton.setSelected(false);
-        negateGreebRadioButton.setSelected(false);
-        negateBlueRadioButton.setSelected(false);
-
-        JPanel toolConfigPanel = new JPanel(new GridLayout(3,1));
-        toolConfigPanel.setPreferredSize(new Dimension(150,300));
-        toolConfigPanel.add(negateRedRadioButton);
-        toolConfigPanel.add(negateGreebRadioButton);
-        toolConfigPanel.add(negateBlueRadioButton);
-
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "negate one or more color channels");
-        Font titleFont = new Font(titleLable.getFont().getName(),
-                titleLable.getFont().getStyle(),18);
-        titleLable.setFont(titleFont);
-        titleLable.setText(titleText);
-        //add components to the panel
-        panel.add(BorderLayout.NORTH, titleLable);
-        panel.add(BorderLayout.CENTER, toolConfigPanel);
-        panel.add(BorderLayout.SOUTH, confirmButton);
-
-        //handle confirm button press
-        confirmButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    //use the negate method from the Picture class
-                    Picture negated = new Picture(picture.getHeight(), picture.getWidth());
-                    negated.copyPicture(new SimplePicture(picture.getBufferedImage()));
-                    negated.negateColorChannels(
-                        negateRedRadioButton.isSelected(), 
-                        negateGreebRadioButton.isSelected(), 
-                        negateBlueRadioButton.isSelected()
-                    );
-                    pictureConfirmation.updateConfPanelImage(negated);
-                }
-            });
-
-        return panel;
-    }
-
-    /**
-     * method to handle the grayscale tool panel,
-     * as well as ActionEvents having to do with the UI of this panel
-     */
-    private JPanel grayscaleToolPanel() 
-    {
-        //panels
-        JPanel panel = defaultUtilityPanel();
-        //title label
-        JLabel titleLable = new JLabel();
-        //button to confirm changes
-        JButton confirmButton = new JButton("confirm");
-
-        //config panel components
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "greyscale the image");
-        Font titleFont = new Font(titleLable.getFont().getName(),
-                titleLable.getFont().getStyle(),18);
-        titleLable.setFont(titleFont);
-        titleLable.setText(titleText);
-
-        //add components to the panel
-        panel.add(BorderLayout.NORTH, titleLable);
-        panel.add(BorderLayout.SOUTH, confirmButton);
-
-        //handle confirm button press
-        confirmButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    //use the grayscale method from the Picture class
-                    Picture grayscaled = new Picture(picture.getHeight(), picture.getWidth());
-                    grayscaled.copyPicture(new SimplePicture(picture.getBufferedImage()));
-                    grayscaled.grayscale();
-                    pictureConfirmation.updateConfPanelImage(grayscaled);
-                }
-            });
-
-        return panel;
-    }
-
-    /**
-     * method to handle the replace color with color tool panel,
-     * as well as ActionEvents having to do with the UI of this panel
-     */
-    private JPanel replaceColorWithColorToolPanel() 
-    {
-        //panels
-        JPanel panel = defaultUtilityPanel();
-        //title label
-        JLabel titleLable = new JLabel();
-        //label, button and panel to display the currently selected color to replace
-        JLabel colorToReplaceLabel = new JLabel();
-        JButton colorToReplaceButton = new JButton("update color to replace");
-        JPanel replaceColorPanel = new JPanel(); //displays the replace color
-        //label, button and panel to display the currently selected color to set
-        JLabel colorToSetLabel = new JLabel();
-        JButton colorToSetButton = new JButton("select color to set");
-        JPanel setColorPanel = new JPanel(); //displays the set color
-        Color setColor = Color.WHITE;
-        //tolerance slider
-        JSlider toleranceSlider = new JSlider(1,255,15);
-        JLabel toleranceLabel = new JLabel("tolerance (0-255):"  + toleranceSlider.getValue());
-        //button to confirm changes
-        JButton confirmButton = new JButton("confirm");
-
-        //config panel components
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "replace color with color");
-        Font titleFont = new Font(titleLable.getFont().getName(),
-                titleLable.getFont().getStyle(),18);
-        titleLable.setFont(titleFont);
-        titleLable.setText(titleText);
-
-        JPanel colorToReplacePanel = new JPanel();
-        colorToReplaceLabel.setText("color to replace");
-        replaceColorPanel.setBackground(selectedPixelColor);
-        colorToReplacePanel.add(BorderLayout.WEST, colorToReplaceLabel);
-        colorToReplacePanel.add(BorderLayout.EAST, replaceColorPanel);
-        colorToReplacePanel.add(BorderLayout.SOUTH, colorToReplaceButton);
-
-        JPanel colorToSetPanel = new JPanel();
-        colorToSetLabel.setText("color to set");
-        colorToSetPanel.add(BorderLayout.WEST, colorToSetLabel);
-        colorToSetPanel.add(BorderLayout.EAST, setColorPanel);
-        colorToSetPanel.add(BorderLayout.SOUTH, colorToSetButton);
-
-        JPanel tolerancePanel = new JPanel(new GridLayout(2,1));
-        tolerancePanel.add(toleranceLabel);
-        tolerancePanel.add(toleranceSlider);
-
-        JPanel toolConfigPanel = new JPanel(new GridLayout(3,1));
-        toolConfigPanel.setPreferredSize(new Dimension(150,200));
-        toolConfigPanel.add(colorToReplacePanel);
-        toolConfigPanel.add(colorToSetPanel);
-        toolConfigPanel.add(tolerancePanel);
-
-        confirmButton.setEnabled(false);
-        //add components to the panel
-        panel.add(BorderLayout.NORTH, titleLable);
-        panel.add(BorderLayout.CENTER, toolConfigPanel);
-        panel.add(BorderLayout.SOUTH, confirmButton);
-
-        //handle confirm button press
-        confirmButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    //use the replaceColorWithColor method from the Picture class
-                    Picture colorReplaced = new Picture(picture.getHeight(), picture.getWidth());
-                    colorReplaced.copyPicture(new SimplePicture(picture.getBufferedImage()));
-                    colorReplaced.replaceColorWithColor(
-                        replaceColorPanel.getBackground(), 
-                        setColorPanel.getBackground(), 
-                        toleranceSlider.getValue()
-                    );
-                    pictureConfirmation.updateConfPanelImage(colorReplaced);
-                }
-            });
-        //handle colorToReplaceButton press
-        colorToReplaceButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    //update the replaceColorPanel
-                    replaceColorPanel.setBackground(selectedPixelColor);
-                }
-            });
-
-        //handle colorToSetButton press
-        colorToSetButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    //update the setColorPanel, and enable confirmButton
-                    setColorPanel.setBackground(ColorChooser.pickAColor());
-                    confirmButton.setEnabled(true);
-                }
-            });
-        //handle tolerance slider changing value
-        toleranceSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent evt) {
-                    //update maxValueLabel
-                    toleranceLabel.setText("tolerance: " + toleranceSlider.getValue());
-                }
-            });
-
-        return panel;
-    }
-
-    /////////////// Filter Tools///////////////
-    /**
-     * creates and returns the panel associated with the passed integer
-     * @param tool the integer associated with the filter tool the panel is being created for
-     * @return the panel associated with the tool passed
-     */
-    public JPanel filtersToolUtilityPanel(int tool)
-    {
-        JPanel panel = defaultUtilityPanel();
-        if (currentTool[0] != 2)
-        {
-            return panel;
-        }
-        switch (tool) {
-            case 1: //Edge Detection tool selected
-            panel = edgeDetectionToolPanel();
-            return panel;
-            case 2: //brighten tool selected
-            panel = brightenToolPanel();
-            return panel;
-            case 3: //darken tool selected
-            panel = darkenToolPanel();
-            return panel;
-            case 4: //simplify tool selected
-            panel = simplifyColorToolPanel();
-            return panel;
-            default: //a tool not accounted for selected
-            currentTool[0] = 0;
-            currentTool[1] = 0;
-            return panel;
-        }
-    }
-
-    /**
-     * method to handle the edge detection tool panel,
-     * as well as ActionEvents having to do with the UI of this panel
-     */
-    private JPanel edgeDetectionToolPanel() 
-    {
-        //panels
-        JPanel panel = defaultUtilityPanel();
-        //title label
-        JLabel titleLable = new JLabel();
-        //algorithm selection comboBox
-        JComboBox algorithmSelection = new JComboBox(new String[]{"algorithm 1", "algorithm 2", "algorithm 3"});
-        JLabel explainationLabel = new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", 150, "algorithm 1 is much slower, but a higher resolution. Algorithm 2 is much faster, but can sometimes appear \"fuzzy\". Algorithm 3 fills area between edges, useful for making light text show up better against a plain background"));
-        //tolerance slider
-        JSlider toleranceSlider = new JSlider(1,255,5);
-        JLabel toleranceLabel = new JLabel("tolerance (0-255):"  + toleranceSlider.getValue());
-        //iterations text box
-        NumberFormatter iterationsFormat = new NumberFormatter(NumberFormat.getNumberInstance());
-        JFormattedTextField iterationsField = new JFormattedTextField(iterationsFormat);
-        JLabel iterationsLabel = new JLabel("iterations: '1");
-        //auto tolerance radiobutton
-        JCheckBox autoTolerance = new JCheckBox(String.format("<html><div WIDTH=%d>%s</div></html>", 100, "automatically find a decent tolerance?"));
-        //button to confirm changes
-        JButton confirmButton = new JButton("confirm");
-        //checkbox, toggle grayscaling
-        JCheckBox grayscaleCheckBox = new JCheckBox("grayscale output?");
-
-        //config panel components
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "detect edges with 1 of 3 algorithms");
-        Font titleFont = new Font(titleLable.getFont().getName(),
-                titleLable.getFont().getStyle(),18);
-        titleLable.setFont(titleFont);
-        titleLable.setText(titleText);
-
-        explainationLabel.setFont(new Font(explainationLabel.getFont().getName(),explainationLabel.getFont().getStyle(),9));
-
-        JPanel algorithmPanels = new JPanel(new GridLayout(2,1));
-        iterationsField.setValue(new Integer(1));
-        iterationsField.setColumns(10);
-        algorithmPanels.add(iterationsLabel);
-        algorithmPanels.add(iterationsField);
-        algorithmPanels.setVisible(false);
-        autoTolerance.setVisible(false);
-
-        algorithmSelection.setSelectedIndex(0);
-        JPanel algorithmSelectionPanel = new JPanel();
-        algorithmSelectionPanel.add(BorderLayout.NORTH, algorithmSelection);
-        algorithmSelectionPanel.add(BorderLayout.SOUTH, algorithmPanels);
-        algorithmSelectionPanel.add(BorderLayout.SOUTH, autoTolerance);
-        algorithmSelectionPanel.add(BorderLayout.SOUTH, explainationLabel);
-
-        grayscaleCheckBox.setVisible(false);
-        grayscaleCheckBox.setSelected(false);
-        JPanel tolerancePanel = new JPanel(new GridLayout(3,1));
-        tolerancePanel.add(grayscaleCheckBox);
-        tolerancePanel.add(toleranceLabel);
-        tolerancePanel.add(toleranceSlider);
-
-        JPanel toolConfigPanel = new JPanel(new GridLayout(2,1));
-        toolConfigPanel.setPreferredSize(new Dimension(150,300));
-        toolConfigPanel.add(algorithmSelectionPanel);
-        toolConfigPanel.add(tolerancePanel);
-
-        //add components to the panel
-        panel.add(BorderLayout.NORTH, titleLable);
-        panel.add(BorderLayout.CENTER, toolConfigPanel);
-        panel.add(BorderLayout.SOUTH, confirmButton);
-
-        //handle the iterations field
-        iterationsField.addPropertyChangeListener("value", new PropertyChangeListener() {
-                public void propertyChange(PropertyChangeEvent e) {
-                    iterationsLabel.setText("iterations: '" + (int) ((Number)iterationsField.getValue()).doubleValue() );
-                }           
-            });
-        //handle the toggle auto tolerance checkbox
-        autoTolerance.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent evt) {
-                    if (autoTolerance.isSelected()) {
-                        toleranceLabel.setText("tolerance: auto");
-                        toleranceSlider.setEnabled(false);
-                    }
-                    else {
-                        toleranceLabel.setText("tolerance: " + toleranceSlider.getValue());
-                        toleranceSlider.setEnabled(true);
-                    }
-                }
-            });
-
-        //handle confirm button press
-        confirmButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    //use one of the edgeDetection methods from the Picture class
-                    Picture edged = new Picture(picture.getHeight(), picture.getWidth());
-                    edged.copyPicture(new SimplePicture(picture.getBufferedImage()));
-                    switch (algorithmSelection.getSelectedIndex()) 
-                    {
-                        case 1: 
-                        try {
-                            edged.edgeDetection2(toleranceSlider.getValue(), Integer.parseInt(iterationsLabel.getText().substring(iterationsLabel.getText().indexOf("'")+1)));
-                        } catch (Exception e) {JOptionPane.showMessageDialog(null, "an error occured, please try again", e.toString(), JOptionPane.ERROR_MESSAGE);} 
-                        break;
-                        case 2:
-                        if (autoTolerance.isSelected()) edged.bolden2();
-                        else edged.bolden(toleranceSlider.getValue());
-                        break;
-                        default:
-                        edged.edgeDetection(toleranceSlider.getValue());
-                        break;
-                    }
-                    //grayscale image if box is checked
-                    if (grayscaleCheckBox.isSelected()) {
-                        edged.grayscale();
-                    }
-                    //save the new image (ask first)
-                    pictureConfirmation.updateConfPanelImage(edged);
-                }
-            });
-        //handle the combo box changing selected value
-        algorithmSelection.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    //update the panel as needed
-                    algorithmPanels.setVisible(false);
-                    explainationLabel.setVisible(true);
-                    autoTolerance.setVisible(false);
-                    autoTolerance.setSelected(false);
-                    grayscaleCheckBox.setVisible(false);
-
-                    if (algorithmSelection.getSelectedIndex() == 1) { //add the things for the second edge detection algorithm
-                        algorithmPanels.setVisible(true);
-                        explainationLabel.setVisible(false);
-                        autoTolerance.setVisible(false);
-                        autoTolerance.setSelected(false);
-                        grayscaleCheckBox.setVisible(false);
-                    } else if (algorithmSelection.getSelectedIndex() == 2) {
-                        algorithmPanels.setVisible(false);
-                        explainationLabel.setVisible(false);
-                        autoTolerance.setVisible(true);
-                        grayscaleCheckBox.setVisible(true);
-                    }
-                }
-            });
-        //handle tolerance slider changing value
-        toleranceSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent evt) {
-                    //update maxValueLabel
-                    toleranceLabel.setText("tolerance: " + toleranceSlider.getValue());
-                }
-            });
-        return panel;
-    }
-
-    /**
-     * method to handle the grayscale tool panel,
-     * as well as ActionEvents having to do with the UI of this panel
-     */
-    private JPanel brightenToolPanel() 
-    {
-        //panels
-        JPanel panel = defaultUtilityPanel();
-        //title label
-        JLabel titleLable = new JLabel();
-        //button to confirm changes
-        JButton confirmButton = new JButton("confirm");
-
-        //config panel components
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "brighten the image");
-        Font titleFont = new Font(titleLable.getFont().getName(),
-                titleLable.getFont().getStyle(),18);
-        titleLable.setFont(titleFont);
-        titleLable.setText(titleText);
-
-        //add components to the panel
-        panel.add(BorderLayout.NORTH, titleLable);
-        panel.add(BorderLayout.SOUTH, confirmButton);
-
-        //handle confirm button press
-        confirmButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    //use the brighten method from the Picture class
-                    Picture brightened = new Picture(picture.getHeight(), picture.getWidth());
-                    brightened.copyPicture(new SimplePicture(picture.getBufferedImage()));
-                    brightened.brighten();
-                    pictureConfirmation.updateConfPanelImage(brightened);
-                }
-            });
-
-        return panel;
-    }
-
-    /**
-     * method to handle the grayscale tool panel,
-     * as well as ActionEvents having to do with the UI of this panel
-     */
-    private JPanel darkenToolPanel() 
-    {
-        //panels
-        JPanel panel = defaultUtilityPanel();
-        //title label
-        JLabel titleLable = new JLabel();
-        //button to confirm changes
-        JButton confirmButton = new JButton("confirm");
-
-        //config panel components
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "darken the image");
-        Font titleFont = new Font(titleLable.getFont().getName(),
-                titleLable.getFont().getStyle(),18);
-        titleLable.setFont(titleFont);
-        titleLable.setText(titleText);
-
-        //add components to the panel
-        panel.add(BorderLayout.NORTH, titleLable);
-        panel.add(BorderLayout.SOUTH, confirmButton);
-
-        //handle confirm button press
-        confirmButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    //use the darken method from the Picture class
-                    Picture darkened = new Picture(picture.getHeight(), picture.getWidth());
-                    darkened.copyPicture(new SimplePicture(picture.getBufferedImage()));
-                    darkened.darken();
-                    pictureConfirmation.updateConfPanelImage(darkened);
-                }
-            });
-
-        return panel;
-    }
-
-    /**
-     * method to handle the edge detection tool panel,
-     * as well as ActionEvents having to do with the UI of this panel
-     */
-    private JPanel simplifyColorToolPanel() 
-    {
-        //panels
-        JPanel panel = defaultUtilityPanel();
-        //title label
-        JLabel titleLable = new JLabel();
-        //button to confirm changes
-        JButton confirmButton = new JButton("confirm");
-        //checkbox, toggle grayscaling
-        JCheckBox grayscaleCheckBox = new JCheckBox("grayscale output?");
-
-        //config panel components
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "simplify image to a certain number of balanced colors");
-        Font titleFont = new Font(titleLable.getFont().getName(),
-                titleLable.getFont().getStyle(),18);
-        titleLable.setFont(titleFont);
-        titleLable.setText(titleText);
-
-        grayscaleCheckBox.setSelected(false);
-        
-        JPanel toolConfigPanel = new JPanel();
-        toolConfigPanel.setPreferredSize(new Dimension(150,300));
-        toolConfigPanel.add(BorderLayout.NORTH, new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", 100,"this method simplifies an image to five colors, \n the colors are based off of the background color (color of the top left pixel) \n and are equidistant from eachother on the color wheel")));
-        toolConfigPanel.add(BorderLayout.SOUTH, grayscaleCheckBox);
-
-        //add components to the panel
-        panel.add(BorderLayout.NORTH, titleLable);
-        panel.add(BorderLayout.CENTER, toolConfigPanel);
-        panel.add(BorderLayout.SOUTH, confirmButton);
-        
-        //handle confirm button press
-        confirmButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    //use one of the edgeDetection methods from the Picture class
-                    Picture simplified = new Picture(picture.getHeight(), picture.getWidth());
-                    simplified.copyPicture(new SimplePicture(picture.getBufferedImage()));
-                    
-                    simplified.simplifyColors();
-
-                    //grayscale image if box is checked
-                    if (grayscaleCheckBox.isSelected()) {
-                        simplified.grayscale();
-                    }
-                    //save the new image (ask first)
-                    pictureConfirmation.updateConfPanelImage(simplified);
-                }
-            });
-        
-        return panel;
-    }
-
-    ///////////////next tool type (idk, image manipulation, fun, some other groups)///////////////
+    
     //****************************************//
     //               Event Listeners          //
     //****************************************//
@@ -1576,7 +857,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
                 return;
             }
         }
-
+        
         //handle filters menu actions
         for(Component element : filtersMenu.getMenuComponents())
         {
@@ -1657,7 +938,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         //update the current tool to this tool group
         currentTool[0] = 1;
         currentTool[1]=0;
-
+        
         if (a.getSource() == removeColor) 
         {
             currentTool[1]=1;
@@ -1758,7 +1039,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      * a preview of the image 
      * and asks user for confirmation before setting that temp image to the picture
      */
-    private class PictureConfirmation {
+    public class PictureConfirmation {
         /** picture to display */
         private DigitalPicture tempPicture;
         /** frame used to hold all of this */
@@ -1837,9 +1118,12 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
             applyButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
                         picture = new Picture(tempPicture.getBufferedImage());
-                        //tempFrame.setVisible(false);
+                        //tempFrame.setVisible(false)
                         updateImage();
+                        //memory cleanup
                         tempFrame.dispose();
+                        tempImageIcon.setImage(new Picture().getImage());
+                        return;
                     }
                 });
         }

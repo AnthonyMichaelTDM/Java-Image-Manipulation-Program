@@ -97,6 +97,8 @@ public class Picture extends SimplePicture
                 }
             }
         }
+        pixels = null;
+        return;
     }
 
     /**
@@ -133,6 +135,8 @@ public class Picture extends SimplePicture
                 }
             }
         }
+        pixels = null;
+        return;
     }
 
     /**
@@ -159,6 +163,8 @@ public class Picture extends SimplePicture
                 }
             }
         }
+        pixels = null;
+        return;
     }
 
     /** 
@@ -177,6 +183,8 @@ public class Picture extends SimplePicture
                 pixelObj.setBlue((int)average);
             }
         }
+        pixels = null;
+        return;
     }
 
     /**
@@ -199,6 +207,8 @@ public class Picture extends SimplePicture
                 }
             }
         }
+        pixels = null;
+        return;
     }
 
     /**
@@ -214,6 +224,8 @@ public class Picture extends SimplePicture
                 pixelObj.setColor(pixelObj.getColor().brighter());
             }
         }
+        pixels = null;
+        return;
     }
 
     /**
@@ -229,6 +241,8 @@ public class Picture extends SimplePicture
                 pixelObj.setColor(pixelObj.getColor().darker());
             }
         }
+        pixels = null;
+        return;
     }
 
     /** 
@@ -314,7 +328,7 @@ public class Picture extends SimplePicture
                 currentPixel.setColor(colors[fmsBestIndex]);
             }
         }
-
+        pixels = null;
         return;
     }
     ////////////////////// methods ///////////////////////////////////////
@@ -344,6 +358,8 @@ public class Picture extends SimplePicture
                 pixelObj.setBlue(0);
             }
         }
+        pixels = null;
+        return;
     }
 
     /** Method that mirrors the picture around a 
@@ -364,6 +380,8 @@ public class Picture extends SimplePicture
                 rightPixel.setColor(leftPixel.getColor());
             }
         } 
+        pixels = null;
+        return;
     }
 
     /** Mirror just part of a picture of a temple */
@@ -389,6 +407,9 @@ public class Picture extends SimplePicture
             }
         }
         System.out.println(count);
+        
+        pixels = null;
+        return;
     }
 
     /** copy from the passed fromPic to the
@@ -420,6 +441,9 @@ public class Picture extends SimplePicture
                 toPixel.setColor(fromPixel.getColor());
             }
         }   
+        toPixels = null;
+        fromPixels = null;
+        return;
     }
 
     /** Method to create a collage of several pictures */
@@ -470,6 +494,8 @@ public class Picture extends SimplePicture
                     leftPixel.setColor(Color.WHITE);
             }
         }
+        pixels = null;
+        return;
     }
 
     /* Main method for testing - each class in Java can have a main 
@@ -530,6 +556,8 @@ public class Picture extends SimplePicture
                 pixelObj.setGreen(0);
             }
         }
+        pixels = null;
+        return;
     }
 
     /** method to set all rgb values to 255 - that rgb value */
@@ -545,6 +573,8 @@ public class Picture extends SimplePicture
                 pixelObj.setBlue(255 - pixelObj.getBlue());
             }
         }
+        pixels = null;
+        return;
     }
 
     /**
@@ -566,6 +596,8 @@ public class Picture extends SimplePicture
                 leftPixel.setColor(rightPixel.getColor());
             }
         } 
+        pixels = null;
+        return;
     }
 
     /**
@@ -587,6 +619,8 @@ public class Picture extends SimplePicture
                 bottomPixel.setColor(topPixel.getColor());
             }
         }
+        pixels = null;
+        return;
     }
 
     /**
@@ -608,6 +642,8 @@ public class Picture extends SimplePicture
                 topPixel.setColor(bottomPixel.getColor());
             }
         }
+        pixels = null;
+        return;
     }
 
     /**
@@ -646,6 +682,8 @@ public class Picture extends SimplePicture
                 dupePixel.setColor(originalPixel.getColor());
             }
         }
+        pixels = null;
+        return;
     }
 
     /**
@@ -673,6 +711,8 @@ public class Picture extends SimplePicture
                 dupePixel.setColor(originalPixel.getColor());
             }
         }
+        pixels = null;
+        return;
     }
 
     /** copy from the passed fromPic to the
@@ -705,7 +745,10 @@ public class Picture extends SimplePicture
                 toPixel = toPixels[toRow][toCol];
                 toPixel.setColor(fromPixel.getColor());
             }
-        }   
+        } 
+        toPixels = null;
+        fromPixels = null;
+        return;  
     }
 
     /** Method to create a collage of several pictures */
@@ -880,6 +923,8 @@ public class Picture extends SimplePicture
                 }
             }
         }
+        pixels = null;
+        return;
     }
     //////////////////////////////////////////////////////////// boldeners ////////////////////////////////////////////////////////////
     /** Method to show large changes in color
@@ -890,7 +935,7 @@ public class Picture extends SimplePicture
     public void bolden(int edgeDist)
     {
         Pixel currentPixel = null;
-        Pixel[][] pixels = this/*tempCopyPicture*/.getPixels2D();
+        Pixel[][] pixels = this.getPixels2D();
 
         Color background = pixels[1][1].getColor();
 
@@ -920,7 +965,7 @@ public class Picture extends SimplePicture
                 }
             }
         }
-
+        pixels = null;
         return;
     }
 
@@ -931,12 +976,10 @@ public class Picture extends SimplePicture
      */
     public void bolden2()
     {
-        Picture tempCopyPicture = new Picture(this);
-
         int edgeDist = 5;
 
         Pixel currentPixel = null;
-        Pixel[][] pixels = tempCopyPicture.getPixels2D();
+        Pixel[][] pixels = this.getPixels2D();
 
         Color background = pixels[1][1].getColor();
         //Color invertedBackground = new Color(255 - background.getRed(), 255 - background.getGreen(), 255 - background.getBlue());
@@ -963,15 +1006,14 @@ public class Picture extends SimplePicture
                 }
             }
         }
-
-        //if (countInvertBack > 7 * countBack || countBack > 7 * countInvertBack) {
+        
         int edgeDiff = Math.abs(countInvertBack - countBack);
-        int newEdgeDist = 1;//edgeDist + 5;
-        //if (newEdgeDist >=255) newEdgeDist = 5;
-        //else if (newEdgeDist < 5) newEdgeDist = 255;
+        int newEdgeDist = 1;
         this.bolden2Iter(pixels, newEdgeDist, 1,edgeDist, edgeDiff, edgeDist, edgeDiff, 0);
+        
+        pixels = null;
         return;
-        //} else this.copyPicture(new Picture(tempCopyPicture));
+        
     }
 
     /** 
@@ -1038,7 +1080,7 @@ public class Picture extends SimplePicture
             this.bolden2Iter(pixels, newEdgeDist, i + 1, bestEdgeDist, bestEdgeDiff, edgeDist, edgeDiff, x);
             return;
         }
-        else this.bolden(bestEdgeDist); //finally, actually apply the best edge dist
+        else {pixels=null;this.bolden(bestEdgeDist);} //finally, actually apply the best edge dist
         return;
     }
 
