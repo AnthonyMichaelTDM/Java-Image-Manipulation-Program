@@ -285,9 +285,7 @@ public class Picture extends SimplePicture
         hsbValues = Color.RGBtoHSB(background.getRed(),background.getGreen(),background.getBlue(), hsbValues);
 
         for(int i=0; i<colors.length; i++) {
-            float[] fnsHSBvalues = new float[3];
-            fnsHSBvalues = Color.RGBtoHSB(background.getRed(),background.getGreen(),background.getBlue(), fnsHSBvalues);
-            colors[i] = Color.getHSBColor((float)(hsbValues[0] + (0.2*i))%1, fnsHSBvalues[1], fnsHSBvalues[2]);
+            colors[i] = Color.getHSBColor((float)(hsbValues[0] + (0.2*i))%1, hsbValues[1], hsbValues[2]);
         }
         /*
         colors[0] = Color.getHSBColor(hsbValues[0],hsbValues[1], hsbValues[2]);
@@ -296,6 +294,10 @@ public class Picture extends SimplePicture
         colors[3] = Color.getHSBColor((float)(hsbValues[0]+0.6)%1,hsbValues[1], hsbValues[2]);
         colors[4] = Color.getHSBColor((float)(hsbValues[0]+0.8)%1,hsbValues[1], hsbValues[2]);
          */
+        
+        //clear the colors ArrayList to save some memory or something
+        pictureColors.clear();
+        
         //recolor image
         for (int row = 0; row < pixels.length; row++)
         {

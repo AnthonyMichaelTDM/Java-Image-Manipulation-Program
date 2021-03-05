@@ -1790,7 +1790,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
                 tempFrame.dispose();
                 return;
             }
-
+            tempFrame.dispose();
             this.initFrame();
             tempPicture = new SimplePicture(temp.getBufferedImage());
             // only do this if there is a picture
@@ -1837,7 +1837,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
             applyButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
                         picture = new Picture(tempPicture.getBufferedImage());
-                        tempFrame.setVisible(false);
+                        //tempFrame.setVisible(false);
                         updateImage();
                         tempFrame.dispose();
                     }
