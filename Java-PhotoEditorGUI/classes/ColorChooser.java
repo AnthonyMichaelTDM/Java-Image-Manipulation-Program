@@ -8,7 +8,7 @@ import java.awt.Color;
  * pick a color and returns the chosen color object.
  * based on work by Barbara Ericson ericson@cc.gatech.edu
  * 
- * @author Anthony Rubick
+ * @author Anthony Michael
  */
 public class ColorChooser 
 {

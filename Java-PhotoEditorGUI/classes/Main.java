@@ -2,8 +2,7 @@
 /**
  * a main class, for testing and running the program
  *
- * @author Anthony Rubick
- * @version (a version number or a date)
+ * @author Anthony Michael
  */
 public class Main
 {

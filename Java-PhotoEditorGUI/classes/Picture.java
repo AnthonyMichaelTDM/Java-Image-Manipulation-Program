@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * the Picture class. 
  * based on work by Barbara Ericson ericson@cc.gatech.edu
  * 
- * @author Anthony Rubick
+ * @author Anthony Michael
  */
 public class Picture extends SimplePicture 
 {

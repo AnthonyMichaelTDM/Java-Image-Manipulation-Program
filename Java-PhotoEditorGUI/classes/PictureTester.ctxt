@@ -1,6 +1,6 @@
 #BlueJ class context
 comment0.target=PictureTester
-comment0.text=\r\n\ This\ class\ contains\ class\ (static)\ methods\r\n\ that\ will\ help\ you\ test\ the\ Picture\ class\ \r\n\ methods.\ \ Uncomment\ the\ methods\ and\ the\ code\r\n\ in\ the\ main\ to\ test.\r\n\ \r\n\ @author\ Anthony\ Rubick\ \r\n
+comment0.text=\r\n\ This\ class\ contains\ class\ (static)\ methods\r\n\ that\ will\ help\ you\ test\ the\ Picture\ class\ \r\n\ methods.\ \ Uncomment\ the\ methods\ and\ the\ code\r\n\ in\ the\ main\ to\ test.\r\n\ \r\n\ @author\ Anthony\ Michael\ \r\n
 comment1.params=
 comment1.target=void\ testZeroBlue()
 comment1.text=Method\ to\ test\ zeroBlue

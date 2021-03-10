@@ -1,6 +1,6 @@
 #BlueJ class context
 comment0.target=Picture
-comment0.text=\r\n\ A\ class\ that\ represents\ a\ picture.\ \ This\ class\ inherits\ from\ \r\n\ SimplePicture\ and\ allows\ the\ student\ to\ add\ functionality\ to\r\n\ the\ Picture\ class.\ \r\n\ based\ on\ work\ by\ Barbara\ Ericson\ ericson@cc.gatech.edu\r\n\ \r\n\ @author\ Anthony\ Rubick\r\n
+comment0.text=\r\n\ A\ class\ that\ represents\ a\ picture.\ \ This\ class\ inherits\ from\ \r\n\ SimplePicture\ and\ allows\ the\ student\ to\ add\ functionality\ to\r\n\ the\ Picture\ class.\ \r\n\ based\ on\ work\ by\ Barbara\ Ericson\ ericson@cc.gatech.edu\r\n\ \r\n\ @author\ Anthony\ Michael\r\n
 comment1.params=
 comment1.target=Picture()
 comment1.text=\r\n\ Constructor\ that\ takes\ no\ arguments\ \r\n

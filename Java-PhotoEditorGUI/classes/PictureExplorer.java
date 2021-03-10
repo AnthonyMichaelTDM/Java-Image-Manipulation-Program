@@ -20,7 +20,7 @@ import java.beans.PropertyChangeEvent;
  * Also modified to show row and columns by Barbara Ericson
  * Modified to be a fully gui based Image Manipulation program by Anthony Rubick
  * 
- * @author Anthony Rubick
+ * @author Anthony Michael
  */
 public class PictureExplorer implements MouseMotionListener, ActionListener, MouseListener
 {

@@ -10,7 +10,7 @@ import java.net.*;
  * pick a file and returns the chosen file name.
  * based on work by Barbara Ericson ericson@cc.gatech.edu
  * 
- * @author Anthony Rubick
+ * @author Anthony Michael
  */
 public class FileChooser 
 {

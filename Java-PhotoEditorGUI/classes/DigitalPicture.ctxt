@@ -1,6 +1,6 @@
 #BlueJ class context
 comment0.target=DigitalPicture
-comment0.text=\r\n\ Interface\ to\ describe\ a\ digital\ picture.\ \ A\ digital\ picture\ can\ have\ an\ \r\n\ associated\ file\ name.\ \ It\ can\ have\ a\ title.\ \ It\ has\ pixels\ \r\n\ associated\ with\ it\ and\ you\ can\ get\ and\ set\ the\ pixels.\ \ You\ \r\n\ can\ get\ an\ Image\ from\ a\ picture\ or\ a\ BufferedImage.\ \ You\ can\ load\r\n\ it\ from\ a\ file\ name\ or\ image.\ \ You\ can\ show\ a\ picture.\ \ You\ can\ \r\n\ explore\ a\ picture.\ \ You\ can\ create\ a\ new\ image\ for\ it.\r\n\ based\ on\ work\ by\ Barbara\ Ericson\ ericson@cc.gatech.edu\r\n\ \r\n\ @author\ Anthony\ Rubick\r\n
+comment0.text=\r\n\ Interface\ to\ describe\ a\ digital\ picture.\ \ A\ digital\ picture\ can\ have\ an\ \r\n\ associated\ file\ name.\ \ It\ can\ have\ a\ title.\ \ It\ has\ pixels\ \r\n\ associated\ with\ it\ and\ you\ can\ get\ and\ set\ the\ pixels.\ \ You\ \r\n\ can\ get\ an\ Image\ from\ a\ picture\ or\ a\ BufferedImage.\ \ You\ can\ load\r\n\ it\ from\ a\ file\ name\ or\ image.\ \ You\ can\ show\ a\ picture.\ \ You\ can\ \r\n\ explore\ a\ picture.\ \ You\ can\ create\ a\ new\ image\ for\ it.\r\n\ \r\n\ @author\ Barbara\ Ericson\ ericson@cc.gatech.edu\r\n
 comment1.params=
 comment1.target=java.lang.String\ getFileName()
 comment10.params=x\ y

@@ -6,7 +6,7 @@ import java.awt.image.*;
  * Class to display an image and the current location with a + sign
  * based on work by Barbara Ericson ericson@cc.gatech.edu
  * 
- * @author Anthony Rubick
+ * @author Anthony Michael
  */
 public class ImageDisplay extends JPanel implements Scrollable
 {
