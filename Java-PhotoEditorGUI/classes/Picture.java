@@ -251,67 +251,187 @@ public class Picture extends SimplePicture
      * and are equidistant from eachother on the color wheel
      * uses the 5 number summary of all the pixels color values (as integers) to balance the image better
      * 
+     * @param mode which mode to use, 0 = equidistant from color wheel, 1 = grayscale, 2 = faithful, 3 = faithful+, 4= faithful-balance, 5=faithful-balance+
      */
-    public void simplifyColors()
+    public void simplifyColors(int mode)
     {
+        //data
         Pixel currentPixel = null;
-        Pixel[][] pixels = this/*tempCopyPicture*/.getPixels2D();
-
+        Pixel[][] pixels = this.getPixels2D();
+        ArrayList<Integer> pictureColors = new ArrayList<Integer>();
         Color background = pixels[1][1].getColor();
+        float[] hsbValues = new float[3];
+        //variables for 5 number summaries
+        int min=0, q1=0, med=0, q3=0, max=0;
+        Color[] fiveNumSumColors = new Color[5];
+        Set<Integer> colorSet;
+        //5 colors
+        Color[] colors = new Color[5];
+
         //if the background colors saturation, or brightness is really low, increase it
         if (true) {
-            float[] bgHSBval = new float[3];
-            Color.RGBtoHSB(background.getRed(),background.getGreen(),background.getBlue(), bgHSBval);
-            if (Math.abs(bgHSBval[1]) < 0.3) {
-                bgHSBval[1] = 0.3f;
+            Color.RGBtoHSB(background.getRed(),background.getGreen(),background.getBlue(), hsbValues);
+            if (Math.abs(hsbValues[1]) < 0.3) {
+                hsbValues[1] = 0.3f;
             }
-            if (Math.abs(bgHSBval[2]) < 0.3) {
-                bgHSBval[2] = 0.3f;
+            if (Math.abs(hsbValues[2]) < 0.3) {
+                hsbValues[2] = 0.3f;
             }
-            background = Color.getHSBColor(bgHSBval[0], bgHSBval[1], bgHSBval[2]);
+            background = Color.getHSBColor(hsbValues[0], hsbValues[1], hsbValues[2]);
         }
 
-        // get 5 number summary of the image
         //get an array list of the integer representations of all the pixels color values
-        ArrayList<Integer> pictureColors = new ArrayList<Integer>();
         for (Pixel[] rowArray : pixels) {
             for (Pixel pixelObj : rowArray) {
                 pictureColors.add(pixelObj.getColor().getRGB());
             }
         }
-        //sort the array
-        Collections.sort(pictureColors);
-        //find the median
-        int med = pictureColors.get( (int)(pictureColors.size() / 2.0));
-        //find the min and max
-        int min = Collections.min(pictureColors);
-        int max = Collections.max(pictureColors);
-        // find q1 and q3
-        int q1 = pictureColors.get( (int)(pictureColors.size() / 4.0));
-        int q3 = pictureColors.get( (int)(pictureColors.size() * (3.0 / 5.0) ));
 
-        int[] fiveNumSum = {min, q1, med, q3, max};
-        Color[] fiveNumSumColors = { (new Color(min)) , (new Color(q1)) , (new Color(med)) , (new Color(q3)) , (new Color(max)) };
+        //generate 5 number summary
+        //do something different depending on the mode
+        switch(mode) {
+            /*faithful+*/
+            case 3:
+            //find 5 num sum, this time summarize the occurances of each color rather than the colors themselves
+            //remove duplicates from picture colors using a hashset
+            // Create a new LinkedHashSet
+            colorSet = new LinkedHashSet<>();
+            // Add The elements to set
+            colorSet.addAll(pictureColors);
+            // Clear the list
+            pictureColors.clear();
+            // add the elements of set
+            // with no duplicates to the list
+            pictureColors.addAll(colorSet);
+            //sort the array
+            Collections.sort(pictureColors);
 
-        //generate 5 colors
-        Color[] colors = new Color[5];
-        float[] hsbValues = new float[3];
-        hsbValues = Color.RGBtoHSB(background.getRed(),background.getGreen(),background.getBlue(), hsbValues);
+            //find the five num sum
+            //find the median
+            med = pictureColors.get( (int)(pictureColors.size() / 2.0));
+            //find the min and max
+            min = pictureColors.get(0);
+            max = pictureColors.get(pictureColors.size()-1);
+            // find q1 and q3
+            q1 = pictureColors.get( (int)(pictureColors.size() / 4.0));
+            q3 = pictureColors.get( (int)(pictureColors.size() * (3.0 / 5.0) ));
+            break;
+            
+            
+            
+            
+            /*faithful-balanc+*/
+            case 5:
+            //find 5 num sum, this time summarize the occurances of each color rather than the colors themselves
+            //remove duplicates from picture colors using a hashset
+            //*// Create a new LinkedHashSet
+            colorSet = new LinkedHashSet<>();
+            // Add The elements to set
+            colorSet.addAll(pictureColors);
+            // Clear the list
+            pictureColors.clear();
+            // add the elements of set
+            // with no duplicates to the list
+            pictureColors.addAll(colorSet);
+            
+            /*faithful-balance*/
+            case 4:
+            //sort the array
+            Collections.sort(pictureColors, new Comparator<Integer>() {
+                    @Override
+                    public int compare(Integer o1, Integer o2) {
+                        //DATA
+                        Color c1 = new Color(o1);
+                        int[] c1HSB = getHSV(c1.getRed(),c1.getGreen(),c1.getBlue());
+                        Color c2 = new Color(o2);
+                        int[] c2HSB = getHSV(c2.getRed(),c2.getGreen(),c2.getBlue());
 
-        for(int i=0; i<colors.length; i++) {
-            colors[i] = Color.getHSBColor((float)(hsbValues[0] + (0.2*i))%1, hsbValues[1], hsbValues[2]);
+                        //rank by hue
+                        return (int)(c1HSB[0]*255) - (int)(c2HSB[0]*255);
+                    }
+
+                    public int[] getHSV(int r, int g, int b) {
+                        float cmax = Math.max(r, Math.max(g, b));
+                        float cmin = Math.min(r, Math.min(g, b));
+                        float deltaC = cmax - cmin;
+                        float h;
+                        if (cmax==r) {
+                            h = (((g-b)/deltaC)%6)*60;
+                        } else if (cmax==g) {
+                            h = (((b-r)/deltaC) + 2)*60;
+                        } else {
+                            h = (((r-g)/deltaC) + 4)*60;
+                        }
+                        float s = 0;
+                        if (cmax!=0) {
+                            s = deltaC/cmax;
+                        }
+                        int[] returnValue = new int[3];
+                        // re-scale
+                        returnValue[0] = (int) h/255;
+                        returnValue[1] = (int) s/255;
+                        returnValue[2] = (int) cmax/255;
+                        return returnValue;
+                    }
+                });
+            //find the five num sum
+            //find the median
+            med = pictureColors.get( (int)(pictureColors.size() / 2.0));
+            //find the min and max
+            min = pictureColors.get(0);
+            max = pictureColors.get(pictureColors.size()-1);
+            // find q1 and q3
+            q1 = pictureColors.get( (int)(pictureColors.size() / 4.0));
+            q3 = pictureColors.get( (int)(pictureColors.size() * (3.0 / 5.0) ));
+            break;
+
+            
+            
+            
+            /*others*/
+            default:
+            //sort the array
+            Collections.sort(pictureColors);
+            //find the median
+            med = pictureColors.get( (int)(pictureColors.size() / 2.0));
+            //find the min and max
+            min = pictureColors.get(0);
+            max = pictureColors.get(pictureColors.size()-1);
+            // find q1 and q3
+            q1 = pictureColors.get( (int)(pictureColors.size() / 4.0));
+            q3 = pictureColors.get( (int)(pictureColors.size() * (3.0 / 5.0) ));
+            break;
         }
-        /*
-        colors[0] = Color.getHSBColor(hsbValues[0],hsbValues[1], hsbValues[2]);
-        colors[1] = Color.getHSBColor((float)(hsbValues[0]+0.2)%1,hsbValues[1], hsbValues[2]);
-        colors[2] = Color.getHSBColor((float)(hsbValues[0]+0.4)%1,hsbValues[1], hsbValues[2]);
-        colors[3] = Color.getHSBColor((float)(hsbValues[0]+0.6)%1,hsbValues[1], hsbValues[2]);
-        colors[4] = Color.getHSBColor((float)(hsbValues[0]+0.8)%1,hsbValues[1], hsbValues[2]);
-         */
-        
+        fiveNumSumColors[0] = new Color(min);
+        fiveNumSumColors[1] = new Color(q1);
+        fiveNumSumColors[2] = new Color(med);
+        fiveNumSumColors[3] = new Color(q3);
+        fiveNumSumColors[4] = new Color(max);
+
+        //generate colors
+        //do something different depending on the mode
+        switch(mode) {
+            /*grayscale and equidistant*/
+            case 0:
+            case 1:
+            //generate the colors
+            hsbValues = Color.RGBtoHSB(background.getRed(),background.getGreen(),background.getBlue(), hsbValues);
+
+            for(int i=0; i<colors.length; i++) {
+                colors[i] = Color.getHSBColor((float)(hsbValues[0] + (0.2*i))%1, hsbValues[1], hsbValues[2]);
+            }
+            break;
+
+            /*others*/
+            default:
+            //generate the colors
+            colors = fiveNumSumColors;
+            break;
+        }
+
         //clear the colors ArrayList to save some memory or something
         pictureColors.clear();
-        
+
         //recolor image
         for (int row = 0; row < pixels.length; row++)
         {
@@ -320,15 +440,22 @@ public class Picture extends SimplePicture
                 currentPixel = pixels[row][col];
 
                 //parse the fiveNumSum colors and compare to background
-                int fmsBestIndex = 0;
+                int fnsBestIndex = 0;
                 for (int e = 1; e < fiveNumSumColors.length; e++) {
-                    if (currentPixel.colorDistance(fiveNumSumColors[e]) < currentPixel.colorDistance(fiveNumSumColors[fmsBestIndex])) fmsBestIndex = e;
+                    if (currentPixel.colorDistance(fiveNumSumColors[e]) < currentPixel.colorDistance(fiveNumSumColors[fnsBestIndex])) 
+                        fnsBestIndex = e;
                 }
 
-                currentPixel.setColor(colors[fmsBestIndex]);
+                currentPixel.setColor(colors[fnsBestIndex]);
             }
         }
-        pixels = null;
+
+        //special operations
+        //some modes have other filters applied after simplification, do that here
+        switch (mode) {
+            case 1: this.grayscale();break; //grayscale mode
+            default: break;
+        }
         return;
     }
     ////////////////////// methods ///////////////////////////////////////
@@ -407,7 +534,7 @@ public class Picture extends SimplePicture
             }
         }
         System.out.println(count);
-        
+
         pixels = null;
         return;
     }
@@ -1006,14 +1133,14 @@ public class Picture extends SimplePicture
                 }
             }
         }
-        
+
         int edgeDiff = Math.abs(countInvertBack - countBack);
         int newEdgeDist = 1;
         this.bolden2Iter(pixels, newEdgeDist, 1,edgeDist, edgeDiff, edgeDist, edgeDiff, 0);
-        
+
         pixels = null;
         return;
-        
+
     }
 
     /** 

@@ -56,7 +56,7 @@ public class ToolUtilityPanelHandler extends JPanel
             break;
             default: utilityPanel = defaultToolUtilityPanel();
         }
-        
+
         return utilityPanel;
     }
 
@@ -699,8 +699,8 @@ public class ToolUtilityPanelHandler extends JPanel
         JLabel titleLable = new JLabel();
         //button to confirm changes
         JButton confirmButton = new JButton("confirm");
-        //checkbox, toggle grayscaling
-        JCheckBox grayscaleCheckBox = new JCheckBox("grayscale output?");
+        //combo box to select the mode   0 = equidistant from color wheel, 1 = grayscale, 2 = faithful, 3 = faithful+, 4= faithful-balance, 5=faithful-balance+
+        JComboBox modeSelection = new JComboBox(new String[]{"Wheely balanced", "grayscale", "faithful", "faithful+", "faithful-balance", "faithful-balance+"});
 
         //config panel components
         String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "simplify image to a certain number of balanced colors");
@@ -709,12 +709,11 @@ public class ToolUtilityPanelHandler extends JPanel
         titleLable.setFont(titleFont);
         titleLable.setText(titleText);
 
-        grayscaleCheckBox.setSelected(false);
-
+        modeSelection.setSelectedIndex(0);
         JPanel toolConfigPanel = new JPanel();
         toolConfigPanel.setPreferredSize(new Dimension(150,300));
-        toolConfigPanel.add(BorderLayout.NORTH, new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", 100,"this method simplifies an image to five colors, \n the colors are based off of the background color (color of the top left pixel) \n and are equidistant from eachother on the color wheel")));
-        toolConfigPanel.add(BorderLayout.SOUTH, grayscaleCheckBox);
+        toolConfigPanel.add(BorderLayout.NORTH, new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", 100,"this method simplifies an image to five colors, \n the colors depend on the selected mode")));
+        toolConfigPanel.add(BorderLayout.SOUTH, modeSelection);
 
         //add components to the panel
         panel.add(BorderLayout.NORTH, titleLable);
@@ -728,12 +727,9 @@ public class ToolUtilityPanelHandler extends JPanel
                     Picture simplified = new Picture(PictureExplorer.picture.getHeight(), PictureExplorer.picture.getWidth());
                     simplified.copyPicture(new SimplePicture(PictureExplorer.picture.getBufferedImage()));
 
-                    simplified.simplifyColors();
-
-                    //grayscale image if box is checked
-                    if (grayscaleCheckBox.isSelected()) {
-                        simplified.grayscale();
-                    }
+                    //simplify image with user selected mode
+                    simplified.simplifyColors(modeSelection.getSelectedIndex());
+                    
                     //save the new image (ask first)
                     PictureExplorer.pictureConfirmation.updateConfPanelImage(simplified);
                 }
