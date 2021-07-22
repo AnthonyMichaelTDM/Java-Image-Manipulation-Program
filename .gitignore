@@ -5,3 +5,6 @@ Java-PhotoEditorGUI/classes/doc/*
 **/images
 *.js
 *.css
+Java-PhotoEditorGUI/classes/PictureTest.java
+Java-PhotoEditorGUI/classes/IntArrayWorker.java
+Java-PhotoEditorGUI/classes/IntArrayWorkerTester.java
