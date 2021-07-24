@@ -1,6 +1,7 @@
 package classes;
 
- 
+import javax.swing.JFileChooser;
+import java.io.*;
 
 /**
  * This class contains class (static) methods
@@ -142,7 +143,51 @@ public class PictureTester
         test.edgeDetection2(10,1);
         test.explore();
     }
-
+    
+    /** Method to test all the simplify colors modes*/
+    public static void testSimplifyColors() {
+        //open a file of the users choice, then apply the 4 simplify color filters to it, and save each one
+        //DATA, the images
+        //open a file of the users choice, then apply the 4 simplify color filters to it, and save each one
+        Picture basePic = new Picture(FileChooser.pickAFile());
+        Picture grayPic = new Picture(basePic);
+        Picture faithfulPic = new Picture(basePic);
+        Picture faithfullPlusPic = new Picture(basePic);
+        Picture faithfullBalancePic = new Picture(basePic);
+        Picture faithfullBalancePlusPic = new Picture(basePic);
+        String extension = basePic.getFileName().substring(basePic.getFileName().indexOf("."));
+        String pathName = basePic.getFileName().substring(0, basePic.getFileName().indexOf("."));
+        
+        //1 = 5grayscale, 2 = faithful, 3 = faithful+, 4= faithful-balance, 5=faithful-balance+
+        //apply filters and save
+        grayPic.simplifyColors(1);
+        grayPic.write(pathName + "-grayscale" + extension);
+        /*
+        faithfulPic.simplifyColors(2);
+        faithfulPic.write(pathName + "-faithful" + extension);
+        faithfulPic.simplifyColors(2);
+        faithfulPic.write(pathName + "-faithful" + extension);
+        faithfullPlusPic.simplifyColors(3);
+        faithfullPlusPic.write(pathName + "-faithful+" + extension);
+        faithfullBalancePic.simplifyColors(4);
+        faithfullBalancePic.write(pathName + "-faithful-balance" + extension);
+        faithfullBalancePlusPic.simplifyColors(5);
+        faithfullBalancePlusPic.write(pathName + "-faithful-balance+" + extension);
+        */
+        System.out.println("done");
+    }
+    
+    public static void testBolden() {
+        //data
+        Picture bolden = new Picture(FileChooser.pickAFile());
+        String extension = bolden.getFileName().substring(bolden.getFileName().indexOf("."));
+        String pathName = bolden.getFileName().substring(0, bolden.getFileName().indexOf("."));
+        
+        bolden.bolden2();
+        bolden.grayscale();
+        bolden.write(pathName + "-boldened" + extension);
+    }
+    
     /** Main method for testing.  Every class can have a main
      * method in Java */
     public static void main(String[] args)
@@ -168,8 +213,9 @@ public class PictureTester
         //testMyCollage();
         //testCopy();
         //testCopy2();
-        testEdgeDetection();
-        testEdgeDetection2();
+        //testEdgeDetection();
+        //testEdgeDetection2();
+        testSimplifyColors();
         //testChromakey();
         //testEncodeAndDecode();
         //testGetCountRedOverValue(250);
