@@ -67,11 +67,11 @@ goto fail
 :execute
 @rem Setup the command line
 
-set CLASSPATH=%APP_HOME%\lib\Java-Image_Manipulation-Program-2.1.0.jar
+set CLASSPATH=%APP_HOME%\lib\Java-Image_Manipulation-Program-2.1.0.jar;%APP_HOME%\lib\guava-30.1-jre.jar;%APP_HOME%\lib\failureaccess-1.0.1.jar;%APP_HOME%\lib\listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar;%APP_HOME%\lib\jsr305-3.0.2.jar;%APP_HOME%\lib\checker-qual-3.5.0.jar;%APP_HOME%\lib\error_prone_annotations-2.3.4.jar;%APP_HOME%\lib\j2objc-annotations-1.3.jar
 
 
 @rem Execute Java-Image-Manipulation-Program
-"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %JAVA_IMAGE_MANIPULATION_PROGRAM_OPTS%  -classpath "%CLASSPATH%" Main %*
+"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %JAVA_IMAGE_MANIPULATION_PROGRAM_OPTS%  -classpath "%CLASSPATH%" classes.Main %*
 
 :end
 @rem End local scope for the variables with windows NT shell

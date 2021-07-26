@@ -321,9 +321,9 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     private void setUpUndoAndRedoButtons()
     {
         // create the image icons for the buttons
-        Icon undoIcon = new ImageIcon(DigitalPicture.class.getResource("leftArrow.gif"), 
+        Icon undoIcon = new ImageIcon(this.getClass().getResource("/leftArrow.gif"), 
                 "previous index");
-        Icon redoIcon = new ImageIcon(DigitalPicture.class.getResource("rightArrow.gif"), 
+        Icon redoIcon = new ImageIcon(this.getClass().getResource("/rightArrow.gif"), 
                 "next index");
         // create the arrow buttons
         undoButton = new JButton(undoIcon);

@@ -1,33 +1,40 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-// tag::repositories[]
+// repositories
 repositories { 
     mavenCentral() 
 }
-// end::repositories[]
 
-// tag::jar[]
 jar {
     archiveBaseName = 'Java-Image_Manipulation-Program'
     archiveVersion =  '2.1.0'
 }
-// end::jar[]
 
-// tag::dependencies[]
+// dependencies
 sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-//main
-if (!hasProperty('mainClass')) {
-    ext.mainClass = 'classes.Main'
-    mainClassName = ext.mainClass
-}
-
 dependencies {
-    //none
+    implementation 'com.google.guava:guava:30.1-jre' 
 }
-// end::dependencies[]
 
-// tag::wrapper[]
-// end::wrapper[]
+// main
+mainClassName = 'classes.Main'
+//if (!hasProperty('mainClass')) {
+//    ext.mainClass = 'classes.Main'
+//    mainClassName = ext.mainClass
+//}
+
+application {
+    mainClass = 'classes.Main'
+}
+
+//resources
+sourceSets {
+    main {
+        resources {
+            srcDirs "src/main/resources", "src/main/configs"
+        }
+    }
+}
