@@ -162,7 +162,6 @@ public class PictureTester
         //apply filters and save
         grayPic.simplifyColors(1);
         grayPic.write(pathName + "-grayscale" + extension);
-        /*
         faithfulPic.simplifyColors(2);
         faithfulPic.write(pathName + "-faithful" + extension);
         faithfulPic.simplifyColors(2);
@@ -173,7 +172,6 @@ public class PictureTester
         faithfullBalancePic.write(pathName + "-faithful-balance" + extension);
         faithfullBalancePlusPic.simplifyColors(5);
         faithfullBalancePlusPic.write(pathName + "-faithful-balance+" + extension);
-        */
         System.out.println("done");
     }
     
@@ -181,7 +179,7 @@ public class PictureTester
         //data
         Picture bolden = new Picture(FileChooser.pickAFile());
         String extension = bolden.getFileName().substring(bolden.getFileName().indexOf("."));
-        String pathName = bolden.getFileName().substring(0, bolden.getFileName().indexOf("."));
+        String pathName = bolden.getFileName().substring(0,bolden.getFileName().indexOf("."));
         
         bolden.bolden2();
         bolden.grayscale();
@@ -215,7 +213,8 @@ public class PictureTester
         //testCopy2();
         //testEdgeDetection();
         //testEdgeDetection2();
-        testSimplifyColors();
+        //testSimplifyColors();
+        testBolden();
         //testChromakey();
         //testEncodeAndDecode();
         //testGetCountRedOverValue(250);

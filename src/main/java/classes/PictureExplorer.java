@@ -1,8 +1,5 @@
 package classes;
 
-
- 
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -36,8 +33,9 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      * bottom menu, where the user can load a image, save their image, undo, and redo actions (later)
      */
 
-    //current picture file extension
+    //current picture file extension, and the path to the directory containing the image
     private String pictureExtension;
+    private String picturePath; 
 
     // current indicies
     /** row index */
@@ -418,19 +416,14 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         saveButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     //save the current image to a file
-                    JFileChooser fileChooser = new JFileChooser();
-                    fileChooser.setDialogTitle("Specify a file to save");
-                    String path = FileChooser.pickPath(fileChooser);
+                    String path = FileChooser.pickAFile("Save image as", picturePath);
+                    
                     if (path != null) {
-                        try {
-                            picture.write(path + pictureExtension);
-                        } catch (Exception e) {
-                            try {
-                                picture.write(path + picture.getFileName().substring(picture.getFileName().indexOf(".")));
-                            } catch (Exception exc) {
-                                picture.write(path + ".jpg");
-                            }
-                        }
+                        //try to write to path as is, this fails if user provides invalid extension 
+                        if (picture.write(path)) {} //try saving
+                        //if that doesn't work, try adding pictureExtension, and if that doesn't work, default to .jpg
+                        else if (picture.write(path + pictureExtension)) {} //try adding the extension of the original image
+                        else {picture.write(path + ".jpg");} //otherwise just use .jpg
                     }
                 }
             });
@@ -439,16 +432,17 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         loadButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     //select a picture
-                    String fileName = FileChooser.pickAFile();
+                    String fileName = FileChooser.pickAFile("Open image");
 
                     //set selected picture to the picture being edited, unless there was an error while selecting the picture
                     if (fileName != null) {
+                        //load the image
+                        picture = new Picture(fileName);
+                        
                         try {
-                            picture = new Picture(fileName);
-                        } catch (Exception e) {}
-                        try {
-                            pictureExtension = picture.getFileName().substring(picture.getFileName().indexOf("."));
-                        } catch (Exception e) { pictureExtension = ".jpg";}
+                            pictureExtension = fileName.substring(fileName.lastIndexOf("."));
+                            picturePath = picture.getFileName().substring(0 , picture.getFileName().lastIndexOf(System.getProperty("file.separator"))); //directory containing the loaded image, by creating a substring containing all characters up to the last file separator (/ on UNIX, \ on windows
+                        } catch (Exception e) { pictureExtension = ".jpg"; picturePath = FileChooser.getMediaDirectory();}
                         updateImage();
                     } else {
                         //display error message

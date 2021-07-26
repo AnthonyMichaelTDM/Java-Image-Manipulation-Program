@@ -95,6 +95,87 @@ public class FileChooser
 
         return fileName;
     }
+    
+    /**
+     * Method to let the user pick a file and return
+     * the full file name as a string.  If the user didn't 
+     * pick a file then the file name will be null.
+     * @param title title of the file chooser
+     * @return the full file name of the picked file or null
+     */
+    public static String pickAFile(String title)
+    {
+        JFileChooser fileChooser = null;
+        
+        // start off the file name as null
+        String fileName = null;
+        
+        // get the current media directory
+        String mediaDir = getMediaDirectory();
+
+        /* create a file for this and check that the directory exists
+         * and if it does set the file chooser to use it
+         */
+        try {
+            File file = new File(mediaDir);
+            if (file.exists())
+                fileChooser = new JFileChooser(file);
+        } catch (Exception ex) {
+        }
+
+        // if no file chooser yet create one
+        if (fileChooser == null)
+            fileChooser = new JFileChooser();
+
+        //set title
+        fileChooser.setDialogTitle(title);
+        
+        // pick the file
+        fileName = pickPath(fileChooser);
+
+        return fileName;
+    }
+    
+    /**
+     * Method to let the user pick a file and return
+     * the full file name as a string.  If the user didn't 
+     * pick a file then the file name will be null.
+     * @param title title of the file chooser
+     * @param directory the directory to open the file chooser in
+     * @return the full file name of the picked file or null
+     */
+    public static String pickAFile(String title, String directory)
+    {
+        JFileChooser fileChooser = null;
+
+        // start off the file name as null
+        String fileName = null;
+
+        // if passed directory is null, set it to the default media directory
+        if (directory == null) directory = getMediaDirectory();
+
+        /* create a file for this and check that the directory exists
+         * and if it does set the file chooser to use it
+         */
+        try {
+            File file = new File(directory);
+            if (file.exists())
+                fileChooser = new JFileChooser(file);
+        } catch (Exception ex) {
+        }
+
+        // if no file chooser yet create one
+        if (fileChooser == null)
+            fileChooser = new JFileChooser();
+        
+        //set title
+        fileChooser.setDialogTitle(title);
+        
+        // pick the file
+        fileName = pickPath(fileChooser);
+
+        return fileName;
+    }
 
     /**
      * Method to get the directory for the media
@@ -109,7 +190,7 @@ public class FileChooser
         // try to find the images directory
         try {
             // get the URL for where we loaded this class 
-            Class currClass = Class.forName("FileChooser");
+            Class currClass = Class.forName("classes.FileChooser");
             URL classURL = currClass.getResource("FileChooser.class");
             URL fileURL = new URL(classURL,"../images/");
             directory = fileURL.getPath();
