@@ -270,7 +270,7 @@ public class Picture extends SimplePicture
         Color[] colors = new Color[5];
 
         //if the background colors saturation, or brightness is really low, increase it
-        if (true) {
+        /*if (true) {
             Color.RGBtoHSB(background.getRed(),background.getGreen(),background.getBlue(), hsbValues);
             if (Math.abs(hsbValues[1]) < 0.3) {
                 hsbValues[1] = 0.3f;
@@ -279,7 +279,7 @@ public class Picture extends SimplePicture
                 hsbValues[2] = 0.3f;
             }
             background = Color.getHSBColor(hsbValues[0], hsbValues[1], hsbValues[2]);
-        }
+        }*/
 
         //get an array list of the integer representations of all the pixels color values
         for (Pixel[] rowArray : pixels) {
