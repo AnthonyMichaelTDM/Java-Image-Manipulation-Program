@@ -25,20 +25,30 @@ import java.beans.PropertyChangeEvent;
  */
 public class ToolUtilityPanelHandler extends JPanel
 {
-    private static JPanel utilityPanel;
-
     /**
-     * creates and returns a blank panel
-     * @return a default panel for the utility panel
+     * default constructor
      */
-    public static JPanel defaultToolUtilityPanel() 
-    {
-        JPanel panel = new JPanel();
-        panel.setBackground(Color.gray);
-        panel.setPreferredSize(new Dimension(150,100));
-        return panel;
+    public ToolUtilityPanelHandler() {
+        defaultToolUtilityPanel();
     }
-
+    
+    /**
+     * set the utility panel to the default
+     */
+    private void defaultToolUtilityPanel() 
+    {
+        clearPanel();
+        this.setBackground(Color.gray); //from parent
+        this.setPreferredSize(new Dimension(150,100)); //from parent
+    }
+    
+    /**
+     * clears the panel
+     */
+    public void clearPanel() {
+        removeAll(); //from parent
+    }
+    
     /**
      * this is the method accessable to other classes, and it handles selecting and returning
      * the proper panel for the passed tool
@@ -46,49 +56,46 @@ public class ToolUtilityPanelHandler extends JPanel
      * the panel associated with the passed tool
      * @param tool the integer array representing the tool currently selected
      */
-    public static JPanel updateToolUtilityPanel(int[] tool)
+    public void updateToolUtilityPanel(int[] tool)
     {
         //create the appropriate panel based on the passed tool
         switch (tool[0]) {
             case 1: //color management tool is selected
-            utilityPanel = colorManagementToolUtilityPanel(tool[1]);
+            colorModificationToolUtilityPanel(tool[1]);
             break;
             case 2: // filters tool is selected
-            utilityPanel = filtersToolUtilityPanel(tool[1]);
+            filtersToolUtilityPanel(tool[1]);
             break;
-            default: utilityPanel = defaultToolUtilityPanel();
+            default: defaultToolUtilityPanel();
         }
-
-        return utilityPanel;
     }
 
     ///////////////Color Tools///////////////
     /**
-     * creates and returns the panel associated with the passed integer
+     * creates the panel associated with the passed integer
      * @param tool the integer associated with the color tool the panel is being created for
-     * @return the panel associated with the tool passed
      */
-    public static JPanel colorManagementToolUtilityPanel(int tool)
+    private void colorModificationToolUtilityPanel(int tool)
     {
-        JPanel panel = defaultToolUtilityPanel();
         switch (tool) {
             case 1: //Remove Color Channel tool selected
-            panel = removeColorToolPanel();
-            return panel;
+            removeColorToolPanel();
+            break;
             case 2: //Trim Color Channel tool selected
-            panel = trimColorToolPanel();
-            return panel;
+            trimColorToolPanel();
+            break;
             case 3: //Negate Color Channel tool selected
-            panel = negateToolPanel();
-            return panel;
+            negateToolPanel();
+            break;
             case 4: //Gray Scale tool selected
-            panel = grayscaleToolPanel();
-            return panel;
+            grayscaleToolPanel();
+            break;
             case 5: //set color to color tool selected
-            panel = replaceColorWithColorToolPanel();
-            return panel;
+            replaceColorWithColorToolPanel();
+            break;
             default: //a tool not accounted for selected
-            return panel;
+            defaultToolUtilityPanel();
+            break;
         }
     }
 
@@ -96,10 +103,10 @@ public class ToolUtilityPanelHandler extends JPanel
      * method to handle the remove tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
-    private static JPanel removeColorToolPanel() 
+    private void removeColorToolPanel() 
     {
         //panels
-        JPanel panel = defaultToolUtilityPanel();
+        defaultToolUtilityPanel();
         //title label
         JLabel titleLable = new JLabel();
         //radio buttons, to select the channels
@@ -126,9 +133,9 @@ public class ToolUtilityPanelHandler extends JPanel
         titleLable.setFont(titleFont);
         titleLable.setText(titleText);
         //add components to the panel
-        panel.add(BorderLayout.NORTH, titleLable);
-        panel.add(BorderLayout.CENTER, toolConfigPanel);
-        panel.add(BorderLayout.SOUTH, confirmButton);
+        this.add(BorderLayout.NORTH, titleLable);
+        this.add(BorderLayout.CENTER, toolConfigPanel);
+        this.add(BorderLayout.SOUTH, confirmButton);
 
         //handle confirm button press
         confirmButton.addActionListener(new ActionListener() {
@@ -145,17 +152,16 @@ public class ToolUtilityPanelHandler extends JPanel
                 }
             });
 
-        return panel;
     }
 
     /**
      * method to handle the trim tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
-    private static JPanel trimColorToolPanel() 
+    private void trimColorToolPanel() 
     {
         //panels
-        JPanel panel = defaultToolUtilityPanel();
+        defaultToolUtilityPanel();
 
         // panel components
 
@@ -198,9 +204,9 @@ public class ToolUtilityPanelHandler extends JPanel
         toolConfigPanel.add(maxValueLabel);
 
         // add components to panel
-        panel.add(BorderLayout.NORTH, titleLable);
-        panel.add(BorderLayout.CENTER, toolConfigPanel);
-        panel.add(BorderLayout.SOUTH, confirmButton);
+        this.add(BorderLayout.NORTH, titleLable);
+        this.add(BorderLayout.CENTER, toolConfigPanel);
+        this.add(BorderLayout.SOUTH, confirmButton);
 
         //handle confirm button press
         confirmButton.addActionListener(new ActionListener() {
@@ -235,18 +241,16 @@ public class ToolUtilityPanelHandler extends JPanel
                 }
             });
 
-        //return the panel
-        return panel;
     }
 
     /**
      * method to handle the negate tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
-    private static JPanel negateToolPanel() 
+    private void negateToolPanel() 
     {
         //panels
-        JPanel panel = defaultToolUtilityPanel();
+        defaultToolUtilityPanel();
         //title label
         JLabel titleLable = new JLabel();
         //radio buttons, to select the channels
@@ -273,9 +277,9 @@ public class ToolUtilityPanelHandler extends JPanel
         titleLable.setFont(titleFont);
         titleLable.setText(titleText);
         //add components to the panel
-        panel.add(BorderLayout.NORTH, titleLable);
-        panel.add(BorderLayout.CENTER, toolConfigPanel);
-        panel.add(BorderLayout.SOUTH, confirmButton);
+        this.add(BorderLayout.NORTH, titleLable);
+        this.add(BorderLayout.CENTER, toolConfigPanel);
+        this.add(BorderLayout.SOUTH, confirmButton);
 
         //handle confirm button press
         confirmButton.addActionListener(new ActionListener() {
@@ -292,17 +296,16 @@ public class ToolUtilityPanelHandler extends JPanel
                 }
             });
 
-        return panel;
     }
 
     /**
      * method to handle the grayscale tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
-    private static JPanel grayscaleToolPanel() 
+    private void grayscaleToolPanel() 
     {
         //panels
-        JPanel panel = defaultToolUtilityPanel();
+        defaultToolUtilityPanel();
         //title label
         JLabel titleLable = new JLabel();
         //button to confirm changes
@@ -316,8 +319,8 @@ public class ToolUtilityPanelHandler extends JPanel
         titleLable.setText(titleText);
 
         //add components to the panel
-        panel.add(BorderLayout.NORTH, titleLable);
-        panel.add(BorderLayout.SOUTH, confirmButton);
+        this.add(BorderLayout.NORTH, titleLable);
+        this.add(BorderLayout.SOUTH, confirmButton);
 
         //handle confirm button press
         confirmButton.addActionListener(new ActionListener() {
@@ -330,17 +333,16 @@ public class ToolUtilityPanelHandler extends JPanel
                 }
             });
 
-        return panel;
     }
 
     /**
      * method to handle the replace color with color tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
-    private static JPanel replaceColorWithColorToolPanel() 
+    private void replaceColorWithColorToolPanel() 
     {
         //panels
-        JPanel panel = defaultToolUtilityPanel();
+        defaultToolUtilityPanel();
         //title label
         JLabel titleLable = new JLabel();
         //label, button and panel to display the currently selected color to replace
@@ -390,9 +392,9 @@ public class ToolUtilityPanelHandler extends JPanel
 
         confirmButton.setEnabled(false);
         //add components to the panel
-        panel.add(BorderLayout.NORTH, titleLable);
-        panel.add(BorderLayout.CENTER, toolConfigPanel);
-        panel.add(BorderLayout.SOUTH, confirmButton);
+        this.add(BorderLayout.NORTH, titleLable);
+        this.add(BorderLayout.CENTER, toolConfigPanel);
+        this.add(BorderLayout.SOUTH, confirmButton);
 
         //handle confirm button press
         confirmButton.addActionListener(new ActionListener() {
@@ -432,33 +434,30 @@ public class ToolUtilityPanelHandler extends JPanel
                 }
             });
 
-        return panel;
     }
 
     /////////////// Filter Tools///////////////
     /**
-     * creates and returns the panel associated with the passed integer
+     * creates the panel associated with the passed integer
      * @param tool the integer associated with the filter tool the panel is being created for
-     * @return the panel associated with the tool passed
      */
-    public static JPanel filtersToolUtilityPanel(int tool)
+    public void filtersToolUtilityPanel(int tool)
     {
-        JPanel panel = defaultToolUtilityPanel();
         switch (tool) {
             case 1: //Edge Detection tool selected
-            panel = edgeDetectionToolPanel();
-            return panel;
+            edgeDetectionToolPanel();
+            break;
             case 2: //brighten tool selected
-            panel = brightenToolPanel();
-            return panel;
+            brightenToolPanel();
+            break;
             case 3: //darken tool selected
-            panel = darkenToolPanel();
-            return panel;
+            darkenToolPanel();
+            break;
             case 4: //simplify tool selected
-            panel = simplifyColorToolPanel();
-            return panel;
+            simplifyColorToolPanel();
+            break;
             default: //a tool not accounted for selected
-            return panel;
+            defaultToolUtilityPanel();
         }
     }
 
@@ -466,10 +465,10 @@ public class ToolUtilityPanelHandler extends JPanel
      * method to handle the edge detection tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
-    private static JPanel edgeDetectionToolPanel() 
+    private void edgeDetectionToolPanel() 
     {
         //panels
-        JPanel panel = defaultToolUtilityPanel();
+        defaultToolUtilityPanel();
         //title label
         JLabel titleLable = new JLabel();
         //algorithm selection comboBox
@@ -526,9 +525,9 @@ public class ToolUtilityPanelHandler extends JPanel
         toolConfigPanel.add(tolerancePanel);
 
         //add components to the panel
-        panel.add(BorderLayout.NORTH, titleLable);
-        panel.add(BorderLayout.CENTER, toolConfigPanel);
-        panel.add(BorderLayout.SOUTH, confirmButton);
+        this.add(BorderLayout.NORTH, titleLable);
+        this.add(BorderLayout.CENTER, toolConfigPanel);
+        this.add(BorderLayout.SOUTH, confirmButton);
 
         //handle the iterations field
         iterationsField.addPropertyChangeListener("value", new PropertyChangeListener() {
@@ -610,17 +609,17 @@ public class ToolUtilityPanelHandler extends JPanel
                     toleranceLabel.setText("tolerance: " + toleranceSlider.getValue());
                 }
             });
-        return panel;
+        
     }
 
     /**
      * method to handle the grayscale tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
-    private static JPanel brightenToolPanel() 
+    private void brightenToolPanel() 
     {
         //panels
-        JPanel panel = defaultToolUtilityPanel();
+        defaultToolUtilityPanel();
         //title label
         JLabel titleLable = new JLabel();
         //button to confirm changes
@@ -634,8 +633,8 @@ public class ToolUtilityPanelHandler extends JPanel
         titleLable.setText(titleText);
 
         //add components to the panel
-        panel.add(BorderLayout.NORTH, titleLable);
-        panel.add(BorderLayout.SOUTH, confirmButton);
+        this.add(BorderLayout.NORTH, titleLable);
+        this.add(BorderLayout.SOUTH, confirmButton);
 
         //handle confirm button press
         confirmButton.addActionListener(new ActionListener() {
@@ -648,17 +647,16 @@ public class ToolUtilityPanelHandler extends JPanel
                 }
             });
 
-        return panel;
     }
 
     /**
      * method to handle the grayscale tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
-    private static JPanel darkenToolPanel() 
+    private void darkenToolPanel() 
     {
         //panels
-        JPanel panel = defaultToolUtilityPanel();
+        defaultToolUtilityPanel();
         //title label
         JLabel titleLable = new JLabel();
         //button to confirm changes
@@ -672,8 +670,8 @@ public class ToolUtilityPanelHandler extends JPanel
         titleLable.setText(titleText);
 
         //add components to the panel
-        panel.add(BorderLayout.NORTH, titleLable);
-        panel.add(BorderLayout.SOUTH, confirmButton);
+        this.add(BorderLayout.NORTH, titleLable);
+        this.add(BorderLayout.SOUTH, confirmButton);
 
         //handle confirm button press
         confirmButton.addActionListener(new ActionListener() {
@@ -686,17 +684,16 @@ public class ToolUtilityPanelHandler extends JPanel
                 }
             });
 
-        return panel;
     }
 
     /**
      * method to handle the edge detection tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
-    private static JPanel simplifyColorToolPanel() 
+    private void simplifyColorToolPanel() 
     {
         //panels
-        JPanel panel = defaultToolUtilityPanel();
+        defaultToolUtilityPanel();
         //title label
         JLabel titleLable = new JLabel();
         //button to confirm changes
@@ -718,9 +715,9 @@ public class ToolUtilityPanelHandler extends JPanel
         toolConfigPanel.add(BorderLayout.SOUTH, modeSelection);
 
         //add components to the panel
-        panel.add(BorderLayout.NORTH, titleLable);
-        panel.add(BorderLayout.CENTER, toolConfigPanel);
-        panel.add(BorderLayout.SOUTH, confirmButton);
+        this.add(BorderLayout.NORTH, titleLable);
+        this.add(BorderLayout.CENTER, toolConfigPanel);
+        this.add(BorderLayout.SOUTH, confirmButton);
 
         //handle confirm button press
         confirmButton.addActionListener(new ActionListener() {
@@ -737,7 +734,6 @@ public class ToolUtilityPanelHandler extends JPanel
                 }
             });
 
-        return panel;
     }
 
     ///////////////next tool type (idk, image manipulation, fun, some other groups)///////////////

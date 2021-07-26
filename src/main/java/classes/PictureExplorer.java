@@ -1,5 +1,7 @@
 package classes;
 
+import classes.menus.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -73,27 +75,16 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     private JCheckBox askForConfirmationCheckBox;
 
     //side panel
-    private JPanel toolUtilityPanel;
+    private ToolUtilityPanelHandler toolUtilityPanel;
 
     //menu bar components
     /**menu bar*/
     private JMenuBar menuBar;
     // things on the menuBar
     /** color manipulation menu */
-    private JMenu colorMenu;
-    //  colorMenu items
-    private JMenuItem removeColor;
-    private JMenuItem trimColor;
-    private JMenuItem negate;
-    private JMenuItem grayscale;
-    private JMenuItem replaceColorWithColor;
+    private ColorModificationMenu colorMenu;
     /** filters menu */
-    private JMenu filtersMenu;
-    //filters menu items
-    private JMenuItem edgeDetection;
-    private JMenuItem brighten;
-    private JMenuItem darken;
-    private JMenuItem simplifyColors;
+    private FiltersMenu filtersMenu;
     /** zoom menu */
     private JMenu zoomMenu;
     /* zoom to fit level */
@@ -233,43 +224,13 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         menuBar.add(zoomMenu);
 
         /** color modification menu */
-        colorMenu = new JMenu("Color Modification");
-        removeColor = new JMenuItem("Remove Color Channel");
-        trimColor = new JMenuItem("Trim Color Channel");
-        negate = new JMenuItem("Negate Color Channel");
-        grayscale = new JMenuItem("grayscale");
-        replaceColorWithColor = new JMenuItem("Replace Color With Color");
-        // add the action listeners
-        removeColor.addActionListener(this);
-        trimColor.addActionListener(this);
-        negate.addActionListener(this);
-        grayscale.addActionListener(this);
-        replaceColorWithColor.addActionListener(this);
-        // add the menu items to the menu
-        colorMenu.add(removeColor);
-        colorMenu.add(trimColor);
-        colorMenu.add(negate);
-        colorMenu.add(grayscale);
-        colorMenu.add(replaceColorWithColor);
+        colorMenu = new ColorModificationMenu(this);
         menuBar.add(colorMenu);
 
         /** filters menu */
-        filtersMenu = new JMenu("Filters");
-        edgeDetection = new JMenuItem("Edge Detection");
-        brighten = new JMenuItem("Brighten Picture");
-        darken = new JMenuItem("Darken Picture");
-        simplifyColors = new JMenuItem("simplify picture colors");
-        // add the action listeners
-        edgeDetection.addActionListener(this);
-        brighten.addActionListener(this);
-        darken.addActionListener(this);
-        simplifyColors.addActionListener(this);
-        // add the menu items to the menu
-        filtersMenu.add(edgeDetection);
-        filtersMenu.add(brighten);
-        filtersMenu.add(darken);
-        filtersMenu.add(simplifyColors);
+        filtersMenu = new FiltersMenu(this);
         menuBar.add(filtersMenu);
+        
 
         // set the menu bar to this menu
         pictureFrame.setJMenuBar(menuBar);
@@ -324,7 +285,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      */
     private void createSidePanel() 
     {
-        toolUtilityPanel = ToolUtilityPanelHandler.defaultToolUtilityPanel();
+        toolUtilityPanel = new ToolUtilityPanelHandler();
         pictureFrame.getContentPane().add(BorderLayout.WEST,toolUtilityPanel);
         repaint();
     }
@@ -654,7 +615,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     {
         //set that created panel to the utilityPanel
         pictureFrame.getContentPane().remove(toolUtilityPanel);
-        toolUtilityPanel = ToolUtilityPanelHandler.updateToolUtilityPanel(tool);
+        toolUtilityPanel.updateToolUtilityPanel(tool);
         pictureFrame.getContentPane().add(BorderLayout.WEST,toolUtilityPanel);
         pictureFrame.pack();
         repaint();
@@ -860,26 +821,6 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
                 return;
             }
         }
-
-        //handle Color Modification menu actions
-        for (Component element : colorMenu.getMenuComponents())
-        {
-            if (element.equals(a.getSource()))
-            {
-                colorActionPerformed(a);
-                return;
-            }
-        }
-
-        //handle filters menu actions
-        for(Component element : filtersMenu.getMenuComponents())
-        {
-            if (element.equals(a.getSource()))
-            {
-                filtersActionPerformed(a);
-                return;
-            }
-        }
     }
 
     /**
@@ -940,72 +881,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
             fiveHundred.setEnabled(false);
         }
     }
-
-    /**
-     * Controls the Color Modification menu bar
-     * 
-     * @param a the ActionEvent
-     */
-    public void colorActionPerformed(ActionEvent a)
-    {
-        //update the current tool to this tool group
-        currentTool[0] = 1;
-        currentTool[1]=0;
-
-        if (a.getSource() == removeColor) 
-        {
-            currentTool[1]=1;
-        }
-        if (a.getSource() == trimColor) 
-        {
-            currentTool[1]=2;
-        }
-        if (a.getSource() == negate) 
-        {
-            currentTool[1]=3;
-        }
-        if (a.getSource() == grayscale) 
-        {
-            currentTool[1]=4;
-        }
-        if (a.getSource() == replaceColorWithColor)
-        {
-            currentTool[1]=5;
-        }
-
-        updateUtilityPanel(currentTool);
-    }
-
-    /**
-     * Controls the Color Modification menu bar
-     * 
-     * @param a the ActionEvent
-     */
-    public void filtersActionPerformed(ActionEvent a)
-    {
-        currentTool[0] = 2;
-        currentTool[1] = 0;
-
-        if (a.getSource() == edgeDetection)
-        {
-            currentTool[1] = 1;
-        }
-        if (a.getSource() == brighten)
-        {
-            currentTool[1] = 2;
-        }
-        if (a.getSource() == darken)
-        {
-            currentTool[1] = 3;
-        }
-        if (a.getSource() == simplifyColors)
-        {
-            currentTool[1] = 4;
-        }
-
-        updateUtilityPanel(currentTool);
-    }
-
+    
     /**
      * Class for establishing the focus for the textfields
      */

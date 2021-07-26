@@ -475,21 +475,6 @@ public class Picture extends SimplePicture
 
     }
 
-    /** Method to set the blue to 0 */
-    public void zeroBlue()
-    {
-        Pixel[][] pixels = this.getPixels2D();
-        for (Pixel[] rowArray : pixels)
-        {
-            for (Pixel pixelObj : rowArray)
-            {
-                pixelObj.setBlue(0);
-            }
-        }
-        pixels = null;
-        return;
-    }
-
     /** Method that mirrors the picture around a 
      * vertical mirror in the center of the picture
      * from left to right */
@@ -511,35 +496,7 @@ public class Picture extends SimplePicture
         pixels = null;
         return;
     }
-
-    /** Mirror just part of a picture of a temple */
-    public void mirrorTemple()
-    {
-        int mirrorPoint = 276;
-        Pixel leftPixel = null;
-        Pixel rightPixel = null;
-        int count = 0;
-        Pixel[][] pixels = this.getPixels2D();
-
-        // loop through the rows
-        for (int row = 27; row < 97; row++)
-        {
-            // loop from 13 to just before the mirror point
-            for (int col = 13; col < mirrorPoint; col++)
-            {
-                count ++;
-                leftPixel = pixels[row][col];      
-                rightPixel = pixels[row]                       
-                [mirrorPoint - col + mirrorPoint];
-                rightPixel.setColor(leftPixel.getColor());
-            }
-        }
-        System.out.println(count);
-
-        pixels = null;
-        return;
-    }
-
+    
     /** copy from the passed fromPic to the
      * specified startRow and startCol in the
      * current picture
@@ -572,23 +529,6 @@ public class Picture extends SimplePicture
         toPixels = null;
         fromPixels = null;
         return;
-    }
-
-    /** Method to create a collage of several pictures */
-    public void createCollage()
-    {
-        Picture flower1 = new Picture("flower1.jpg");
-        Picture flower2 = new Picture("flower2.jpg");
-        this.copy(flower1,0,0);
-        this.copy(flower2,100,0);
-        this.copy(flower1,200,0);
-        Picture flowerNoBlue = new Picture(flower2);
-        flowerNoBlue.zeroBlue();
-        this.copy(flowerNoBlue,300,0);
-        this.copy(flower1,400,0);
-        this.copy(flower2,500,0);
-        this.mirrorVertical();
-        this.write("collage.jpg");
     }
 
     /** Method to show large changes in color 
@@ -632,12 +572,7 @@ public class Picture extends SimplePicture
     public static void main(String[] args) 
     {
         Picture beach = new Picture("beach.jpg");
-        beach.explore();
-        beach.zeroBlue();
-
-        beach.explore();
-        beach.keepOnlyBlue();
-
+        
         beach.explore();
         beach.negate();
 
