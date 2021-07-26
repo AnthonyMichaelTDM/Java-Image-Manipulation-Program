@@ -10,6 +10,8 @@ I'd like to add support for multiple layers, and some other functionality in the
 current limitation is that this is (currently) a one layer editor, meaning you can't have multiple layers like you can in gimp or many other editing softwares
 
 ## to use this
+you need Java installed for this to work
+
 either download the latest release 
 
-or clone the repo and run `./gradlew run` if you want to be on the bleeding edge
+or clone the repo, open your terminal, navigate to where you cloned it, and run `./gradlew run` if you want to be on the bleeding edge
