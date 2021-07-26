@@ -186,7 +186,24 @@ public class FileChooser
         String directory = null;
         boolean done = false;
         File dirFile = null;
-
+        
+        try {
+            //this directory should be the pictures folder on windows, linux, and macOS
+            directory = System.getProperty("user.home") + System.getProperty("file.separator") + "Pictures" + System.getProperty("file.separator"); // ~\Pictures\    SHOULD work on windows and linux, idk though
+            
+            //check if user is running windows, if so, check if they have a onedrive folder at their home directory, if so, change directory to the pictures folder in that, otherwise don't change directory
+            if (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0) {//windows
+                if ((new File(System.getProperty("user.home") + System.getProperty("file.separator") + "Onedrive" + System.getProperty("file.separator"))).isDirectory()) 
+                    directory = System.getProperty("user.home") + System.getProperty("file.separator") + "Onedrive" + System.getProperty("file.separator") + "Pictures" + System.getProperty("file.separator");;
+            }
+            
+            dirFile = new File(directory);
+            if (dirFile.exists()) {
+                //setMediaPath(directory);
+                return directory;
+            }
+        } catch (Exception e) {}
+        /*
         // try to find the images directory
         try {
             // get the URL for where we loaded this class 
@@ -202,6 +219,7 @@ public class FileChooser
             }
         } catch (Exception ex) {
         }
+        */
 
         return directory;
     }

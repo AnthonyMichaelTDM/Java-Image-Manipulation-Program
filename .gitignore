@@ -1,10 +1,10 @@
 *.class
 *.ctxt
-*.html
-Java-PhotoEditorGUI/classes/doc/*
+**/doc
 **/images
-*.js
-*.css
-Java-PhotoEditorGUI/classes/PictureTest.java
-Java-PhotoEditorGUI/classes/IntArrayWorker.java
-Java-PhotoEditorGUI/classes/IntArrayWorkerTester.java
+src/main/java/classes/PictureTest.java
+src/main/java/classes/IntArrayWorker.java
+src/main/java/classes/IntArrayWorkerTester.java
+/build/
+/.gradle/
+/gradle/

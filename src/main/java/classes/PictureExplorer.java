@@ -320,7 +320,8 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      */
     private void setUpUndoAndRedoButtons()
     {
-        // create the image icons for the buttons
+        // create the image icons for the buttons 
+        //issue ... this works when compiled as a jar, but if you try running this in an IDE you'll likely get a null pointer error
         Icon undoIcon = new ImageIcon(this.getClass().getResource("/leftArrow.gif"), 
                 "previous index");
         Icon redoIcon = new ImageIcon(this.getClass().getResource("/rightArrow.gif"), 
