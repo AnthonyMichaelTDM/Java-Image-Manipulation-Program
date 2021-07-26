@@ -10,6 +10,7 @@ import javax.swing.text.*;
 import java.text.NumberFormat;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
+
 /**
  * Displays a picture and lets you explore the picture by displaying the row, column, red,
  * green, and blue values of the pixel at the cursor when you click a mouse button or
@@ -172,10 +173,23 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         pictureFrame = new JFrame(); // create the JFrame
         pictureFrame.setResizable(true);  // allow the user to resize it
         pictureFrame.getContentPane().setLayout(new BorderLayout()); // use border layout
-        pictureFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // when close stop
         pictureFrame.setTitle(picture.getTitle());
         PictureExplorerFocusTraversalPolicy newPolicy = new PictureExplorerFocusTraversalPolicy();
         pictureFrame.setFocusTraversalPolicy(newPolicy);
+        
+        //make it so that the program closes when the window is closed 
+        pictureFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        pictureFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                    if (JOptionPane.showConfirmDialog(pictureFrame, 
+                        "Are you sure you want to close this window?", "Close Window?", 
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+                        System.exit(0);
+                    }
+                }
+            });
 
     }
 
@@ -296,11 +310,11 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
 
         //creates the scrollpane for the picture
         createAndInitScrollingImage();
-
+        
         // show the picture in the frame at the size it needs to be
         pictureFrame.pack();
         pictureFrame.setVisible(true);
-
+        
         //initialize the confirmation panel used by some of the tools
         pictureConfirmation = new PictureConfirmation();
     }
@@ -418,7 +432,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
                 public void actionPerformed(ActionEvent evt) {
                     //save the current image to a file
                     String path = FileChooser.pickAFile("Save image as", picturePath);
-                    
+
                     if (path != null) {
                         //try to write to path as is, this fails if user provides invalid extension 
                         if (picture.write(path)) {} //try saving
@@ -439,7 +453,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
                     if (fileName != null) {
                         //load the image
                         picture = new Picture(fileName);
-                        
+
                         try {
                             pictureExtension = fileName.substring(fileName.lastIndexOf("."));
                             picturePath = picture.getFileName().substring(0 , picture.getFileName().lastIndexOf(System.getProperty("file.separator"))); //directory containing the loaded image, by creating a substring containing all characters up to the last file separator (/ on UNIX, \ on windows
@@ -645,7 +659,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         pictureFrame.pack();
         repaint();
     }
-    
+
     //****************************************//
     //               Event Listeners          //
     //****************************************//
@@ -856,7 +870,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
                 return;
             }
         }
-        
+
         //handle filters menu actions
         for(Component element : filtersMenu.getMenuComponents())
         {
@@ -937,7 +951,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         //update the current tool to this tool group
         currentTool[0] = 1;
         currentTool[1]=0;
-        
+
         if (a.getSource() == removeColor) 
         {
             currentTool[1]=1;

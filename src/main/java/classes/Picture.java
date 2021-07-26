@@ -654,16 +654,7 @@ public class Picture extends SimplePicture
         beach.mirrorHorizontalBotToTop();
 
         beach.explore();
-        beach.mirrorArms();
-
-        beach.explore();
-        beach.mirrorGull();
-
-        beach.explore();
         beach.copy2(beach, 252,454,290,600);
-
-        beach.explore();
-        beach.myCollage();
 
         beach.explore();
         beach.edgeDetection2(10,2);
@@ -774,75 +765,6 @@ public class Picture extends SimplePicture
         return;
     }
 
-    /**
-     * mirror the arms on the snowman (â€œsnowman.jpgâ€?) to
-     * make a snowman with 4 arms.
-     */
-    public void mirrorArms()
-    {
-        Pixel originalPixel = null;
-        Pixel dupePixel = null;
-        int count = 0;
-        Pixel[][] pixels = this.getPixels2D();
-        int leftMirrorPoint = 190;
-        int rightMirrorPoint = 197;
-
-        // loop through the rows 
-        //left arm (r: 158 - 190; c: 103-170)
-        for (int row = 155; row < 190; row++)
-        {
-            for (int col = 103; col < 170; col++)
-            {
-                originalPixel = pixels[row][col];      
-                //set the dupePixel to a different row as the originalPixel
-                dupePixel = pixels[leftMirrorPoint + (leftMirrorPoint - row)][col];
-                dupePixel.setColor(originalPixel.getColor());
-            }
-        }
-        //right arm (r: 172 - 197; c 239-295)
-        for (int row = 197; row > 172; row --)
-        {
-            for (int col = 239; col < 295; col++)
-            {
-                originalPixel = pixels[row][col];      
-                //set the dupePixel to a different row as the originalPixel
-                dupePixel = pixels[row + 15][col];
-                dupePixel.setColor(originalPixel.getColor());
-            }
-        }
-        pixels = null;
-        return;
-    }
-
-    /**
-     * mirror the seagull (â€œseagull.jpgâ€?) to the right so
-     * that there are two seagulls on the beach near each other
-     */
-    public void mirrorGull()
-    {
-        Pixel originalPixel = null;
-        Pixel dupePixel = null;
-        int count = 0;
-        Pixel[][] pixels = this.getPixels2D();
-
-        //top left corner of og seagull: r = 233; c = 238
-        //bottom right corner of og seagull: r = 322; c = 342
-
-        //translate seagull: r = -10; c = -83;
-        for (int row = 233; row < 322; row++)
-        {
-            for (int col = 238; col < 342; col++)
-            {
-                originalPixel = pixels[row][col];      
-                //set the dupePixel to a different row as the originalPixel
-                dupePixel = pixels[row - 5][col - 110];
-                dupePixel.setColor(originalPixel.getColor());
-            }
-        }
-        pixels = null;
-        return;
-    }
-
     /** copy from the passed fromPic to the
      * specified startRow and startCol in the
      * current picture
@@ -877,33 +799,6 @@ public class Picture extends SimplePicture
         toPixels = null;
         fromPixels = null;
         return;  
-    }
-
-    /** Method to create a collage of several pictures */
-    public void myCollage()
-    {
-        Picture flower1 = new Picture("flower1.jpg");
-        Picture flower2 = new Picture("flower2.jpg");
-        Picture squidward = new Picture("squidward.jpg");
-
-        this.copy(flower1,0,0);
-        this.copy(flower2,0,100);
-        this.copy(squidward,0,200);
-        Picture flowerNoBlue = new Picture(flower2);
-        flowerNoBlue.zeroBlue();
-
-        Picture negativeSquid = new Picture("squidward.jpg");
-        negativeSquid.negate();
-
-        Picture graySquid = new Picture("squidward.jpg");
-        graySquid.grayscale();
-
-        this.copy(flowerNoBlue,0,300);
-        this.copy(graySquid,0,400);
-        this.copy(negativeSquid,0,500);
-
-        this.mirrorHorizontal();
-        this.write("collage.jpg");
     }
 
     /** Method to show large changes in color

@@ -7,8 +7,14 @@ repositories {
 }
 
 jar {
-    archiveBaseName = 'Java-Image_Manipulation-Program'
-    archiveVersion =  '2.1.0'
+    archiveBaseName = 'JIMP'
+    archiveVersion =  '1.0'
+
+    //modify the manifest to make the .jar executable
+    manifest {
+        attributes("Class-Path": ".",
+                   "Main-Class": "classes.Main")
+    }
 }
 
 // dependencies
@@ -16,7 +22,7 @@ sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 dependencies {
-    implementation 'com.google.guava:guava:30.1-jre' 
+    //implementation 'com.google.guava:guava:30.1-jre' 
 }
 
 // main

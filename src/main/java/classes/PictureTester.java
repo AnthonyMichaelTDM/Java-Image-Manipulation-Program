@@ -269,24 +269,6 @@ public class PictureTester
         beach.explore();
     }
 
-    /** method to test mirrorArms() */
-    public static void testMirrorArms()
-    {
-        Picture snowman = new Picture("snowman.jpg");
-        snowman.explore();
-        snowman.mirrorArms();
-        snowman.explore();
-    }
-
-    /** method to test mirrorGull() */
-    public static void testMirrorGull()
-    {
-        Picture seagull = new Picture("seagull.jpg");
-        seagull.explore();
-        seagull.mirrorGull();
-        seagull.explore();
-    }
-
     /** method to test copy2() */
     public static void testCopy2()
     {
@@ -296,15 +278,5 @@ public class PictureTester
         beach.explore();
         beach.copy2(water, 252,454,290,600);
         beach.explore();
-    }
-
-    /** method to test myCollage() */
-    public static void testMyCollage()
-    {
-        Picture canvas = new Picture("640x480.jpg");
-
-        canvas.explore();
-        canvas.myCollage();
-        canvas.explore();
     }
 } 
