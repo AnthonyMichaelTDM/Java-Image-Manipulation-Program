@@ -14,3 +14,7 @@ current limitation is that this is (currently) a one layer editor, meaning you c
 the html documentation has been removed as it was causing this project to be falsely flagged as an html project lol
 
 "Anthony Michael" is an allias btw
+
+## to use this
+either download the latest release, 
+or clone the repo and run ./gradlew run
