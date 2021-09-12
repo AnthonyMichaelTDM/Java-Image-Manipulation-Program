@@ -181,13 +181,18 @@ public class PictureTester
         //testEdgeDetection();
         //testEdgeDetection2();
         //testSimplifyColors();
-        testBolden();
+        //testBolden();
         //testChromakey();
         //testEncodeAndDecode();
         //testGetCountRedOverValue(250);
         //testSetRedToHalfValueInTopHalf();
         //testClearBlueOverValue(200);
         //testGetAverageForColumn(0);
+        
+        
+        Picture test = new Picture(FileChooser.pickAFile("select image"));
+        test.simplifyColors(6);
+        PictureFrame pf = new PictureFrame(test);
     }
 
     ////////////////////// tester methods i made ///////////////////////////////////////

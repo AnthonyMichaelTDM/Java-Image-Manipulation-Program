@@ -252,7 +252,7 @@ public class Picture extends SimplePicture
      * and are equidistant from eachother on the color wheel
      * uses the 5 number summary of all the pixels color values (as integers) to balance the image better
      * 
-     * @param mode which mode to use, 0 = equidistant from color wheel, 1 = grayscale, 2 = faithful, 3 = faithful+, 4= faithful-balance, 5=faithful-balance+
+     * @param mode which mode to use, 0 = equidistant from color wheel, 1 = grayscale, 2 = faithful, 3 = faithful+, 4= faithful-balance, 5=faithful-balance+, 6=ave-balance
      */
     public void simplifyColors(int mode)
     {
@@ -271,14 +271,14 @@ public class Picture extends SimplePicture
 
         //if the background colors saturation, or brightness is really low, increase it
         /*if (true) {
-            Color.RGBtoHSB(background.getRed(),background.getGreen(),background.getBlue(), hsbValues);
-            if (Math.abs(hsbValues[1]) < 0.3) {
-                hsbValues[1] = 0.3f;
-            }
-            if (Math.abs(hsbValues[2]) < 0.3) {
-                hsbValues[2] = 0.3f;
-            }
-            background = Color.getHSBColor(hsbValues[0], hsbValues[1], hsbValues[2]);
+        Color.RGBtoHSB(background.getRed(),background.getGreen(),background.getBlue(), hsbValues);
+        if (Math.abs(hsbValues[1]) < 0.3) {
+        hsbValues[1] = 0.3f;
+        }
+        if (Math.abs(hsbValues[2]) < 0.3) {
+        hsbValues[2] = 0.3f;
+        }
+        background = Color.getHSBColor(hsbValues[0], hsbValues[1], hsbValues[2]);
         }*/
 
         //get an array list of the integer representations of all the pixels color values
@@ -287,11 +287,11 @@ public class Picture extends SimplePicture
                 pictureColors.add(pixelObj.getColor().getRGB());
             }
         }
-
+        
         //generate 5 number summary
         //do something different depending on the mode
         switch(mode) {
-            /*faithful+*/
+            /**faithful+*/
             case 3:
             //find 5 num sum, this time summarize the occurances of each color rather than the colors themselves
             //remove duplicates from picture colors using a hashset
@@ -317,11 +317,9 @@ public class Picture extends SimplePicture
             q1 = pictureColors.get( (int)(pictureColors.size() / 4.0));
             q3 = pictureColors.get( (int)(pictureColors.size() * (3.0 / 5.0) ));
             break;
+
             
-            
-            
-            
-            /*faithful-balanc+*/
+            /**faithful-balanc+*/
             case 5:
             //find 5 num sum, this time summarize the occurances of each color rather than the colors themselves
             //remove duplicates from picture colors using a hashset
@@ -334,8 +332,8 @@ public class Picture extends SimplePicture
             // add the elements of set
             // with no duplicates to the list
             pictureColors.addAll(colorSet);
-            
-            /*faithful-balance*/
+
+            /**faithful-balance*/
             case 4:
             //sort the array
             Collections.sort(pictureColors, new Comparator<Integer>() {
@@ -388,8 +386,79 @@ public class Picture extends SimplePicture
 
             
             
+            /**ave-balance, try some fancy stuff with averages*/
+            case 6:
+            //find mean and standard deviation for each color channel, then create colors with that
+            float meanRed=0, meanGreen=0, meanBlue=0;
+            double sdRed=0, sdGreen=0, sdBlue=0;
+
+            //find mean of each color channel
+            for (int color : pictureColors) {
+                Color c = new Color(color);
+                //sum each color channel
+                meanRed += c.getRed();
+                meanGreen += c.getGreen();
+                meanBlue += c.getBlue();
+            }
+            //divide by total
+            meanRed /= pictureColors.size();
+            meanGreen /= pictureColors.size();
+            meanBlue /= pictureColors.size();
+
+            //find standard deviation of each color channel    sqrt( sum( (x-mean)^2 ) / n )
+            //sum((x-mean)^2)
+            for (int color : pictureColors) {
+                Color c = new Color(color);
+                //(x-mean)^2
+                sdRed += Math.pow(c.getRed() - meanRed, 2);
+                sdGreen += Math.pow(c.getGreen() - meanGreen, 2);
+                sdBlue += Math.pow(c.getBlue() - meanBlue, 2);
+            }
+            // /n
+            sdRed /= pictureColors.size();
+            sdGreen /= pictureColors.size();
+            sdBlue /= pictureColors.size();
+            // sqrt
+            sdRed = Math.sqrt(sdRed);
+            sdGreen = Math.sqrt(sdGreen);
+            sdBlue = Math.sqrt(sdBlue);
             
-            /*others*/
+            //create 5 colors with mean and sd
+            // mean
+            med = (new Color(
+                (int)(meanRed),
+                (int)(meanGreen),
+                (int)(meanBlue)
+            )).getRGB();
+            // +- 0.5 Standard Deviations
+            q1 = (new Color(
+                (int)(meanRed - 0.5*sdRed),
+                (int)(meanGreen - 0.5*sdGreen),
+                (int)(meanBlue - 0.5*sdBlue)
+            )).getRGB();
+            q3 = (new Color(
+                (int)(meanRed + 0.5*sdRed),
+                (int)(meanGreen + 0.5*sdGreen),
+                (int)(meanBlue + 0.5*sdBlue)
+            )).getRGB();
+            // +- 1 Standard Deviations
+            min = (new Color(
+                (int)(meanRed - sdRed),
+                (int)(meanGreen - sdGreen),
+                (int)(meanBlue - sdBlue)
+            )).getRGB();
+            max = (new Color(
+                (int)(meanRed +  sdRed),
+                (int)(meanGreen + sdGreen),
+                (int)(meanBlue + sdBlue)
+            )).getRGB();
+            
+            //print out means and SDs for debugging, remove this later
+            System.out.println("Means:\nred: " + meanRed + "; green " + meanGreen + "; blue " + meanBlue);
+            System.out.println("Standard Deviations:\nred: " + sdRed + "; green " + sdGreen + "; blue " + sdBlue);
+            break;
+
+            /**others*/
             default:
             //sort the array
             Collections.sort(pictureColors);
@@ -496,7 +565,7 @@ public class Picture extends SimplePicture
         pixels = null;
         return;
     }
-    
+
     /** copy from the passed fromPic to the
      * specified startRow and startCol in the
      * current picture
@@ -572,7 +641,7 @@ public class Picture extends SimplePicture
     public static void main(String[] args) 
     {
         Picture beach = new Picture("beach.jpg");
-        
+
         beach.explore();
         beach.negate();
 

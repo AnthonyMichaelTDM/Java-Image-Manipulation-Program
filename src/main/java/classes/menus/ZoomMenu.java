@@ -1,11 +1,14 @@
-package classes;
+package classes.menus;
 
+import classes.PictureExplorer;
+
+import java.awt.event.*;
+import javax.swing.*;
 
 /**
- * Write a description of class ZoomMenu here.
+ * handles the "Zoom" menu in the top menu bar
  *
- * @author (your name)
- * @version (a version number or a date)
+ * @author Anthony Michael
  */
 public class ZoomMenu
 {
