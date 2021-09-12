@@ -1,7 +1,7 @@
 package classes;
 
-import javax.swing.JFileChooser;
-import java.io.*;
+//import javax.swing.JFileChooser;
+//import java.io.*;
 
 /**
  * This class contains class (static) methods
@@ -123,12 +123,21 @@ public class PictureTester
         //open a file of the users choice, then apply the 4 simplify color filters to it, and save each one
         //DATA, the images
         //open a file of the users choice, then apply the 4 simplify color filters to it, and save each one
-        Picture basePic = new Picture(FileChooser.pickAFile());
+
+        Picture basePic;
+        try {
+            basePic=new Picture(FileChooser.pickAFile());
+        } catch (Exception e) {
+            return;
+        }
         Picture grayPic = new Picture(basePic);
         Picture faithfulPic = new Picture(basePic);
         Picture faithfullPlusPic = new Picture(basePic);
-        Picture faithfullBalancePic = new Picture(basePic);
-        Picture faithfullBalancePlusPic = new Picture(basePic);
+        Picture BalancePic = new Picture(basePic);
+        Picture BalancePlusPic = new Picture(basePic);
+        Picture sdMeanPic = new Picture(basePic);
+        Picture zedPic = new Picture(basePic);
+        Picture zedPlusPic = new Picture(basePic);
         String extension = basePic.getFileName().substring(basePic.getFileName().indexOf("."));
         String pathName = basePic.getFileName().substring(0, basePic.getFileName().indexOf("."));
         
@@ -136,17 +145,36 @@ public class PictureTester
         //apply filters and save
         grayPic.simplifyColors(1);
         grayPic.write(pathName + "-grayscale" + extension);
+
         faithfulPic.simplifyColors(2);
         faithfulPic.write(pathName + "-faithful" + extension);
+
         faithfulPic.simplifyColors(2);
         faithfulPic.write(pathName + "-faithful" + extension);
+
         faithfullPlusPic.simplifyColors(3);
         faithfullPlusPic.write(pathName + "-faithful+" + extension);
-        faithfullBalancePic.simplifyColors(4);
-        faithfullBalancePic.write(pathName + "-faithful-balance" + extension);
-        faithfullBalancePlusPic.simplifyColors(5);
-        faithfullBalancePlusPic.write(pathName + "-faithful-balance+" + extension);
+
+        BalancePic.simplifyColors(4);
+        BalancePic.write(pathName + "-balance" + extension);
+
+        BalancePlusPic.simplifyColors(5);
+        BalancePlusPic.write(pathName + "-balance+" + extension);
+
+        sdMeanPic.simplifyColors(6);
+        sdMeanPic.write(pathName + "-SD+mean" + extension);
+
+        zedPic.simplifyColors(7);
+        zedPic.write(pathName + "-zed" + extension);
+
+        zedPlusPic.simplifyColors(8);
+        zedPlusPic.write(pathName + "-zed+" + extension);
+
         System.out.println("done");
+
+        testSimplifyColors();
+
+        return;
     }
     
     public static void testBolden() {
@@ -180,7 +208,7 @@ public class PictureTester
         //testCopy2();
         //testEdgeDetection();
         //testEdgeDetection2();
-        //testSimplifyColors();
+        testSimplifyColors();
         //testBolden();
         //testChromakey();
         //testEncodeAndDecode();
@@ -188,11 +216,6 @@ public class PictureTester
         //testSetRedToHalfValueInTopHalf();
         //testClearBlueOverValue(200);
         //testGetAverageForColumn(0);
-        
-        
-        Picture test = new Picture(FileChooser.pickAFile("select image"));
-        test.simplifyColors(6);
-        PictureFrame pf = new PictureFrame(test);
     }
 
     ////////////////////// tester methods i made ///////////////////////////////////////

@@ -4,8 +4,8 @@ package classes;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import java.awt.image.*;
-import javax.swing.border.*;
+//import java.awt.image.*;
+//import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
 import java.text.NumberFormat;
@@ -168,7 +168,7 @@ public class ToolUtilityPanelHandler extends JPanel
         //title label
         JLabel titleLable = new JLabel();
         //color comboBox
-        JComboBox colorBox = new JComboBox(new String[]{"red","green","blue"});
+        JComboBox<String> colorBox = new JComboBox<String>(new String[]{"red","green","blue"});
         //confirm button
         JButton confirmButton = new JButton("confirm");
         //min slider
@@ -353,7 +353,6 @@ public class ToolUtilityPanelHandler extends JPanel
         JLabel colorToSetLabel = new JLabel();
         JButton colorToSetButton = new JButton("select color to set");
         JPanel setColorPanel = new JPanel(); //displays the set color
-        Color setColor = Color.WHITE;
         //tolerance slider
         JSlider toleranceSlider = new JSlider(1,255,15);
         JLabel toleranceLabel = new JLabel("tolerance (0-255):"  + toleranceSlider.getValue());
@@ -472,7 +471,7 @@ public class ToolUtilityPanelHandler extends JPanel
         //title label
         JLabel titleLable = new JLabel();
         //algorithm selection comboBox
-        JComboBox algorithmSelection = new JComboBox(new String[]{"algorithm 1", "algorithm 2", "algorithm 3"});
+        JComboBox<String> algorithmSelection = new JComboBox<String>(new String[]{"algorithm 1", "algorithm 2", "algorithm 3"});
         JLabel explainationLabel = new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", 150, "algorithm 1 is much slower, but a higher resolution. Algorithm 2 is much faster, but can sometimes appear \"fuzzy\". Algorithm 3 fills area between edges, useful for making light text show up better against a plain background"));
         //tolerance slider
         JSlider toleranceSlider = new JSlider(1,255,5);
@@ -698,8 +697,8 @@ public class ToolUtilityPanelHandler extends JPanel
         JLabel titleLable = new JLabel();
         //button to confirm changes
         JButton confirmButton = new JButton("confirm");
-        //combo box to select the mode   0 = equidistant from color wheel, 1 = grayscale, 2 = faithful, 3 = faithful+, 4= faithful-balance, 5=faithful-balance+
-        JComboBox modeSelection = new JComboBox(new String[]{"Wheely balanced", "grayscale", "faithful", "faithful+", "faithful-balance", "faithful-balance+"});
+        //combo box to select the mode   0 = equidistant from color wheel, 1 = grayscale, 2 = faithful, 3 = faithful+, 4= balance, 5=balance+
+        JComboBox<String> modeSelection = new JComboBox<String>(new String[]{"rainbow", "grayscale", "faithful", "faithful+", "balance", "balance+"});
 
         //config panel components
         String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "simplify image to a certain number of balanced colors");

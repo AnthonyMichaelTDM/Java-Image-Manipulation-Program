@@ -10,3 +10,9 @@ src/main/java/classes/IntArrayWorkerTester.java
 /build/
 
 /.gradle/
+
+/.settings/
+.classpath
+.project
+
+/bin/

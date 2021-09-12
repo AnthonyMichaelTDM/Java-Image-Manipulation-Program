@@ -6,12 +6,12 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.image.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
-import java.text.NumberFormat;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
+//import javax.swing.border.*;
+//import javax.swing.event.*;
+//import javax.swing.text.*;
+//import java.text.NumberFormat;
+//import java.beans.PropertyChangeListener;
+//import java.beans.PropertyChangeEvent;
 
 /**
  * Displays a picture and lets you explore the picture by displaying the row, column, red,
@@ -49,7 +49,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     //stores integer values corresponding to the tool currently selected, 
     //first index is the tool group, second is the actual tool
     //{0,0} represents no tool being selected
-    private int[] currentTool = {0,0};
+    //private int[] currentTool = {0,0};
 
     // main GUI
     /** window to hold GUI */
@@ -111,7 +111,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     static DigitalPicture picture;
 
     /** The image icon used to display the picture */
-    private ImageIcon scrollImageIcon;
+    //private ImageIcon scrollImageIcon;
 
     /** The image display */
     private ImageDisplay imageDisplay;
@@ -127,12 +127,12 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
 
     /**
      * Public constructor 
-     * @param picture the picture to explore
+     * @param pic the picture to explore
      */
-    public PictureExplorer(DigitalPicture picture)
+    public PictureExplorer(DigitalPicture pic)
     {
         // set the fields
-        this.picture=picture;
+        picture=pic;
         zoomFactor=1;
 
         // create the window and set things up

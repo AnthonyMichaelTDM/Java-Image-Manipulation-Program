@@ -2,9 +2,9 @@ package classes;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import java.util.Properties;
+//import java.util.Properties;
 import java.io.*;
-import java.net.*;
+//import java.net.*;
 
 /**
  * A class to make working with a file chooser easier. 
@@ -28,7 +28,7 @@ public class FileChooser
     {
         String path = null;
         String directory = getMediaDirectory();
-        boolean done = true;
+        //boolean done = true;
 
         // get the full path
         path = directory + fileName;
@@ -184,7 +184,7 @@ public class FileChooser
     public static String getMediaDirectory() 
     {
         String directory = null;
-        boolean done = false;
+        //boolean done = false;
         File dirFile = null;
         
         try {
