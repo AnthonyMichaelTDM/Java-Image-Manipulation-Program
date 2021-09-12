@@ -10,6 +10,3 @@ src/main/java/classes/IntArrayWorkerTester.java
 /build/
 
 /.gradle/
-
-/gradle/
-!gradle/wrapper/gradle-wrapper.jar

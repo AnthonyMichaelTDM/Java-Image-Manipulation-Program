@@ -44,3 +44,8 @@ sourceSets {
         }
     }
 }
+
+//hack for a wierd issue where non-existant duplicates were preventing build 
+rootProject.tasks.named("processResources") {
+    duplicatesStrategy = 'include'
+}

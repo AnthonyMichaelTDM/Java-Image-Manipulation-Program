@@ -498,7 +498,7 @@ public class ToolUtilityPanelHandler extends JPanel
         explainationLabel.setFont(new Font(explainationLabel.getFont().getName(),explainationLabel.getFont().getStyle(),9));
 
         JPanel algorithmPanels = new JPanel(new GridLayout(2,1));
-        iterationsField.setValue(new Integer(1));
+        iterationsField.setValue(1);
         iterationsField.setColumns(10);
         algorithmPanels.add(iterationsLabel);
         algorithmPanels.add(iterationsField);
@@ -711,7 +711,7 @@ public class ToolUtilityPanelHandler extends JPanel
         modeSelection.setSelectedIndex(0);
         JPanel toolConfigPanel = new JPanel();
         toolConfigPanel.setPreferredSize(new Dimension(150,300));
-        toolConfigPanel.add(BorderLayout.NORTH, new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", 100,"this method simplifies an image to five colors, \n the colors depend on the selected mode")));
+        toolConfigPanel.add(BorderLayout.NORTH, new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", 100,"this method simplifies an image to five colors depending on the selected algorithm")));
         toolConfigPanel.add(BorderLayout.SOUTH, modeSelection);
 
         //add components to the panel
