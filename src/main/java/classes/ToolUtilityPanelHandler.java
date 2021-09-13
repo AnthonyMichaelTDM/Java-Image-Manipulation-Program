@@ -701,7 +701,7 @@ public class ToolUtilityPanelHandler extends JPanel
         JComboBox<String> modeSelection = new JComboBox<String>(new String[]{"rainbow", "grayscale", "faithful", "faithful+", "balance", "balance+", "SD+mean", "Zed", "Zed+"});
 
         //config panel components
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "simplify image to a certain number of balanced colors");
+        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "simplify image to 5 colors");
         Font titleFont = new Font(titleLable.getFont().getName(),
                 titleLable.getFont().getStyle(),18);
         titleLable.setFont(titleFont);
