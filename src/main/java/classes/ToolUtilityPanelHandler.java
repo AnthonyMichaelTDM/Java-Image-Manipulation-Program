@@ -698,7 +698,7 @@ public class ToolUtilityPanelHandler extends JPanel
         //button to confirm changes
         JButton confirmButton = new JButton("confirm");
         //combo box to select the mode   0 = equidistant from color wheel, 1 = grayscale, 2 = faithful, 3 = faithful+, 4= balance, 5=balance+
-        JComboBox<String> modeSelection = new JComboBox<String>(new String[]{"rainbow", "grayscale", "faithful", "faithful+", "balance", "balance+"});
+        JComboBox<String> modeSelection = new JComboBox<String>(new String[]{"rainbow", "grayscale", "faithful", "faithful+", "balance", "balance+", "SD+mean", "Zed", "Zed+"});
 
         //config panel components
         String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "simplify image to a certain number of balanced colors");

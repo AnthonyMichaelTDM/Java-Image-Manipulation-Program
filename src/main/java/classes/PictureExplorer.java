@@ -87,22 +87,6 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     private FiltersMenu filtersMenu;
     /** zoom menu */
     private JMenu zoomMenu;
-    /* zoom to fit level */
-    //private JMenuItem zoomToFit;// removed, too many issues
-    /* 25% zoom level */
-    private JMenuItem twentyFive;
-    /* 50% zoom level */
-    private JMenuItem fifty;
-    /* 75% zoom level */
-    private JMenuItem seventyFive;
-    /* 100% zoom level */
-    private JMenuItem hundred;
-    /* 150% zoom level */
-    private JMenuItem hundredFifty;
-    /* 200% zoom level */
-    private JMenuItem twoHundred;
-    /* 500% zoom level */
-    private JMenuItem fiveHundred;
 
     /** confirmation frame */
     static PictureConfirmation pictureConfirmation;
@@ -193,34 +177,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         menuBar = new JMenuBar();
 
         /** zoom menu */
-        zoomMenu = new JMenu("Zoom");
-        //zoomToFit = new JMenuItem("Auto Zoom");// removeed, too many issues
-        twentyFive = new JMenuItem("25%");
-        fifty = new JMenuItem("50%");
-        seventyFive = new JMenuItem("75%");
-        hundred = new JMenuItem("100%");
-        hundred.setEnabled(false);
-        hundredFifty = new JMenuItem("150%");
-        twoHundred = new JMenuItem("200%");
-        fiveHundred = new JMenuItem("500%");
-        // add the action listeners
-        //zoomToFit.addActionListener(this);// removeed, too many issues
-        twentyFive.addActionListener(this);
-        fifty.addActionListener(this);
-        seventyFive.addActionListener(this);
-        hundred.addActionListener(this);
-        hundredFifty.addActionListener(this);
-        twoHundred.addActionListener(this);
-        fiveHundred.addActionListener(this);
-        // add the menu items to the menu
-        //zoomMenu.add(zoomToFit); // removeed, too many issues
-        zoomMenu.add(twentyFive);
-        zoomMenu.add(fifty);
-        zoomMenu.add(seventyFive);
-        zoomMenu.add(hundred);
-        zoomMenu.add(hundredFifty);
-        zoomMenu.add(twoHundred);
-        zoomMenu.add(fiveHundred);
+        zoomMenu = new ZoomMenu(this);
         menuBar.add(zoomMenu);
 
         /** color modification menu */
@@ -784,21 +741,6 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     }
 
     /**
-     * Method to enable all menu commands
-     */
-    private void enableZoomItems()
-    {
-        //zoomToFit.setEnabled(true);// removeed, too many issues
-        twentyFive.setEnabled(true);
-        fifty.setEnabled(true);
-        seventyFive.setEnabled(true);
-        hundred.setEnabled(true);
-        hundredFifty.setEnabled(true);
-        twoHundred.setEnabled(true);
-        fiveHundred.setEnabled(true);
-    }
-
-    /**
      * Controls the menu bars
      * 
      * @param a the ActionEvent
@@ -811,77 +753,8 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
             this.repaint();
             return;
         }
-
-        //handle zoom menu actions
-        for (Component element : zoomMenu.getMenuComponents())
-        {
-            if (element.equals(a.getSource()))
-            {
-                zoomActionPerformed(a);
-                return;
-            }
-        }
     }
 
-    /**
-     * Controls the zoom menu bar
-     *
-     * @param a the ActionEvent 
-     */
-    public void zoomActionPerformed(ActionEvent a)
-    {
-        /* getting removed for now, too many issues
-        if(a.getActionCommand().equals("Auto Zoom"))
-        {
-        zoomImageToFit();
-        enableZoomItems();
-        zoomToFit.setEnabled(false);
-        }
-         */
-        if(a.getActionCommand().equals("25%"))
-        {
-            this.zoom(.25);
-            enableZoomItems();
-            twentyFive.setEnabled(false);
-        }
-        if(a.getActionCommand().equals("50%"))
-        {
-            this.zoom(.50);
-            enableZoomItems();
-            fifty.setEnabled(false);
-        }
-        if(a.getActionCommand().equals("75%"))
-        {
-            this.zoom(.75);
-            enableZoomItems();
-            seventyFive.setEnabled(false);
-        }
-        if(a.getActionCommand().equals("100%"))
-        {
-            this.zoom(1.0);
-            enableZoomItems();
-            hundred.setEnabled(false);
-        }
-        if(a.getActionCommand().equals("150%"))
-        {
-            this.zoom(1.5);
-            enableZoomItems();
-            hundredFifty.setEnabled(false);
-        }
-        if(a.getActionCommand().equals("200%"))
-        {
-            this.zoom(2.0);
-            enableZoomItems();
-            twoHundred.setEnabled(false);
-        }
-        if(a.getActionCommand().equals("500%"))
-        {
-            this.zoom(5.0);
-            enableZoomItems();
-            fiveHundred.setEnabled(false);
-        }
-    }
-    
     /**
      * Class for establishing the focus for the textfields
      */
