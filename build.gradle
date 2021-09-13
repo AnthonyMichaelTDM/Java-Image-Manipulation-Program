@@ -8,7 +8,7 @@ repositories {
 
 jar {
     archiveBaseName = 'JIMP'
-    archiveVersion =  '1.1.0'
+    archiveVersion =  'v1.1.0'
 
     //modify the manifest to make the .jar executable
     manifest {
