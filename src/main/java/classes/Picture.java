@@ -249,7 +249,7 @@ public class Picture extends SimplePicture {
      */
     /*
      0 = equidistant from color wheel 
-     1 = 0, but grayscale
+     1 = 6, but grayscale
      2 = faithful: numbers are the 5 number summary of allpixel's colors, sorted by their integer representations 
      3 = faithful+: 2, but duplicate values are removed 
      4 = balance: numbers are the 5 number summary of all pixel's colors, sorted by their hues 
@@ -318,7 +318,7 @@ public class Picture extends SimplePicture {
                 // find q1 and q3
                 q1 = pictureColors.get((int) (pictureColors.size() / 4.0));
                 q3 = pictureColors.get((int) (pictureColors.size() * (3.0 / 5.0)));
-                break;
+            break;
 
             /** balance+ */
             case 5:
@@ -385,8 +385,10 @@ public class Picture extends SimplePicture {
                 // find q1 and q3
                 q1 = pictureColors.get((int) (pictureColors.size() / 4.0));
                 q3 = pictureColors.get((int) (pictureColors.size() * (3.0 / 5.0)));
-                break;
-
+            break;
+            
+            /** grayscale */
+            case 1:
             /** SD+mean */
             case 6:
                 // find mean and standard deviation for each color channel, then create colors
@@ -456,7 +458,7 @@ public class Picture extends SimplePicture {
                     Math.abs((int) (meanBlue + sdBlue)%255))
                     ).getRGB();
                         
-                break;
+            break;
             
             /** Zed+ */
             case 7:
@@ -523,7 +525,7 @@ public class Picture extends SimplePicture {
                 q1 = pictureColors.get((int) (pictureColors.size() / 4.0));
                 q3 = pictureColors.get((int) (pictureColors.size() * (3.0 / 5.0)));
 
-                break;
+            break;
         
             /** others */
             default:
@@ -537,7 +539,7 @@ public class Picture extends SimplePicture {
                 // find q1 and q3
                 q1 = pictureColors.get((int) (pictureColors.size() / 4.0));
                 q3 = pictureColors.get((int) (pictureColors.size() * (3.0 / 5.0)));
-                break;
+            break;
         } // switch-case
         fiveNumSumColors[0] = new Color(min);
         fiveNumSumColors[1] = new Color(q1);
@@ -548,22 +550,21 @@ public class Picture extends SimplePicture {
         // generate colors
         // do something different depending on the mode
         switch (mode) {
-            /* grayscale and equidistant */
+            /* equidistant */
             case 0:
-            case 1:
                 // generate the colors
                 hsbValues = Color.RGBtoHSB(background.getRed(), background.getGreen(), background.getBlue(), hsbValues);
-
+                //change the brightness
                 for (int i = 0; i < colors.length; i++) {
                     colors[i] = Color.getHSBColor((float) (hsbValues[0] + (0.2 * i)) % 1, hsbValues[1], hsbValues[2]);
                 } // for
-                break;
+            break;
 
             /* others */
             default:
                 // generate the colors
                 colors = fiveNumSumColors;
-                break;
+            break;
         } // switch-case
 
         // clear the colors ArrayList to save some memory or something
@@ -592,9 +593,9 @@ public class Picture extends SimplePicture {
         switch (mode) {
             case 1:
                 this.grayscale();
-                break; // grayscale mode
+            break; // grayscale mode
             default:
-                break;
+            break;
         } // switch-case
         return;
     } // simplifyColors

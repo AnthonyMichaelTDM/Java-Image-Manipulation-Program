@@ -1,5 +1,9 @@
 package classes;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 //import javax.swing.JFileChooser;
 //import java.io.*;
 
@@ -127,6 +131,7 @@ public class PictureTester
         Picture basePic;
         try {
             basePic=new Picture(FileChooser.pickAFile());
+            if (basePic.getFileName().isBlank()) throw new Exception();
         } catch (Exception e) {
             return;
         }
@@ -138,10 +143,9 @@ public class PictureTester
         Picture sdMeanPic = new Picture(basePic);
         Picture zedPic = new Picture(basePic);
         Picture zedPlusPic = new Picture(basePic);
-        String extension = basePic.getFileName().substring(basePic.getFileName().indexOf("."));
-        String pathName = basePic.getFileName().substring(0, basePic.getFileName().indexOf("."));
+        String extension = basePic.getFileName().substring(basePic.getFileName().lastIndexOf("."));
+        String pathName = basePic.getFileName().substring(0, basePic.getFileName().lastIndexOf("."));
         
-        //1 = 5grayscale, 2 = faithful, 3 = faithful+, 4= faithful-balance, 5=faithful-balance+
         //apply filters and save
         grayPic.simplifyColors(1);
         grayPic.write(pathName + "-grayscale" + extension);
@@ -174,6 +178,113 @@ public class PictureTester
 
         testSimplifyColors();
 
+        return;
+    }
+
+    /**
+     * applies various filters and whatnot to given image, or all .jpg/.png images in given directory
+     */
+    public static void createWallpapers(String fileOrDirectoryPath) {
+        //data
+        File file = new File(fileOrDirectoryPath);
+        ArrayList<String> names = new ArrayList<String>(), validPaths = new ArrayList<String>();
+        boolean isDirectory = false;
+        Picture basePic, grayPic, grayscalePic, faithfulPic, faithfullPlusPic, BalancePic, BalancePlusPic, sdMeanPic, zedPic, zedPlusPic;
+        String extension, pathName;
+        int n=0;
+
+        System.out.println(fileOrDirectoryPath);
+
+        //find out if a file or directory was given
+        if (file.isDirectory()) {
+            isDirectory=true;
+            //fill names arraylist with contents of the directory
+            names.addAll(Arrays.asList(file.list()));
+        }
+        else if (file.isFile()) {
+            //just have the file in the names arraylist
+            names.add(fileOrDirectoryPath);
+        }
+        else {
+            System.out.println("error accessing " + fileOrDirectoryPath);
+            return;
+        }
+        //fill validNames arraylist with all image files in names
+        for (String s : names) {
+            //System.out.println(s);
+            //data
+            File f;
+
+            if (isDirectory) {
+                f = new File(fileOrDirectoryPath + s);
+            }
+            else {
+                f = new File(fileOrDirectoryPath);                
+            }
+            //figure out if f is a file, if it is, is it an image?, only add it if the answer to both questions is yess
+            if (f.isFile()) {
+                extension = f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf(".")).toLowerCase();
+                if ((extension.equals(".jpg") || extension.equals(".png") || extension.equals(".jpeg") || extension.equals(".bmp")) && !f.getAbsolutePath().contains("-ByJIMP")) {
+                    //valid image file
+                    validPaths.add(f.getAbsolutePath());
+                    //System.out.println(s);
+                } 
+            }
+        }
+
+        //apply filters to remaining valid images
+        for (String s : validPaths) {
+            //data
+            basePic = new Picture (s);
+            grayPic = new Picture(basePic);
+            grayscalePic = new Picture(basePic);
+            faithfulPic = new Picture(basePic);
+            faithfullPlusPic = new Picture(basePic);
+            BalancePic = new Picture(basePic);
+            BalancePlusPic = new Picture(basePic);
+            sdMeanPic = new Picture(basePic);
+            zedPic = new Picture(basePic);
+            zedPlusPic = new Picture(basePic);
+            extension = basePic.getFileName().substring(basePic.getFileName().lastIndexOf("."));
+            pathName = basePic.getFileName().substring(0, basePic.getFileName().lastIndexOf("."));
+        
+            //apply filters and save
+            grayPic.simplifyColors(1);
+            grayPic.write(pathName + "-gray-ByJIMP" + extension);
+
+            grayscalePic.grayscale();
+            grayscalePic.write(pathName + "-grayscale-ByJIMP" + extension);
+
+            faithfulPic.simplifyColors(2);
+            faithfulPic.write(pathName + "-faithful-ByJIMP" + extension);
+
+            faithfulPic.simplifyColors(2);
+            faithfulPic.write(pathName + "-faithful-ByJIMP" + extension);
+
+            faithfullPlusPic.simplifyColors(3);
+            faithfullPlusPic.write(pathName + "-faithful+-ByJIMP" + extension);
+
+            BalancePic.simplifyColors(4);
+            BalancePic.write(pathName + "-balance-ByJIMP" + extension);
+
+            BalancePlusPic.simplifyColors(5);
+            BalancePlusPic.write(pathName + "-balance+-ByJIMP" + extension);
+
+            sdMeanPic.simplifyColors(6);
+            sdMeanPic.write(pathName + "-SD+mean-ByJIMP" + extension);
+            sdMeanPic.grayscale();
+            sdMeanPic.write(pathName + "-SD+mean-grayscaled-ByJIMP" + extension);
+
+            zedPic.simplifyColors(7);
+            zedPic.write(pathName + "-zed-ByJIMP" + extension);
+
+            zedPlusPic.simplifyColors(8);
+            zedPlusPic.write(pathName + "-zed+-ByJIMP" + extension);
+
+            n++;
+            System.out.println(n + "/" + validPaths.size() + ": done with " + s);
+        }
+        System.out.println("done with all :D\nenjoy!");
         return;
     }
     
@@ -216,6 +327,7 @@ public class PictureTester
         //testSetRedToHalfValueInTopHalf();
         //testClearBlueOverValue(200);
         //testGetAverageForColumn(0);
+        //createWallpapers("" + FileChooser.getMediaDirectory() + "Backgrounds" + System.getProperty("file.separator"));
     }
 
     ////////////////////// tester methods i made ///////////////////////////////////////
