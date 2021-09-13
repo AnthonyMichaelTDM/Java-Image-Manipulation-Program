@@ -9,6 +9,8 @@ src/main/java/classes/IntArrayWorkerTester.java
 
 /build/
 
+/.vscode/
+
 /.gradle/
 
 /.settings/
