@@ -14,4 +14,8 @@ you need Java installed for this to work
 
 either download the latest release 
 
-or clone the repo, open your terminal, navigate to where you cloned it, and run `./gradlew run` if you want to be on the bleeding edge
+or clone the repo, then:
+ -create a file called `gradle.properties`, and set your java home by putting the following line in the file:
+    `org.gradle.java.home=` followed by the path to the java JDK on your system (make sure to escape backslashed '\', for example
+    `org.gradle.java.home=C:\\Users\\6021915\\jdk-16.0.2`
+ -open your terminal, navigate to where you cloned the repo, and run `./gradlew run` on windows, or `./gradlew.sh run` on linux/mac
