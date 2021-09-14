@@ -92,7 +92,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     static PictureConfirmation pictureConfirmation;
 
     /** The picture being explored */
-    static DigitalPicture picture;
+    static SimplePicture picture;
 
     /** The image icon used to display the picture */
     //private ImageIcon scrollImageIcon;
@@ -113,7 +113,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      * Public constructor 
      * @param pic the picture to explore
      */
-    public PictureExplorer(DigitalPicture pic)
+    public PictureExplorer(SimplePicture pic)
     {
         // set the fields
         picture=pic;
@@ -754,7 +754,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
             return;
         }
     }
-
+    
     /**
      * Class for establishing the focus for the textfields
      */
@@ -803,7 +803,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      */
     public class PictureConfirmation {
         /** picture to display */
-        private DigitalPicture tempPicture;
+        private SimplePicture tempPicture;
         /** frame used to hold all of this */
         private JFrame tempFrame;
         /** ImageIcon used to display the picture in the label*/
@@ -823,11 +823,11 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
          * A method to update the picture frame image with the image  
          * in the picture 
          */
-        public void updateConfPanelImage(DigitalPicture temp)
+        public void updateConfPanelImage(SimplePicture temp)
         {
             //if the ask for confirmation box is unchecked, update the image, and return
             if (!askForConfirmationCheckBox.isSelected()) {
-                picture = new Picture(temp.getBufferedImage());
+                picture.copyPicture(temp);//.getBufferedImage());
                 tempFrame.setVisible(false);
                 updateImage();
                 tempFrame.dispose();
@@ -835,7 +835,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
             }
             tempFrame.dispose();
             this.initFrame();
-            tempPicture = new SimplePicture(temp.getBufferedImage());
+            tempPicture = new SimplePicture(temp);//.getBufferedImage());
             // only do this if there is a picture
             if (tempPicture != null)
             {
@@ -858,7 +858,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
             //init things
             tempFrame = new JFrame();
             applyButton = new JButton("apply");
-            tempImageIcon.setImage((new Picture(picture.getBufferedImage())).getImage());
+            tempImageIcon.setImage(picture.getImage());
             imageLabel = new JLabel(tempImageIcon);
 
             // add the labels to the frame
@@ -879,7 +879,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
             //handle apply button press
             applyButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
-                        picture = new Picture(tempPicture.getBufferedImage());
+                        picture.copyPicture(tempPicture);
                         //tempFrame.setVisible(false)
                         updateImage();
                         //memory cleanup

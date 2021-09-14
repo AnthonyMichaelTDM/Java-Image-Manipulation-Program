@@ -60,6 +60,15 @@ public class Picture extends SimplePicture {
         // let the parent class do the copy
         super(copyPicture);
     } // Picture
+    /**
+     * Constructor that takes a simple picture and creates a copy of that picture
+     * 
+     * @param copyPicture the SimplePicture to copy
+     */
+    public Picture(SimplePicture copyPicture) {
+        // let the parent class do the copy
+        super(copyPicture);
+    }
 
     /**
      * Constructor that takes a buffered image
@@ -69,7 +78,11 @@ public class Picture extends SimplePicture {
     public Picture(BufferedImage image) {
         super(image);
     } // Picture
-
+    
+    
+    ///////////////////// utility methods //////////////////////////////////
+    
+    
     ////////////////////// methods added for the image manipulation GUI
     ////////////////////// //////////////////////
     /**
