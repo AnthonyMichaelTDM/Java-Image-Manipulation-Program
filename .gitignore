@@ -18,3 +18,4 @@ src/main/java/classes/IntArrayWorkerTester.java
 .project
 
 /bin/
+gradle.properties
