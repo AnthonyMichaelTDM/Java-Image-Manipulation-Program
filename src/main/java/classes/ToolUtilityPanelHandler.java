@@ -698,22 +698,62 @@ public class ToolUtilityPanelHandler extends JPanel
         //button to confirm changes
         JButton confirmButton = new JButton("confirm");
         //combo box to select the mode   0 = equidistant from color wheel, 1 = grayscale, 2 = faithful, 3 = faithful+, 4= balance, 5=balance+
-        JComboBox<String> modeSelection = new JComboBox<String>(new String[]{"rainbow", "grayscale", "faithful", "faithful+", "balance", "balance+", "SD+mean", "Zed", "Zed+"});
+        //JComboBox<String> modeSelection = new JComboBox<String>(new String[]{"rainbow", "grayscale", "faithful", "faithful+", "balance", "balance+", "SD+mean", "Zed", "Zed+"});
 
+        // configuration stuff
+        //sort method
+        JPanel sortMethodPanel = new JPanel();
+        JLabel sortMethodLabel = new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", 150,"select sort method:"));
+        JComboBox<String> sortMethodSelection = new JComboBox<String>(new String[]{"Hue","z-score","integer representation"});
+        sortMethodPanel.setPreferredSize(new Dimension(150, 90));
+        sortMethodSelection.setSelectedIndex(0);
+        sortMethodPanel.add(BorderLayout.NORTH, sortMethodLabel);
+        sortMethodPanel.add(BorderLayout.CENTER, sortMethodSelection);
+        //remove duplicates
+        JCheckBox removeDuplicatesCheckBox = new JCheckBox("trim duplicates?");
+        removeDuplicatesCheckBox.setSelected(false);
+        sortMethodPanel.add(BorderLayout.SOUTH, removeDuplicatesCheckBox);
+
+        //generation method
+        JPanel genMethodPanel = new JPanel(new BorderLayout());
+        JLabel genMethodLabel = new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", 150, " \nselect color gen method:"));
+        JComboBox<String> genMethodSelection = new JComboBox<String>(new String[]{"5 num sum", "mean + SD"});
+        //genMethodPanel.setPreferredSize(new Dimension(150, 90));
+        genMethodSelection.setSelectedIndex(0);
+        genMethodPanel.add(BorderLayout.NORTH, genMethodLabel);
+        genMethodPanel.add(BorderLayout.CENTER, genMethodSelection);
+        //genMethodPanel.add(BorderLayout.SOUTH, new JLabel("__________________"));
+
+        //additional filters
+        JPanel additionalFiltersPanel = new JPanel(new BorderLayout());
+        JLabel additionalFiltersLabel = new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", 150, "select additional filters:"));
+        JCheckBox grayscaleCheckBox = new JCheckBox("grayscale output");
+        JCheckBox invertCheckBox = new JCheckBox("invert output");
+        grayscaleCheckBox.setSelected(false);
+        invertCheckBox.setSelected(false);
+        additionalFiltersPanel.add(BorderLayout.NORTH, additionalFiltersLabel);
+        additionalFiltersPanel.add(BorderLayout.CENTER, grayscaleCheckBox);
+        additionalFiltersPanel.add(BorderLayout.SOUTH, invertCheckBox);
+        
+ 
+ 
         //config panel components
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "simplify image to 5 colors");
+        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 150, "simplify image to 5 colors:");
         Font titleFont = new Font(titleLable.getFont().getName(),
                 titleLable.getFont().getStyle(),18);
         titleLable.setFont(titleFont);
         titleLable.setText(titleText);
-
-        modeSelection.setSelectedIndex(0);
+        
+        //build config panel
         JPanel toolConfigPanel = new JPanel();
         toolConfigPanel.setPreferredSize(new Dimension(150,300));
-        toolConfigPanel.add(BorderLayout.NORTH, new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", 100,"this method simplifies an image to five colors depending on the selected algorithm")));
-        toolConfigPanel.add(BorderLayout.SOUTH, modeSelection);
+        //toolConfigPanel.setLayout(new GridLayout(0,1,5,0));
+        toolConfigPanel.add(BorderLayout.NORTH, new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", 150,"this method simplifies an image to five colors depending on the selected parameters")));
+        toolConfigPanel.add(BorderLayout.CENTER, sortMethodPanel);
+        toolConfigPanel.add(BorderLayout.CENTER, genMethodPanel);
+        toolConfigPanel.add(BorderLayout.SOUTH,additionalFiltersPanel);
 
-        //add components to the panel
+        //add components to the main panel
         this.add(BorderLayout.NORTH, titleLable);
         this.add(BorderLayout.CENTER, toolConfigPanel);
         this.add(BorderLayout.SOUTH, confirmButton);
@@ -726,7 +766,7 @@ public class ToolUtilityPanelHandler extends JPanel
                     simplified.copyPicture(new SimplePicture(PictureExplorer.picture.getBufferedImage()));
 
                     //simplify image with user selected mode
-                    simplified.simplifyColors(modeSelection.getSelectedIndex());
+                    simplified.simplifyColors(sortMethodSelection.getSelectedIndex(), removeDuplicatesCheckBox.isSelected(), genMethodSelection.getSelectedIndex(), new Boolean[]{grayscaleCheckBox.isSelected(), invertCheckBox.isSelected()});
 
                     //save the new image (ask first)
                     PictureExplorer.pictureConfirmation.updateConfPanelImage(simplified);
