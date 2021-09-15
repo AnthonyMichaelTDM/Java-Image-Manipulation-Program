@@ -510,7 +510,7 @@ public class Picture extends SimplePicture {
                             meanB + 1.0f*(float)sdB
                         );
 
-                        System.out.println("meanH: " + meanH + "; sdH " + sdH + "\nmeanS: " + meanS + "; sds " + sdS + "\nmeanB: " + meanB + "; sdB " + sdB);
+                        //System.out.println("meanH: " + meanH + "; sdH " + sdH + "\nmeanS: " + meanS + "; sds " + sdS + "\nmeanB: " + meanB + "; sdB " + sdB);
                         
                         break;
                     default:
