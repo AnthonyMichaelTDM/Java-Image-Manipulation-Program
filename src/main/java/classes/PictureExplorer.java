@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.image.*;
+import java.util.LinkedList;
 //import javax.swing.border.*;
 //import javax.swing.event.*;
 //import javax.swing.text.*;
@@ -59,14 +60,9 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
 
     // GUI components
     //bottom panel
-    /** undo label */
-    private JLabel undoLabel;
-    /** undo button */
-    private JButton undoButton;
-    /** redo label*/
-    private JLabel redoLabel;
-    /** redo button */
-    private JButton redoButton;
+    /** undo redo panel */
+    private UndoRedoPanel undoRedoPanel;
+    private final int undoRedoCacheSize = 10;
     /** save button */
     private JButton saveButton;
     /** load button */
@@ -108,6 +104,8 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
 
     /** the number system to use, 0 means starting at 0, 1 means starting at 1 */
     private int numberBase=0;
+    
+    
 
     /**
      * Public constructor 
@@ -248,91 +246,6 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     }
 
     /**
-     * Method to set up the undo and redo buttons
-     */
-    private void setUpUndoAndRedoButtons()
-    {
-        // create the image icons for the buttons 
-        //issue ... this works when compiled as a jar, but if you try running this in an IDE you'll likely get a null pointer error
-        Icon undoIcon = new ImageIcon(this.getClass().getResource("/leftArrow.gif"), 
-                "previous index");
-        Icon redoIcon = new ImageIcon(this.getClass().getResource("/rightArrow.gif"), 
-                "next index");
-        // create the arrow buttons
-        undoButton = new JButton(undoIcon);
-        redoButton = new JButton(redoIcon);
-
-        // set the tool tip text
-        redoButton.setToolTipText("Click to redo the latest action");
-        undoButton.setToolTipText("Click to undo the latest action");
-
-        // set the sizes of the buttons
-        int undoWidth = undoIcon.getIconWidth() + 2;
-        int redoWidth = redoIcon.getIconWidth() + 2;
-        int undoHeight = undoIcon.getIconHeight() + 2;
-        int redoHeight = redoIcon.getIconHeight() + 2;
-        Dimension undoDimension = new Dimension(undoWidth, undoHeight);
-        Dimension redoDimension = new Dimension(redoWidth, redoHeight);
-        undoButton.setPreferredSize(undoDimension);
-        redoButton.setPreferredSize(redoDimension);
-
-        // handle undo button press
-        undoButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    //in the future, undo the most recent action
-                }
-            });
-
-        // handle next column button press
-        redoButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    //in the future, redo the most recently undo'd action
-                }
-            });
-    }
-
-    /**
-     * Create the image option panel, will handle things like redo and undo
-     * @param labelFont the font for the labels
-     * @return the image option panel
-     */
-    private JPanel createImageOptionPanel(Font labelFont) {
-        // create a Image Option panel
-        JPanel imgageOptionPanel = new JPanel();
-        imgageOptionPanel.setLayout(new FlowLayout());
-        Box hBox = Box.createHorizontalBox();
-
-        // create the labels
-        undoLabel = new JLabel("undo");
-        redoLabel = new JLabel("redo");
-
-        // set up the next and previous buttons
-        setUpUndoAndRedoButtons();
-
-        // set up the font for the labels
-        redoLabel.setFont(labelFont);
-        undoLabel.setFont(labelFont);
-
-        //set up askForConfirmationCheckBox
-        askForConfirmationCheckBox = new JCheckBox("ask for confirmation?");
-        askForConfirmationCheckBox.setSelected(true);
-
-        // add the items to the vertical box and the box to the panel
-        hBox.add(Box.createHorizontalGlue());
-        hBox.add(askForConfirmationCheckBox);
-        hBox.add(Box.createHorizontalStrut(10));
-        hBox.add(undoButton);
-        hBox.add(undoLabel);
-        hBox.add(Box.createHorizontalStrut(10));
-        hBox.add(redoLabel);
-        hBox.add(redoButton);
-        imgageOptionPanel.add(hBox);
-        hBox.add(Box.createHorizontalGlue());
-
-        return imgageOptionPanel;
-    }
-
-    /**
      * Method to set up the save and load buttons
      */
     private void setUpSaveAndLoadButtons()
@@ -377,6 +290,10 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
                             picturePath = picture.getFileName().substring(0 , picture.getFileName().lastIndexOf(System.getProperty("file.separator"))); //directory containing the loaded image, by creating a substring containing all characters up to the last file separator (/ on UNIX, \ on windows
                         } catch (Exception e) { pictureExtension = ".jpg"; picturePath = FileChooser.getMediaDirectory();}
                         updateImage();
+                        
+                        //reinstantiate the UndoRedoHandler
+                        undoRedoPanel.initCache();
+                        
                     } else {
                         //display error message
                         JOptionPane.showMessageDialog(null, "error loading image, \n you probably just clicked cancel, \n but if not, please try again", "error loading file", JOptionPane.ERROR_MESSAGE);
@@ -432,11 +349,16 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         JPanel fileOptionPanel = createFileOptionPanel(largerFont);
 
         // create the color information panel
-        JPanel imageOptionPanel = createImageOptionPanel(largerFont);
+        undoRedoPanel = new UndoRedoPanel(undoRedoCacheSize, this);
+        
+        //set up askForConfirmationCheckBox
+        askForConfirmationCheckBox = new JCheckBox("ask for confirmation?");
+        askForConfirmationCheckBox.setSelected(true);
 
         // add the panels to the info panel
         bottomPanel.add(BorderLayout.WEST,fileOptionPanel);
-        bottomPanel.add(BorderLayout.EAST,imageOptionPanel); 
+        bottomPanel.add(BorderLayout.CENTER,askForConfirmationCheckBox);
+        bottomPanel.add(BorderLayout.EAST,undoRedoPanel); 
 
         // add the info panel
         pictureFrame.getContentPane().add(BorderLayout.SOUTH,bottomPanel);
@@ -534,6 +456,9 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      * probably pretty memory intensive
      */
     public void updateImage() {
+        //this method is called every time there is a edit to the picture, so logically, here is where we should update the undo/redo cache from
+        //undoRedoPanel.updateCache(picture);
+        
         // calculate the new width and height and get an image that size
         int width = (int) (picture.getWidth());
         int height = (int) (picture.getHeight());
@@ -588,7 +513,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      */
     public void mouseDragged(MouseEvent e)
     {
-
+        //future, handle drag selection
     }
 
     /**
@@ -601,9 +526,10 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     private boolean isLocationInPicture(int column, int row)
     {
         boolean result = false; // the default is false
-        if (column >= 0 && column < picture.getWidth() &&
-        row >= 0 && row < picture.getHeight())
+        if (column >= 0 && column < picture.getWidth() && row >= 0 && row < picture.getHeight())
+        {
             result = true;
+        }
 
         return result;
     }
@@ -618,17 +544,20 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     {
         int x = -1;
         int y = -1;
-        try {
+        try 
+        {
             x = Integer.parseInt(xString);
             x = x - numberBase;
             y = Integer.parseInt(yString);
             y = y - numberBase;
-        } catch (Exception ex) {
         }
+        catch (Exception ex) {}
 
-        if (x >= 0 && y >= 0) {
+        if (x >= 0 && y >= 0) 
+        {
             return returnPixelInformation(x,y);
-        } else return new Color(255,255,255);
+        } 
+        else {return new Color(255,255,255);}
     }
 
     /**
@@ -671,7 +600,6 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      */
     private Color returnPixelInformation(MouseEvent e)
     {
-
         // get the cursor x and y
         int cursorX = e.getX();
         int cursorY = e.getY();
@@ -711,34 +639,25 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      * Method called when the mouse button is pushed down
      * @param e the mouse event
      */ 
-    public void mousePressed(MouseEvent e)
-    {
-
-    }
+    public void mousePressed(MouseEvent e){}
 
     /**
      * Method called when the mouse button is released
      * @param e the mouse event
      */
-    public void mouseReleased(MouseEvent e)
-    {
-    }
+    public void mouseReleased(MouseEvent e){}
 
     /**
      * Method called when the component is entered (mouse moves over it)
      * @param e the mouse event
      */
-    public void mouseEntered(MouseEvent e)
-    {
-    }
+    public void mouseEntered(MouseEvent e){}
 
     /**
      * Method called when the mouse moves over the component
      * @param e the mouse event
      */
-    public void mouseExited(MouseEvent e)
-    {
-    }
+    public void mouseExited(MouseEvent e){}
 
     /**
      * Controls the menu bars
@@ -747,7 +666,6 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      */
     public void actionPerformed(ActionEvent a)
     {
-
         if(a.getActionCommand().equals("Update"))
         {
             this.repaint();
@@ -820,14 +738,15 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         }
 
         /**
-         * A method to update the picture frame image with the image  
-         * in the picture 
+         * A method to update image being explored with the passed, create a confirmation panel if neccessary
+         * @param temp new image
          */
         public void updateConfPanelImage(SimplePicture temp)
         {
             //if the ask for confirmation box is unchecked, update the image, and return
             if (!askForConfirmationCheckBox.isSelected()) {
-                picture.copyPicture(temp);//.getBufferedImage());
+                picture.copyPicture(temp);//copy the images pixels, but keep the other data
+                undoRedoPanel.updateCache(temp); //update undoRedo cache
                 tempFrame.setVisible(false);
                 updateImage();
                 tempFrame.dispose();
@@ -835,8 +754,8 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
             }
             tempFrame.dispose();
             this.initFrame();
-            tempPicture = new SimplePicture(temp);//.getBufferedImage());
-            // only do this if there is a picture
+            tempPicture = temp;
+            //only do this if there is a picture
             if (tempPicture != null)
             {
                 // set the image for the image icon from the picture
@@ -880,6 +799,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
             applyButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
                         picture.copyPicture(tempPicture);
+                        undoRedoPanel.updateCache(tempPicture); //update undoRedo cache
                         //tempFrame.setVisible(false)
                         updateImage();
                         //memory cleanup
