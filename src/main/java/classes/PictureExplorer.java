@@ -61,7 +61,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     // GUI components
     //bottom panel
     /** undo redo panel */
-    private UndoRedoPanel undoRedoPanel;
+    private UndoRedoPanel undoRedoButtons;
     private final int undoRedoCacheSize = 10;
     /** save button */
     private JButton saveButton;
@@ -85,10 +85,10 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     private JMenu zoomMenu;
 
     /** confirmation frame */
-    static PictureConfirmation pictureConfirmation;
+    public static PictureConfirmation pictureConfirmation;
 
     /** The picture being explored */
-    static SimplePicture picture;
+    public static SimplePicture picture;
 
     /** The image icon used to display the picture */
     //private ImageIcon scrollImageIcon;
@@ -100,7 +100,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     private double zoomFactor;
 
     /** the color currently selected */
-    static Color selectedPixelColor;
+    public static Color selectedPixelColor;
 
     /** the number system to use, 0 means starting at 0, 1 means starting at 1 */
     private int numberBase=0;
@@ -292,7 +292,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
                         updateImage();
                         
                         //reinstantiate the UndoRedoHandler
-                        undoRedoPanel.initCache();
+                        undoRedoButtons.initCache();
                         
                     } else {
                         //display error message
@@ -349,7 +349,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         JPanel fileOptionPanel = createFileOptionPanel(largerFont);
 
         // create the color information panel
-        undoRedoPanel = new UndoRedoPanel(undoRedoCacheSize, this);
+        undoRedoButtons = new UndoRedoPanel(undoRedoCacheSize, this);
         
         //set up askForConfirmationCheckBox
         askForConfirmationCheckBox = new JCheckBox("ask for confirmation?");
@@ -358,7 +358,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         // add the panels to the info panel
         bottomPanel.add(BorderLayout.WEST,fileOptionPanel);
         bottomPanel.add(BorderLayout.CENTER,askForConfirmationCheckBox);
-        bottomPanel.add(BorderLayout.EAST,undoRedoPanel); 
+        bottomPanel.add(BorderLayout.EAST,undoRedoButtons); 
 
         // add the info panel
         pictureFrame.getContentPane().add(BorderLayout.SOUTH,bottomPanel);
@@ -746,7 +746,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
             //if the ask for confirmation box is unchecked, update the image, and return
             if (!askForConfirmationCheckBox.isSelected()) {
                 picture.copyPicture(temp);//copy the images pixels, but keep the other data
-                undoRedoPanel.updateCache(temp); //update undoRedo cache
+                undoRedoButtons.updateCache(temp); //update undoRedo cache
                 tempFrame.setVisible(false);
                 updateImage();
                 tempFrame.dispose();
@@ -799,7 +799,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
             applyButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
                         picture.copyPicture(tempPicture);
-                        undoRedoPanel.updateCache(tempPicture); //update undoRedo cache
+                        undoRedoButtons.updateCache(tempPicture); //update undoRedo cache
                         //tempFrame.setVisible(false)
                         updateImage();
                         //memory cleanup

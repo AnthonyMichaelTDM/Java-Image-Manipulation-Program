@@ -45,8 +45,6 @@ public class UndoRedoPanel extends JPanel
         this.pictureExplorer = pictureExplorer;
         initGui();
         
-        
-        
         //set up undo/redo backend
         currIndex = 0;
         if (size < 2) { 
@@ -93,9 +91,7 @@ public class UndoRedoPanel extends JPanel
         pictureCache = new LinkedList<SimplePicture>();
     
         //create cacheSize blank pictures to hold the most recent edits
-        for (int i = 0; i < cacheSize; i++) {
-            pictureCache.add(new SimplePicture(PictureExplorer.picture.getHeight(), PictureExplorer.picture.getWidth()));
-        }
+        //pictureCache.add(new SimplePicture(PictureExplorer.picture.getHeight(), PictureExplorer.picture.getWidth()));
         updateCache(PictureExplorer.picture);
     }
     /**
@@ -108,8 +104,10 @@ public class UndoRedoPanel extends JPanel
             pictureCache.add(new SimplePicture(PictureExplorer.picture.getHeight(), PictureExplorer.picture.getWidth()));
             currIndex --;
         }
-        pictureCache.removeLast();
         pictureCache.addFirst(new SimplePicture(newPicture));
+        if (pictureCache.size() >= cacheSize) {
+            pictureCache.removeLast();
+        }
         currIndex = 0;
     }
     /**
