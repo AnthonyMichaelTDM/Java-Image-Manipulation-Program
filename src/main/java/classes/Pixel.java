@@ -13,7 +13,7 @@ import java.awt.Color;
  * and set the color using a Color object.
  * based on work by Barbara Ericson ericson@cc.gatech.edu
  * 
- * @author Anthony Rubick
+ * @author Barbara Ericson
  */
 public class Pixel
 {

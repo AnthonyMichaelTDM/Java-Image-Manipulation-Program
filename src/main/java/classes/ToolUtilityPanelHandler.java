@@ -440,7 +440,7 @@ public class ToolUtilityPanelHandler extends JPanel
      * creates the panel associated with the passed integer
      * @param tool the integer associated with the filter tool the panel is being created for
      */
-    public void filtersToolUtilityPanel(int tool)
+    private void filtersToolUtilityPanel(int tool)
     {
         switch (tool) {
             case 1: //Edge Detection tool selected
