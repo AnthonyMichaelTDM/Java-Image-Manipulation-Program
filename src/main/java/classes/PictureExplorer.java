@@ -25,7 +25,7 @@ import java.util.LinkedList;
  * Also modified to show row and columns by Barbara Ericson
  * Modified to be a fully gui based Image Manipulation program by Anthony Rubick
  * 
- * @author Anthony Michael
+ * @author Anthony Rubick
  */
 public class PictureExplorer implements MouseMotionListener, ActionListener, MouseListener
 {

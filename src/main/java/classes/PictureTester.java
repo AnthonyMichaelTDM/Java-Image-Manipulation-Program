@@ -13,7 +13,7 @@ import java.util.Arrays;
  * methods.  Uncomment the methods and the code
  * in the main to test.
  * 
- * @author Anthony Michael 
+ * @author Anthony Rubick 
  */
 public class PictureTester
 {

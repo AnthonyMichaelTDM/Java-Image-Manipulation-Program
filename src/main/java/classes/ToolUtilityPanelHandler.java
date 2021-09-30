@@ -21,7 +21,7 @@ import java.beans.PropertyChangeEvent;
  * adding it to the GUI, and removeing it when a new tool is selected, before regenerating it
  * 
  * 
- * @author Anthony Michael
+ * @author Anthony Rubick
  */
 public class ToolUtilityPanelHandler extends JPanel
 {

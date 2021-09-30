@@ -12,7 +12,7 @@ import java.io.*;
  * pick a file and returns the chosen file name.
  * based on work by Barbara Ericson ericson@cc.gatech.edu
  * 
- * @author Anthony Michael
+ * @author Anthony Rubick
  */
 public class FileChooser 
 {

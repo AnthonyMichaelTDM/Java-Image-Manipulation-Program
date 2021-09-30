@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * allows the student to add functionality to the Picture class. based on work
  * by Barbara Ericson ericson@cc.gatech.edu
  * 
- * @author Anthony Michael
+ * @author Anthony Rubick
  */
 public class Picture extends SimplePicture {
     ///////////////////// constructors //////////////////////////////////

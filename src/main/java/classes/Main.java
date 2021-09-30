@@ -1,12 +1,9 @@
 package classes;
 
- 
-
-
 /**
  * a main class, for testing and running the program
  *
- * @author Anthony Michael
+ * @author Anthony Rubick
  */
 public class Main
 {

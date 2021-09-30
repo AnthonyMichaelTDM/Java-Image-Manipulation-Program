@@ -11,7 +11,7 @@ import javax.swing.*;
  * every time the user applies a tool, send a call to this class, 
  * letting it save the changes to its image cache
  * 
- * @author Anthony
+ * @author Anthony Rubick
  */
 public class UndoRedoPanel extends JPanel
 {
