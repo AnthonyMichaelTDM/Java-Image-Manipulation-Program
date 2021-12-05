@@ -72,11 +72,7 @@ public class KMeans {
      * @return Collection of new and relocated centroids.
      */
     private static <N extends Number> List<Centroid> relocateCentroids(Map<Centroid, List<Record<N>>> clusters) {
-        return clusters
-          .entrySet()
-          .stream()
-          .map(e -> average(e.getKey(), e.getValue()))
-          .collect(toList());
+        return clusters.entrySet().stream().map(e -> average(e.getKey(), e.getValue())).collect(toList());
     }
 
     /**

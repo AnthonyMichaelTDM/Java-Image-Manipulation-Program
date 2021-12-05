@@ -292,8 +292,8 @@ public class PictureTester
             zedPlusPic.write(pathName + "-zed+-ByJIMP" + extension);
             */
 
-            KMeanPic.simplifyColors(0, false, 1, new Boolean[]{false, false});
-            KMeanPic.write(pathName + "-K-Mean-2" + extension);
+            KMeanPic.simplifyColors(9);
+            KMeanPic.write(pathName + "-K-Mean-ByJIMP" + extension);
 
             n++;
             System.out.println(n + "/" + validPaths.size() + ": done with " + s);

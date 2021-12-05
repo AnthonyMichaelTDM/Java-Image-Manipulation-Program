@@ -370,6 +370,7 @@ public class Picture extends SimplePicture {
             case 1:
                 //run the k-means clustering algorithm
                 //TODO: currently the implementation in the method below works, it's just messy, this implementation occassionally Null pointer errors
+                //issue is that in the first iteration, only 3 clusters are made for whatever reason, this then chops off the amount of centroids
                 //5 clusters, 100 iterations
                 int k = 5;
                 Map<Centroid, List<Record<Integer>>> clusters = KMeans.fit(super.getPixelsRecord(), k, new EuclideanDistance(), 10);
@@ -517,7 +518,10 @@ public class Picture extends SimplePicture {
                 // parse the fiveNumSum colors and compare to background
                 int bestIndex = 0;
                 for (int e = 1; e < colors.length; e++) {
-                    if (currentPixel.colorDistance(colors[e]) < currentPixel
+                    if (currentPixel == null || colors[e] == null) {
+                        //TODO: this is just a hack to stop it from crashing 
+                    }
+                    else if (currentPixel.colorDistance(colors[e]) < currentPixel
                             .colorDistance(colors[bestIndex])) {
                                 bestIndex = e;
                     } // if
@@ -609,6 +613,12 @@ public class Picture extends SimplePicture {
                 // find q1 and q3
                 q1 = pictureColors.get((int) (pictureColors.size() / 4.0));
                 q3 = pictureColors.get((int) (pictureColors.size() * (3.0 / 5.0)));
+
+                fiveNumSumColors[0] = new Color(min);
+                fiveNumSumColors[1] = new Color(q1);
+                fiveNumSumColors[2] = new Color(med);
+                fiveNumSumColors[3] = new Color(q3);
+                fiveNumSumColors[4] = new Color(max);
             break;
 
             /** balance+ */
@@ -639,6 +649,12 @@ public class Picture extends SimplePicture {
                 // find q1 and q3
                 q1 = pictureColors.get((int) (pictureColors.size() / 4.0));
                 q3 = pictureColors.get((int) (pictureColors.size() * (3.0 / 5.0)));
+
+                fiveNumSumColors[0] = new Color(min);
+                fiveNumSumColors[1] = new Color(q1);
+                fiveNumSumColors[2] = new Color(med);
+                fiveNumSumColors[3] = new Color(q3);
+                fiveNumSumColors[4] = new Color(max);
             break;
             
             /** grayscale */
@@ -700,7 +716,12 @@ public class Picture extends SimplePicture {
                     Math.abs((int) (meanGreen + sdGreen)%255), 
                     Math.abs((int) (meanBlue + sdBlue)%255))
                     ).getRGB();
-                        
+                
+                fiveNumSumColors[0] = new Color(min);
+                fiveNumSumColors[1] = new Color(q1);
+                fiveNumSumColors[2] = new Color(med);
+                fiveNumSumColors[3] = new Color(q3);
+                fiveNumSumColors[4] = new Color(max);
             break;
             
             /** Zed+ */
@@ -760,6 +781,11 @@ public class Picture extends SimplePicture {
                 q1 = pictureColors.get((int) (pictureColors.size() / 4.0));
                 q3 = pictureColors.get((int) (pictureColors.size() * (3.0 / 5.0)));
 
+                fiveNumSumColors[0] = new Color(min);
+                fiveNumSumColors[1] = new Color(q1);
+                fiveNumSumColors[2] = new Color(med);
+                fiveNumSumColors[3] = new Color(q3);
+                fiveNumSumColors[4] = new Color(max);
             break;
             /* k-means */
             case 9:
@@ -767,7 +793,7 @@ public class Picture extends SimplePicture {
                 DataAnalysisTools.removeDuplicates(pictureColors);
 
                 //first step, create 5 random 3d (corresponding to r,g,b) points (centroids) with coordinates between min and max rbg values
-                int nC = 5; //number of centroids to use
+                int nC = 10; //number of centroids to use
                 int nK = 10; //number of iterations
                 Color[] centroids = new Color[nC];
                 for (int n=0;n<nC;n++) { //forgy initialization method, choose random colors from the image as starting points
@@ -818,11 +844,7 @@ public class Picture extends SimplePicture {
                     }
                 }
                 //assign colors from centroids
-                min = centroids[0].getRGB();
-                q1  = centroids[1].getRGB();
-                med = centroids[2].getRGB();
-                q3  = centroids[3].getRGB();
-                max = centroids[4].getRGB();
+                fiveNumSumColors = centroids;
             break;
             /** others */
             default:
@@ -836,13 +858,14 @@ public class Picture extends SimplePicture {
                 // find q1 and q3
                 q1 = pictureColors.get((int) (pictureColors.size() / 4.0));
                 q3 = pictureColors.get((int) (pictureColors.size() * (3.0 / 5.0)));
+                
+                fiveNumSumColors[0] = new Color(min);
+                fiveNumSumColors[1] = new Color(q1);
+                fiveNumSumColors[2] = new Color(med);
+                fiveNumSumColors[3] = new Color(q3);
+                fiveNumSumColors[4] = new Color(max);
             break;
         } // switch-case
-        fiveNumSumColors[0] = new Color(min);
-        fiveNumSumColors[1] = new Color(q1);
-        fiveNumSumColors[2] = new Color(med);
-        fiveNumSumColors[3] = new Color(q3);
-        fiveNumSumColors[4] = new Color(max);
 
         // generate colors
         // do something different depending on the mode
@@ -858,7 +881,6 @@ public class Picture extends SimplePicture {
             break;
             /* others */
             default:
-                // generate the colors
                 colors = fiveNumSumColors;
             break;
         } // switch-case
