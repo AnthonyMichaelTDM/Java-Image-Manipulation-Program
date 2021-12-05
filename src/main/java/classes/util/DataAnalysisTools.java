@@ -50,11 +50,7 @@ public class DataAnalysisTools {
         //find standard deviation
         // mean
         for (N i : data) {
-<<<<<<< HEAD
             sum += i.doubleValue();
-=======
-            sum += (double) i;
->>>>>>> 1429126a08f69adec284aa273ce204a6224b32f5
         } // for
         mean = sum / n;
 
@@ -62,11 +58,7 @@ public class DataAnalysisTools {
         // sum((x-mean)^2)
         for (N i : data) {
             // (x-mean)^2
-<<<<<<< HEAD
-            sumXMinusMeanSquared += Math.pow(i.doubleValue() - mean, 2);
-=======
             sumXMinusMeanSquared += Math.pow((double)i - mean, 2);
->>>>>>> 1429126a08f69adec284aa273ce204a6224b32f5
         } // for
         sd = Math.sqrt(sumXMinusMeanSquared / n);
 
@@ -79,24 +71,15 @@ public class DataAnalysisTools {
      * @param data collection to analyze
      * @return mean of the data collection 
      */
-<<<<<<< HEAD
     public static <N extends Number> double calcMean(Collection<N> data) {
-=======
-    public static double calcMean(Collection<Integer> data) {
->>>>>>> 1429126a08f69adec284aa273ce204a6224b32f5
         //DATA
         int sum = 0;
         int n = data.size();
         double mean = 0.0f;
 
         //find mean
-<<<<<<< HEAD
         for (N i : data) {
             sum += i.doubleValue();
-=======
-        for (int i : data) {
-            sum += i;
->>>>>>> 1429126a08f69adec284aa273ce204a6224b32f5
         } // for
         mean = sum / n;
         
