@@ -2,11 +2,18 @@ package classes;
 
 
 import javax.imageio.ImageIO;
+
+import classes.util.kmeans.Record;
+
 import java.awt.image.BufferedImage;
 //import javax.swing.ImageIcon;
 import java.awt.*;
 import java.io.*;
 import java.awt.geom.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * A class that represents a simple picture.  A simple picture may have
@@ -341,6 +348,35 @@ public class SimplePicture implements DigitalPicture
                 pixelArray[row * width + col] = new Pixel(this,col,row);
 
         return pixelArray;
+    }
+
+    /**
+     * method to get a list of records representing the pixels for this simple picture
+     * @return list of Records, records are used as another way to store pixel color data
+     */
+    public List<Record<Integer>> getPixelsRecord() {
+        //DATA
+        List<Record<Integer>> pixelList = new ArrayList<Record<Integer>>();
+        int width = getWidth();
+        int height = getHeight();
+
+        //loop through height rows from top to bottom
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+                //create the record
+                Pixel curPix = new Pixel(this,col,row);
+                Map<String, Integer> pixelMap = new HashMap<String, Integer>();
+                pixelMap.put("red",  curPix.getRed());
+                pixelMap.put("green",curPix.getGreen());
+                pixelMap.put("blue", curPix.getBlue());
+                Record<Integer> pixelRecord = new Record<Integer>("("+col+","+row+")" ,pixelMap);
+
+                //add record to list
+                pixelList.add(pixelRecord);
+            }
+        }
+
+        return pixelList;
     }
 
     /**

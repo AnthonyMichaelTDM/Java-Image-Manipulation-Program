@@ -1,12 +1,18 @@
 package classes;
 
+import classes.util.*;
+import classes.util.kmeans.Centroid;
+import classes.util.kmeans.EuclideanDistance;
+import classes.util.kmeans.KMeans;
+import classes.util.kmeans.Record;
+
 import java.awt.*;
 //import java.awt.font.*;
 //import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 //import java.text.*;
 import java.util.*;
-//import java.util.List; // resolves problem with java.awt.List and java.util.List
+import java.util.List; // resolves problem with java.awt.List and java.util.List
 import java.util.ArrayList;
 
 /**
@@ -262,7 +268,7 @@ public class Picture extends SimplePicture {
      * 
      * @param sortMode method used to sort the colors in the image, 0=hue, 1=z-score, 2=integer representation (raw)
      * @param removeDuplicates whether or not to remove duplicates from the list of colors (done before sort)
-     * @param colorGenMode method used to generate colors, 0=5 num sum, 1=SD + mean
+     * @param colorGenMode method used to generate colors, 0=5 num sum, 1=k-mean, 2=SD + mean
      * @param specialOperations which special operations to apply at end (a boolean array, where true/false at following indexes represent whether or not to apply the operation), 0=grayscale, 1=invert,
      */
     public void simplifyColors(int sortMode, boolean removeDuplicates, int colorGenMode, Boolean[] specialOperations) {
@@ -281,126 +287,72 @@ public class Picture extends SimplePicture {
             } // for
         } // for
 
-        //if they want duplicates removed, do so
-        if (removeDuplicates) {
-            //DATA
-            Set<Integer> colorSet;
-            
-            // remove duplicates from picture colors using a hashset
-            // Create a new LinkedHashSet
-            colorSet = new LinkedHashSet<>();
-            // Add The elements to set
-            colorSet.addAll(pictureColors);
-            // Clear the list
-            pictureColors.clear();
-            // add the elements of set
-            // with no duplicates to the list
-            pictureColors.addAll(colorSet);
+        //if they want duplicates removed, do so, also do this if color gen is set to k-means
+        if (removeDuplicates || colorGenMode==1) {
+            DataAnalysisTools.removeDuplicates(pictureColors);
         } //removeDuplicates if
 
-        //sort picture colors based on how the user wants them sorted
-        //0=hue, 1=z-score, 2=integer representation (raw)
-        switch (sortMode) {
-            case 0:
-                //sort by hue    
-                Collections.sort(pictureColors, new Comparator<Integer>() {
-                    @Override
-                    public int compare(Integer o1, Integer o2) {
-                        // DATA
-                        Color c1 = new Color(o1);
-                        int[] c1HSB = getHSB(c1.getRed(), c1.getGreen(), c1.getBlue());
-                        Color c2 = new Color(o2);
-                        int[] c2HSB = getHSB(c2.getRed(), c2.getGreen(), c2.getBlue());
 
-                        // rank by hue
-                        return (int) (c1HSB[0] * 255) - (int) (c2HSB[0] * 255);
-                    } // public int compare
+        if (colorGenMode != 1) //skip sorting if using the k-means color gen method
+        { 
+            //sort picture colors based on how the user wants them sorted
+            //0=hue, 1=z-score, 2=integer representation (raw)
+            switch (sortMode) {
+                case 0:
+                    //TODO: refactor this comparator into a util class
+                    //sort by hue    
+                    Collections.sort(pictureColors, new Comparator<Integer>() {
+                        @Override
+                        public int compare(Integer o1, Integer o2) {
+                            // DATA
+                            Color c1 = new Color(o1);
+                            Color c2 = new Color(o2);
+                            // rank by hue
+                            return ColorTools.getHue(c1.getRed(), c1.getGreen(), c1.getBlue()) - ColorTools.getHue(c2.getRed(), c2.getGreen(), c2.getBlue());
+                        } // public int compare
+                    });
+                    break;
+                case 1:
+                    //sort by z-scores
+                    //DATA
+                    final double mean = DataAnalysisTools.calcMean(pictureColors); //made final so the lamda function can use it
+                    final double sd = DataAnalysisTools.calcStandardDeviation(pictureColors); //made final so the lamda function can use it
+                    //TODO: refactor this comparator into a util class
+                    //sort by z-score
+                    Collections.sort(pictureColors, new Comparator<Integer>() {
+                        @Override
+                        public int compare(Integer c1, Integer c2) {
+                            // DATA
+                            double z1, z2;
 
-                    public int[] getHSB(int r, int g, int b) {
-                        float cmax = Math.max(r, Math.max(g, b));
-                        float cmin = Math.min(r, Math.min(g, b));
-                        float deltaC = cmax - cmin;
-                        float sumC = cmax + cmin;
-                        float h;
-                        float s = 0;
-                        float l; //brightness, luminence
-                        //find hue as a fraction
-                        if (cmax == r) {
-                            h = (((g - b) / deltaC) % 6);
-                        } else if (cmax == g) {
-                            h = (((b - r) / deltaC) + 2);
-                        } else {
-                            h = (((r - g) / deltaC) + 4);
-                        } // if else-if else
-                        //convert hue to degrees
-                        h = (h*60 + 360) % 360;
+                            // find z scores of each z=(x-mean)/SD;
+                            z1 = (c1 - mean) / sd;
+                            z2 = (c2 - mean) / sd;
 
-                        //find brightness
-                        l = (sumC) / 2;
+                            // do abs value
+                            z1 = Math.abs(z1);
+                            z2 = Math.abs(z2);
 
-                        //find saturation
-                        if (l <= 0.5f) s=deltaC/sumC;
-                        else s = deltaC/(2.0f-deltaC);
-                        // re-scale
-                        int[] returnValue = new int[3];
-                        returnValue[0] = (int) (h/255);
-                        returnValue[1] = (int) (s / 255);
-                        returnValue[2] = (int) (cmax / 255);
-                        return returnValue;
-                    } // public int[] getHSV
-                });
-                break;
-            case 1:
-                //sort by z-scores
-                //DATA
-                float sum=0.0f;
-                double sumXMinusMeanSquared=0.0;
-                //find mean and standard deviation
-                //mean
-                for (int c : pictureColors) {
-                    sum += c;
-                }//for
-                final float mean = sum/pictureColors.size(); //made final so the lamda function can use it
-                //standard deviation sqrt( sum( (x-mean)^2 ) / n )
-                // sum((x-mean)^2)
-                for (int c : pictureColors) {
-                    // (x-mean)^2
-                    sumXMinusMeanSquared += Math.pow(c-mean,2);
-                }//for
-                final double sd = Math.sqrt(sumXMinusMeanSquared/pictureColors.size()); //made final so the lamda function can use it
-                //sort by z-score
-                Collections.sort(pictureColors, new Comparator<Integer>() {
-                    @Override
-                    public int compare(Integer c1, Integer c2) {
-                        // DATA
-                        double z1, z2;
-
-                        // find z scores of each z=(x-mean)/SD;
-                        z1 = (c1 - mean) / sd;
-                        z2 = (c2 - mean) / sd;
-
-                        // do abs value
-                        z1 = Math.abs(z1);
-                        z2 = Math.abs(z2);
-
-                        // rank by z-score
-                        if (z1 > z2)
-                            return 1;
-                        else if (z1 < z2)
-                            return -1;
-                        else
-                            return 0;
-                    } // public int compare
-                });
-                break;
-            default:
-                //generic sort of integer representations of colors
-                Collections.sort(pictureColors);
-                break;
-        } //sortMode switch
+                            // rank by z-score
+                            if (z1 > z2)
+                                return 1;
+                            else if (z1 < z2)
+                                return -1;
+                            else
+                                return 0;
+                        } // public int compare
+                    });
+                    break;
+                case 2:
+                default:
+                    //generic sort of integer representations of colors
+                    Collections.sort(pictureColors);
+                    break;
+            } //sortMode switch
+        }
 
         //generate colors based on colorGenMode
-        //0=5 num sum, 1=SD + mean
+        //0=5 num sum, 1=k-means clustering, 2=SD + mean
         switch (colorGenMode) {
             case 0: 
                 // find the five num sum
@@ -416,6 +368,25 @@ public class Picture extends SimplePicture {
                 colors[4] = new Color(pictureColors.get(pictureColors.size() - 1));
                 break;
             case 1:
+                //run the k-means clustering algorithm
+                //5 clusters, 100 iterations
+                int k = 5;
+                Map<Centroid, List<Record<Integer>>> clusters = KMeans.fit(super.getPixelsRecord(), k, new EuclideanDistance(), 10);
+
+                //assign colors from clusters
+                colors = new Color[k];
+                int i = 0;
+                for (Centroid centroid : clusters.keySet()) {
+                    int r,g,b;
+                    r = centroid.getCoordinates().get("red").intValue();
+                    g = centroid.getCoordinates().get("green").intValue();
+                    b = centroid.getCoordinates().get("blue").intValue();
+
+                    colors[i] = new Color( r,g,b );
+                    i++;
+                }
+                break;
+            case 2:
             default:
                 //either do SD+mean stuff with r,g,and b color channels, or the hue,sat, and brightness channels, depending on what user chose for sorting
                 //0 = hue, else = rgb channels
@@ -432,56 +403,24 @@ public class Picture extends SimplePicture {
                         for (int c : pictureColors) {
                             Color color = new Color(c);
                             float r=color.getRed()/255.0f,g=color.getGreen()/255.0f,b=color.getBlue()/255.0f;
-                            //actually find the hue, also store it for later use
-                            float cmax = Math.max(r, Math.max(g, b));
-                            float cmin = Math.min(r, Math.min(g, b));
-                            float deltaC = cmax - cmin + 0.0001f;
-                            float sumC = cmax + cmin;
-                            float h,s,l;
-                            //find hue as a fraction
-                            if (cmax == r) {
-                                h = (((g - b + 0.0001f) / deltaC) % 6);
-                            } else if (cmax == g) {
-                                h = (((b - r + 0.0001f) / deltaC) + 2);
-                            } else {
-                                h = (((r - g + 0.0001f) / deltaC) + 4);
-                            } // if else-if else
-                            //h = (h*60 + 360) % 360;//convert to degrees
-                            //find brightness
-                            l = (sumC) / 2;
-
-                            //find saturation
-                            if ( Math.abs(cmax - cmin) < 0.0001) s = 0; //if min and max are close enough
-                            else if (l <= 0.5f) s=deltaC/sumC;
-                            else s = deltaC/(2.0f-deltaC);
+                            float[] hsl = ColorTools.getHSB(r, g, b);
                             //add to lists for reference later
-                            hueList.add(h);
-                            saturationList.add(s);
-                            brightnessList.add(l);
-                            //System.out.println("H: " + h + "; S: " + s + "; B: " + b);
-
-                            
+                            hueList.add(hsl[0]);
+                            saturationList.add(hsl[1]);
+                            brightnessList.add(hsl[2]);
                             //sum up for mean
-                            meanH += h;
-                            meanS += s;
-                            meanB += b;
+                            meanH += hsl[0];
+                            meanS += hsl[1];
+                            meanB += hsl[2];
                         }//mean loop
                         meanH /= hueList.size();
                         meanS /= saturationList.size();
                         meanB /= brightnessList.size();
                         
-                        //find sd sqrt( sum( (x-mean)^2 ) / n )
-                        // sum((x-mean)^2)
-                        for (int i = 0; i < pictureColors.size(); i++) {
-                            // (x-mean)^2
-                            sdH += Math.pow(hueList.get(i) - meanH, 2);
-                            sdS += Math.pow(saturationList.get(i) - meanS, 2);
-                            sdB += Math.pow(brightnessList.get(i) - meanB, 2);
-                        } // for
-                        // sqrt( */n )
-                        sdH = Math.sqrt( sdH/hueList.size());
-                        sdS = Math.sqrt( sdS/saturationList.size());
-                        sdB = Math.sqrt( sdB/brightnessList.size());
+                        //sd
+                        sdH = DataAnalysisTools.calcStandardDeviation(hueList);
+                        sdS = DataAnalysisTools.calcStandardDeviation(saturationList);
+                        sdB = DataAnalysisTools.calcStandardDeviation(brightnessList);
 
                         //gen 5 colors
                         colors[0] = Color.getHSBColor(
@@ -514,14 +453,19 @@ public class Picture extends SimplePicture {
                         
                         break;
                     default:
-                        // find mean and standard deviation for each color channel, then create colors
-                        // with that
+                        // find mean and standard deviation for each color channel, then create colors with that
+                        ArrayList<Integer> rList = new ArrayList<Integer>();
+                        ArrayList<Integer> gList = new ArrayList<Integer>();
+                        ArrayList<Integer> bList = new ArrayList<Integer>();
                         float meanRed = 0, meanGreen = 0, meanBlue = 0;
                         double sdRed = 0, sdGreen = 0, sdBlue = 0;
 
                         // find mean of each color channel
                         for (int color : pictureColors) {
                             Color c = new Color(color);
+                            rList.add(c.getRed());
+                            gList.add(c.getGreen());
+                            bList.add(c.getBlue());
                             // sum each color channel
                             meanRed += c.getRed();
                             meanGreen += c.getGreen();
@@ -532,19 +476,9 @@ public class Picture extends SimplePicture {
                         meanGreen /= pictureColors.size();
                         meanBlue /= pictureColors.size();
 
-                        // find standard deviation of each color channel sqrt( sum( (x-mean)^2 ) / n )
-                        // sum((x-mean)^2)
-                        for (int color : pictureColors) {
-                            Color c = new Color(color);
-                            // (x-mean)^2
-                            sdRed += Math.pow(c.getRed() - meanRed, 2);
-                            sdGreen += Math.pow(c.getGreen() - meanGreen, 2);
-                            sdBlue += Math.pow(c.getBlue() - meanBlue, 2);
-                        } // for
-                        // sqrt ( * / n )
-                        sdRed = Math.sqrt(sdRed/pictureColors.size());
-                        sdGreen = Math.sqrt(sdGreen/pictureColors.size());
-                        sdBlue = Math.sqrt(sdBlue/pictureColors.size());
+                        sdRed = DataAnalysisTools.calcStandardDeviation(rList);
+                        sdGreen = DataAnalysisTools.calcStandardDeviation(gList);
+                        sdBlue = DataAnalysisTools.calcStandardDeviation(bList);
                         // create 5 colors with mean and sd
                         // mean
                         colors[2] = new Color((int) (meanRed), (int) (meanGreen), (int) (meanBlue));
@@ -614,6 +548,7 @@ public class Picture extends SimplePicture {
      6 = SD+mean: numbers are based off of the mean and standard deviation of the RGB color channels 
      7 = Zed: numbers are the 5 number summary of all pixel's colors, sorted by their z-scores 
      8 = Zed+: 7, but duplicate values are removed
+     9 = K-means: uses an implementation of the k-means algorithm to calculate the colors
      */
     /**
      * this method simplifies an image to five colors, how the colors are chosen
@@ -632,7 +567,6 @@ public class Picture extends SimplePicture {
         // variables for 5 number summaries
         int min = 0, q1 = 0, med = 0, q3 = 0, max = 0;
         Color[] fiveNumSumColors = new Color[5];
-        Set<Integer> colorSet;
         // 5 colors
         Color[] colors = new Color[5];
 
@@ -660,16 +594,8 @@ public class Picture extends SimplePicture {
             case 3:
                 // find 5 num sum, this time summarize the occurances of each color rather than
                 // the colors themselves
-                // remove duplicates from picture colors using a hashset
-                // Create a new LinkedHashSet
-                colorSet = new LinkedHashSet<>();
-                // Add The elements to set
-                colorSet.addAll(pictureColors);
-                // Clear the list
-                pictureColors.clear();
-                // add the elements of set
-                // with no duplicates to the list
-                pictureColors.addAll(colorSet);
+                // remove duplicates from picture colors
+                DataAnalysisTools.removeDuplicates(pictureColors);
                 // sort the array
                 Collections.sort(pictureColors);
 
@@ -688,57 +614,20 @@ public class Picture extends SimplePicture {
             case 5:
                 // find 5 num sum, this time summarize the occurances of each color rather than
                 // the colors themselves
-                // remove duplicates from picture colors using a hashset
-                // *// Create a new LinkedHashSet
-                colorSet = new LinkedHashSet<>();
-                // Add The elements to set
-                colorSet.addAll(pictureColors);
-                // Clear the list
-                pictureColors.clear();
-                // add the elements of set
-                // with no duplicates to the list
-                pictureColors.addAll(colorSet);
-
-            
+                // remove duplicates from picture colors
+                DataAnalysisTools.removeDuplicates(pictureColors);
             /** balance */
             case 4:
                 // sort the array
                 Collections.sort(pictureColors, new Comparator<Integer>() {
                     @Override
-                    public int compare(Integer o1, Integer o2) {
-                        // DATA
-                        Color c1 = new Color(o1);
-                        int[] c1HSB = getHSV(c1.getRed(), c1.getGreen(), c1.getBlue());
-                        Color c2 = new Color(o2);
-                        int[] c2HSB = getHSV(c2.getRed(), c2.getGreen(), c2.getBlue());
-
-                        // rank by hue
-                        return (int) (c1HSB[0] * 255) - (int) (c2HSB[0] * 255);
-                    } // public int compare
-
-                    public int[] getHSV(int r, int g, int b) {
-                        float cmax = Math.max(r, Math.max(g, b));
-                        float cmin = Math.min(r, Math.min(g, b));
-                        float deltaC = cmax - cmin;
-                        float h;
-                        if (cmax == r) {
-                            h = (((g - b) / deltaC) % 6) * 60;
-                        } else if (cmax == g) {
-                            h = (((b - r) / deltaC) + 2) * 60;
-                        } else {
-                            h = (((r - g) / deltaC) + 4) * 60;
-                        } // if else-if else
-                        float s = 0;
-                        if (cmax != 0) {
-                            s = deltaC / cmax;
-                        } // if
-                        int[] returnValue = new int[3];
-                        // re-scale
-                        returnValue[0] = (int) h / 255;
-                        returnValue[1] = (int) s / 255;
-                        returnValue[2] = (int) cmax / 255;
-                        return returnValue;
-                    } // public int[] getHSV
+                        public int compare(Integer o1, Integer o2) {
+                            // DATA
+                            Color c1 = new Color(o1);
+                            Color c2 = new Color(o2);
+                            // rank by hue
+                            return ColorTools.getHue(c1.getRed(), c1.getGreen(), c1.getBlue()) - ColorTools.getHue(c2.getRed(), c2.getGreen(), c2.getBlue());
+                        } // public int compare
                 });
                 // find the five num sum
                 // find the median
@@ -757,12 +646,19 @@ public class Picture extends SimplePicture {
             case 6:
                 // find mean and standard deviation for each color channel, then create colors
                 // with that
+                ArrayList<Integer> rList = new ArrayList<Integer>();
+                ArrayList<Integer> gList = new ArrayList<Integer>();
+                ArrayList<Integer> bList = new ArrayList<Integer>();
                 float meanRed = 0, meanGreen = 0, meanBlue = 0;
                 double sdRed = 0, sdGreen = 0, sdBlue = 0;
+                
 
                 // find mean of each color channel
                 for (int color : pictureColors) {
                     Color c = new Color(color);
+                    rList.add(c.getRed());
+                    gList.add(c.getGreen());
+                    bList.add(c.getBlue());
                     // sum each color channel
                     meanRed += c.getRed();
                     meanGreen += c.getGreen();
@@ -773,28 +669,10 @@ public class Picture extends SimplePicture {
                 meanGreen /= pictureColors.size();
                 meanBlue /= pictureColors.size();
 
-                // find standard deviation of each color channel sqrt( sum( (x-mean)^2 ) / n )
-                // sum((x-mean)^2)
-                for (int color : pictureColors) {
-                    Color c = new Color(color);
-                    // (x-mean)^2
-                    sdRed += Math.pow(c.getRed() - meanRed, 2);
-                    sdGreen += Math.pow(c.getGreen() - meanGreen, 2);
-                    sdBlue += Math.pow(c.getBlue() - meanBlue, 2);
-                } // for
-                  // /n
-                sdRed /= pictureColors.size();
-                sdGreen /= pictureColors.size();
-                sdBlue /= pictureColors.size();
-                // sqrt
-                sdRed = Math.sqrt(sdRed);
-                sdGreen = Math.sqrt(sdGreen);
-                sdBlue = Math.sqrt(sdBlue);
-                
-                // print out means and SDs for debugging, remove this later
-                //System.out.println("Means:\nred: " + meanRed + "; green " + meanGreen + "; blue " + meanBlue);
-                //System.out.println("Standard Deviations:\nred: " + sdRed + "; green " + sdGreen + "; blue " + sdBlue);
-                
+                // sd
+                sdRed = DataAnalysisTools.calcStandardDeviation(rList);
+                sdGreen = DataAnalysisTools.calcStandardDeviation(gList);
+                sdBlue = DataAnalysisTools.calcStandardDeviation(bList);
                 
                 // create 5 colors with mean and sd
                 // mean
@@ -826,16 +704,8 @@ public class Picture extends SimplePicture {
             
             /** Zed+ */
             case 7:
-                // remove duplicates from picture colors using a hashset
-                // *// Create a new LinkedHashSet
-                colorSet = new LinkedHashSet<>();
-                // Add The elements to set
-                colorSet.addAll(pictureColors);
-                // Clear the list
-                pictureColors.clear();
-                // add the elements of set
-                // with no duplicates to the list
-                pictureColors.addAll(colorSet);
+                // remove duplicates from picture colors
+                DataAnalysisTools.removeDuplicates(pictureColors);
             /** Zed */
             case 8:
                 //DATA
@@ -890,7 +760,69 @@ public class Picture extends SimplePicture {
                 q3 = pictureColors.get((int) (pictureColors.size() * (3.0 / 5.0)));
 
             break;
-        
+            /* k-means */
+            case 9:
+                //remove duplicates 
+                DataAnalysisTools.removeDuplicates(pictureColors);
+
+                //first step, create 5 random 3d (corresponding to r,g,b) points (centroids) with coordinates between min and max rbg values
+                int nC = 5; //number of centroids to use
+                int nK = 10; //number of iterations
+                Color[] centroids = new Color[nC];
+                for (int n=0;n<nC;n++) { //forgy initialization method, choose random colors from the image as starting points
+                    centroids[n] = new Color(pictureColors.get( (int)(Math.random() * pictureColors.size() - 1)) );
+                }
+                
+                ArrayList<ArrayList<Integer> > centroidAssignments = new ArrayList<ArrayList<Integer>>(); //colors assigned to the centroids
+                for (int n=0;n<nC;n++) centroidAssignments.add(new ArrayList<Integer>());
+
+                //(repeat for the number of iterations or until # of assignments per centroid no longer changes)
+                //max iterations (k) = 10
+                for (int i = 0; i < nK; i++) {
+                    //go through every coordinate (color) and assign it to it's nearest centroid
+                    for (int c : pictureColors) {
+                        Color color = new Color(c);
+                        int nearest = 0; //index of best match in the centroids array
+                        double minDistance = Double.MAX_VALUE; //distance from best match
+
+                        //find euclidien distance
+                        for (int j = 0; j < centroids.length; j++) {
+                            double distance = Math.sqrt(
+                                Math.pow(color.getRed()-centroids[j].getRed(),2) + Math.pow(color.getGreen()-centroids[j].getGreen(),2) + Math.pow(color.getBlue()-centroids[j].getBlue(),2)
+                            );
+
+                            if (distance < minDistance) {
+                                minDistance = distance;
+                                nearest = j;
+                            }
+                        }
+
+                        //assign
+                        centroidAssignments.get(nearest).add(c); 
+                    }
+
+                    //relocate the centroid to the middle (mean) of its assignments
+                    for (int j = 0; j < centroids.length; j++) { //parse the centroids and their assignments
+                        int sumR = 0;
+                        int sumG = 0;
+                        int sumB = 0;
+                        for (int c : centroidAssignments.get(j)) {
+                            Color color = new Color(c);
+                            sumR += color.getRed();
+                            sumG += color.getGreen();
+                            sumB += color.getBlue();
+                        }
+                        int n = centroidAssignments.get(j).size();
+                        centroids[j] = new Color(sumR/n, sumG/n, sumB/n);
+                    }
+                }
+                //assign colors from centroids
+                min = centroids[0].getRGB();
+                q1  = centroids[1].getRGB();
+                med = centroids[2].getRGB();
+                q3  = centroids[3].getRGB();
+                max = centroids[4].getRGB();
+            break;
             /** others */
             default:
                 // sort the array
@@ -923,7 +855,6 @@ public class Picture extends SimplePicture {
                     colors[i] = Color.getHSBColor((float) (hsbValues[0] + (0.2 * i)) % 1, hsbValues[1], hsbValues[2]);
                 } // for
             break;
-
             /* others */
             default:
                 // generate the colors
