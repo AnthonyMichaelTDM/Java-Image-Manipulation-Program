@@ -369,7 +369,10 @@ public class Picture extends SimplePicture {
                 break;
             case 1:
                 //run the k-means clustering algorithm
+<<<<<<< HEAD
                 //TODO: currently the implementation in the method below works, it's just messy, this implementation occassionally Null pointer errors
+=======
+>>>>>>> 1429126a08f69adec284aa273ce204a6224b32f5
                 //5 clusters, 100 iterations
                 int k = 5;
                 Map<Centroid, List<Record<Integer>>> clusters = KMeans.fit(super.getPixelsRecord(), k, new EuclideanDistance(), 10);
