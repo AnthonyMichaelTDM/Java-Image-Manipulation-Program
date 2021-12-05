@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import classes.util.kmeans.KMeans;
+
 //import javax.swing.JFileChooser;
 //import java.io.*;
 
@@ -143,6 +145,7 @@ public class PictureTester
         Picture sdMeanPic = new Picture(basePic);
         Picture zedPic = new Picture(basePic);
         Picture zedPlusPic = new Picture(basePic);
+        Picture KMeanPic = new Picture (basePic);
         String extension = basePic.getFileName().substring(basePic.getFileName().lastIndexOf("."));
         String pathName = basePic.getFileName().substring(0, basePic.getFileName().lastIndexOf("."));
         
@@ -174,6 +177,11 @@ public class PictureTester
         zedPlusPic.simplifyColors(8);
         zedPlusPic.write(pathName + "-zed+" + extension);
 
+        KMeanPic.simplifyColors(9);
+        KMeanPic.write(pathName + "-K-Mean" + extension);
+
+
+
         System.out.println("done");
 
         testSimplifyColors();
@@ -189,7 +197,7 @@ public class PictureTester
         File file = new File(fileOrDirectoryPath);
         ArrayList<String> names = new ArrayList<String>(), validPaths = new ArrayList<String>();
         boolean isDirectory = false;
-        Picture basePic, grayPic, grayscalePic, faithfulPic, faithfullPlusPic, BalancePic, BalancePlusPic, sdMeanPic, zedPic, zedPlusPic;
+        Picture basePic, grayPic, grayscalePic, faithfulPic, faithfullPlusPic, BalancePic, BalancePlusPic, sdMeanPic, zedPic, zedPlusPic,KMeanPic;
         String extension, pathName;
         int n=0;
 
@@ -245,10 +253,12 @@ public class PictureTester
             sdMeanPic = new Picture(basePic);
             zedPic = new Picture(basePic);
             zedPlusPic = new Picture(basePic);
+            KMeanPic = new Picture(basePic);
             extension = basePic.getFileName().substring(basePic.getFileName().lastIndexOf("."));
             pathName = basePic.getFileName().substring(0, basePic.getFileName().lastIndexOf("."));
         
             //apply filters and save
+            /*
             grayPic.simplifyColors(1);
             grayPic.write(pathName + "-gray-ByJIMP" + extension);
 
@@ -280,6 +290,10 @@ public class PictureTester
 
             zedPlusPic.simplifyColors(8);
             zedPlusPic.write(pathName + "-zed+-ByJIMP" + extension);
+            */
+
+            KMeanPic.simplifyColors(0, false, 1, new Boolean[]{false, false});
+            KMeanPic.write(pathName + "-K-Mean-2" + extension);
 
             n++;
             System.out.println(n + "/" + validPaths.size() + ": done with " + s);
@@ -319,7 +333,7 @@ public class PictureTester
         //testCopy2();
         //testEdgeDetection();
         //testEdgeDetection2();
-        testSimplifyColors();
+        //testSimplifyColors();
         //testBolden();
         //testChromakey();
         //testEncodeAndDecode();
@@ -328,6 +342,8 @@ public class PictureTester
         //testClearBlueOverValue(200);
         //testGetAverageForColumn(0);
         //createWallpapers("" + FileChooser.getMediaDirectory() + "Backgrounds" + System.getProperty("file.separator"));
+
+        createWallpapers("" + FileChooser.getMediaDirectory() + "pixlab-images" + System.getProperty("file.separator") + "Backgrounds" + System.getProperty("file.separator"));
     }
 
     ////////////////////// tester methods i made ///////////////////////////////////////

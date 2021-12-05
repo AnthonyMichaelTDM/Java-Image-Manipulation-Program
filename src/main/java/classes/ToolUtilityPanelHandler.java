@@ -717,7 +717,7 @@ public class ToolUtilityPanelHandler extends JPanel
         //generation method
         JPanel genMethodPanel = new JPanel(new BorderLayout());
         JLabel genMethodLabel = new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", 150, " \nselect color gen method:"));
-        JComboBox<String> genMethodSelection = new JComboBox<String>(new String[]{"5 num sum", "mean + SD"});
+        JComboBox<String> genMethodSelection = new JComboBox<String>(new String[]{"5 num sum", "k-means clustering", "mean + SD"});
         //genMethodPanel.setPreferredSize(new Dimension(150, 90));
         genMethodSelection.setSelectedIndex(0);
         genMethodPanel.add(BorderLayout.NORTH, genMethodLabel);

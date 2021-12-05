@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.image.*;
-import java.util.LinkedList;
+//import java.util.LinkedList;
 //import javax.swing.border.*;
 //import javax.swing.event.*;
 //import javax.swing.text.*;
