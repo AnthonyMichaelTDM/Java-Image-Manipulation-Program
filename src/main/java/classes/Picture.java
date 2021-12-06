@@ -261,6 +261,54 @@ public class Picture extends SimplePicture {
         return;
     } // darken
 
+    /**
+     * simplifies an image to a given number of colors using the k-means clustering algorithm
+     * @param k number of clusters
+     * @param maxIterations maximum number of iterations of k-means to do
+     */
+    public void kMeansSimplify(int k, int maxIterations) {
+        //data
+        // data
+        Pixel currentPixel = null;
+        Pixel[][] pixels = this.getPixels2D();
+        Map<Centroid, List<Record<Integer>>> clusters; //most prevalant color groups as returned by KMeans
+        Color[] colors = new Color[k]; //most prevalent colors
+        int i; //used as in a later for loop
+        
+        
+        
+        //call to KMeans class passing the images colors
+        clusters = KMeans.fit(super.getPixelsRecord(), k, new EuclideanDistance(), 10);
+        
+        //extract the colors from colors
+        i=0;
+        for (Centroid centroid : clusters.keySet()) {
+            int r,g,b;
+            r = centroid.getCoordinates().get("red").intValue();
+            g = centroid.getCoordinates().get("green").intValue();
+            b = centroid.getCoordinates().get("blue").intValue();
+        
+            colors[i] = new Color( r,g,b );
+            i++;
+        }// for
+        
+        for (int row = 0; row < pixels.length; row++) {
+            for (int col = 0; col < pixels[0].length; col++) {
+                currentPixel = pixels[row][col];
+
+                // parse the fiveNumSum colors and compare to background
+                int bestIndex = 0;
+                for (int e = 1; e < colors.length; e++) {
+                    if (colors[e] == null || colors[e].equals(null)) {}
+                    else if (currentPixel.colorDistance(colors[e]) < currentPixel.colorDistance(colors[bestIndex])) {
+                        bestIndex = e;
+                    } // if
+                } // for
+
+                currentPixel.setColor(colors[bestIndex]);
+            } // for
+        } // for
+    } // kMeansSimplify
     
     /**
      * this method simplifies an image to five colors, how the colors are chosen
@@ -268,7 +316,7 @@ public class Picture extends SimplePicture {
      * 
      * @param sortMode method used to sort the colors in the image, 0=hue, 1=z-score, 2=integer representation (raw)
      * @param removeDuplicates whether or not to remove duplicates from the list of colors (done before sort)
-     * @param colorGenMode method used to generate colors, 0=5 num sum, 1=k-mean, 2=SD + mean
+     * @param colorGenMode method used to generate colors, 0=5 num sum, 1=SD + mean
      * @param specialOperations which special operations to apply at end (a boolean array, where true/false at following indexes represent whether or not to apply the operation), 0=grayscale, 1=invert,
      */
     public void simplifyColors(int sortMode, boolean removeDuplicates, int colorGenMode, Boolean[] specialOperations) {
@@ -288,68 +336,65 @@ public class Picture extends SimplePicture {
         } // for
 
         //if they want duplicates removed, do so, also do this if color gen is set to k-means
-        if (removeDuplicates || colorGenMode==1) {
+        if (removeDuplicates) {
             DataAnalysisTools.removeDuplicates(pictureColors);
         } //removeDuplicates if
 
 
-        if (colorGenMode != 1) //skip sorting if using the k-means color gen method
-        { 
-            //sort picture colors based on how the user wants them sorted
-            //0=hue, 1=z-score, 2=integer representation (raw)
-            switch (sortMode) {
-                case 0:
-                    //TODO: refactor this comparator into a util class
-                    //sort by hue    
-                    Collections.sort(pictureColors, new Comparator<Integer>() {
-                        @Override
-                        public int compare(Integer o1, Integer o2) {
-                            // DATA
-                            Color c1 = new Color(o1);
-                            Color c2 = new Color(o2);
-                            // rank by hue
-                            return ColorTools.getHue(c1.getRed(), c1.getGreen(), c1.getBlue()) - ColorTools.getHue(c2.getRed(), c2.getGreen(), c2.getBlue());
-                        } // public int compare
-                    });
-                    break;
-                case 1:
-                    //sort by z-scores
-                    //DATA
-                    final double mean = DataAnalysisTools.calcMean(pictureColors); //made final so the lamda function can use it
-                    final double sd = DataAnalysisTools.calcStandardDeviation(pictureColors); //made final so the lamda function can use it
-                    //TODO: refactor this comparator into a util class
-                    //sort by z-score
-                    Collections.sort(pictureColors, new Comparator<Integer>() {
-                        @Override
-                        public int compare(Integer c1, Integer c2) {
-                            // DATA
-                            double z1, z2;
+        //sort picture colors based on how the user wants them sorted
+        //0=hue, 1=z-score, 2=integer representation (raw)
+        switch (sortMode) {
+            case 0:
+                //TODO: refactor this comparator into a util class
+                //sort by hue    
+                Collections.sort(pictureColors, new Comparator<Integer>() {
+                    @Override
+                    public int compare(Integer o1, Integer o2) {
+                        // DATA
+                        Color c1 = new Color(o1);
+                        Color c2 = new Color(o2);
+                        // rank by hue
+                        return ColorTools.getHue(c1.getRed(), c1.getGreen(), c1.getBlue()) - ColorTools.getHue(c2.getRed(), c2.getGreen(), c2.getBlue());
+                    } // public int compare
+                });
+                break;
+            case 1:
+                //sort by z-scores
+                //DATA
+                final double mean = DataAnalysisTools.calcMean(pictureColors); //made final so the lamda function can use it
+                final double sd = DataAnalysisTools.calcStandardDeviation(pictureColors); //made final so the lamda function can use it
+                //TODO: refactor this comparator into a util class
+                //sort by z-score
+                Collections.sort(pictureColors, new Comparator<Integer>() {
+                    @Override
+                    public int compare(Integer c1, Integer c2) {
+                        // DATA
+                        double z1, z2;
+                        // find z scores of each z=(x-mean)/SD;
+                        z1 = (c1 - mean) / sd;
+                        z2 = (c2 - mean) / sd;
 
-                            // find z scores of each z=(x-mean)/SD;
-                            z1 = (c1 - mean) / sd;
-                            z2 = (c2 - mean) / sd;
+                        // do abs value
+                        z1 = Math.abs(z1);
+                        z2 = Math.abs(z2);
 
-                            // do abs value
-                            z1 = Math.abs(z1);
-                            z2 = Math.abs(z2);
-
-                            // rank by z-score
-                            if (z1 > z2)
-                                return 1;
-                            else if (z1 < z2)
-                                return -1;
-                            else
-                                return 0;
-                        } // public int compare
-                    });
-                    break;
-                case 2:
-                default:
-                    //generic sort of integer representations of colors
-                    Collections.sort(pictureColors);
-                    break;
-            } //sortMode switch
-        }
+                        // rank by z-score
+                        if (z1 > z2)
+                            return 1;
+                        else if (z1 < z2)
+                            return -1;
+                        else
+                            return 0;
+                    } // public int compare
+                });
+                break;
+            case 2:
+            default:
+                //generic sort of integer representations of colors
+                Collections.sort(pictureColors);
+                break;
+        } //sortMode switch
+    
 
         //generate colors based on colorGenMode
         //0=5 num sum, 1=k-means clustering, 2=SD + mean
@@ -368,26 +413,6 @@ public class Picture extends SimplePicture {
                 colors[4] = new Color(pictureColors.get(pictureColors.size() - 1));
                 break;
             case 1:
-                //run the k-means clustering algorithm
-                //TODO: currently the implementation in the method below works, it's just messy, this implementation occassionally Null pointer errors
-                //5 clusters, 100 iterations
-                int k = 5;
-                Map<Centroid, List<Record<Integer>>> clusters = KMeans.fit(super.getPixelsRecord(), k, new EuclideanDistance(), 10);
-
-                //assign colors from clusters
-                colors = new Color[k];
-                int i = 0;
-                for (Centroid centroid : clusters.keySet()) {
-                    int r,g,b;
-                    r = centroid.getCoordinates().get("red").intValue();
-                    g = centroid.getCoordinates().get("green").intValue();
-                    b = centroid.getCoordinates().get("blue").intValue();
-
-                    colors[i] = new Color( r,g,b );
-                    i++;
-                }
-                break;
-            case 2:
             default:
                 //either do SD+mean stuff with r,g,and b color channels, or the hue,sat, and brightness channels, depending on what user chose for sorting
                 //0 = hue, else = rgb channels
@@ -570,7 +595,9 @@ public class Picture extends SimplePicture {
         Color[] fiveNumSumColors = new Color[5];
         // 5 colors
         Color[] colors = new Color[5];
-
+        
+        //TODO: remove the k-means stuff from this once the implementation in KMeansSimplify() is as good as or better than this one
+        
         // if the background colors saturation, or brightness is really low, increase it
         /*
          * if (true) {
