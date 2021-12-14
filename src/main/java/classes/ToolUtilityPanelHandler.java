@@ -455,6 +455,9 @@ public class ToolUtilityPanelHandler extends JPanel
             case 4: //simplify tool selected
             simplifyColorToolPanel();
             break;
+            case 5: //k-means color simplification
+            kMeansSimplifyToolPanel();
+            break;
             default: //a tool not accounted for selected
             defaultToolUtilityPanel();
         }
@@ -686,7 +689,7 @@ public class ToolUtilityPanelHandler extends JPanel
     }
 
     /**
-     * method to handle the edge detection tool panel,
+     * method to handle the color simplification tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
     private void simplifyColorToolPanel() 
@@ -717,7 +720,7 @@ public class ToolUtilityPanelHandler extends JPanel
         //generation method
         JPanel genMethodPanel = new JPanel(new BorderLayout());
         JLabel genMethodLabel = new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", 150, " \nselect color gen method:"));
-        JComboBox<String> genMethodSelection = new JComboBox<String>(new String[]{"5 num sum", "k-means clustering", "mean + SD"});
+        JComboBox<String> genMethodSelection = new JComboBox<String>(new String[]{"5 num sum", "mean + SD"});
         //genMethodPanel.setPreferredSize(new Dimension(150, 90));
         genMethodSelection.setSelectedIndex(0);
         genMethodPanel.add(BorderLayout.NORTH, genMethodLabel);
@@ -761,7 +764,7 @@ public class ToolUtilityPanelHandler extends JPanel
         //handle confirm button press
         confirmButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
-                    //use one of the edgeDetection methods from the Picture class
+                    //use one of the color simplification methods from the Picture class
                     Picture simplified = new Picture(PictureExplorer.picture.getHeight(), PictureExplorer.picture.getWidth());
                     simplified.copyPicture(new SimplePicture(PictureExplorer.picture.getBufferedImage()));
 
@@ -775,5 +778,89 @@ public class ToolUtilityPanelHandler extends JPanel
 
     }
 
+    /**
+     * method to handle the color simplification tool panel,
+     * as well as ActionEvents having to do with the UI of this panel
+     */
+    private void kMeansSimplifyToolPanel() {
+        //DATA
+        //panels
+        defaultToolUtilityPanel();
+        //title label
+        JLabel titleLable = new JLabel();
+        //clusters text box
+        NumberFormatter clustersFormat = new NumberFormatter(NumberFormat.getNumberInstance());
+        JFormattedTextField clustersField = new JFormattedTextField(clustersFormat);
+        JLabel clustersLabel = new JLabel("color clusters: '5");
+        //max iterations text box
+        NumberFormatter iterationsFormat = new NumberFormatter(NumberFormat.getNumberInstance());
+        JFormattedTextField iterationsField = new JFormattedTextField(iterationsFormat);
+        JLabel iterationsLabel = new JLabel("max iterations: '5");
+        
+        
+        //button to confirm changes
+        JButton confirmButton = new JButton("confirm");
+
+        //config panel components
+        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "Simplify image with the k-means clustering algorithm");
+        Font titleFont = new Font(titleLable.getFont().getName(),
+                titleLable.getFont().getStyle(),18);
+        titleLable.setFont(titleFont);
+        titleLable.setText(titleText);
+    
+        JPanel clustersPanel = new JPanel(new GridLayout(2,1));
+        clustersField.setValue(5);
+        clustersField.setColumns(5);
+        clustersPanel.add(clustersLabel);
+        clustersPanel.add(clustersField);
+        
+        JPanel maxIterationsPanel = new JPanel(new GridLayout(2,1));
+        iterationsField.setValue(5);
+        iterationsField.setColumns(5);
+        maxIterationsPanel.add(iterationsLabel);
+        maxIterationsPanel.add(iterationsField);
+
+        JPanel toolConfigPanel = new JPanel(new BorderLayout());
+        toolConfigPanel.setPreferredSize(new Dimension(150,200));
+        toolConfigPanel.add(BorderLayout.NORTH, clustersPanel);
+        toolConfigPanel.add(BorderLayout.SOUTH, maxIterationsPanel);
+
+        //add components to the panel
+        this.add(BorderLayout.NORTH, titleLable);
+        this.add(BorderLayout.CENTER, toolConfigPanel);
+        this.add(BorderLayout.SOUTH, confirmButton);
+
+        //handle the clusters field
+        clustersField.addPropertyChangeListener("value", new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent e) {
+                    clustersLabel.setText("color clusters: '" + (int) ((Number)clustersField.getValue()).doubleValue() );
+                }           
+            });
+        //handle the iterations field
+        iterationsField.addPropertyChangeListener("value", new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent e) {
+                    iterationsLabel.setText("iterations: '" + (int) ((Number)iterationsField.getValue()).doubleValue() );
+                }           
+            });
+
+        //handle confirm button press
+        confirmButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    //use the kMeansSimplify method from the Picture class
+                    Picture simplified= new Picture(PictureExplorer.picture.getHeight(), PictureExplorer.picture.getWidth());
+                    simplified.copyPicture(new SimplePicture(PictureExplorer.picture.getBufferedImage()));
+                    
+                    simplified.kMeansSimplify(
+                        Integer.parseInt(iterationsLabel.getText().substring(clustersLabel.getText().indexOf("'")+1)),
+                        Integer.parseInt(iterationsLabel.getText().substring(iterationsLabel.getText().indexOf("'")+1))
+                    );
+                    
+                    //save the new image (ask first)
+                    PictureExplorer.pictureConfirmation.updateConfPanelImage(simplified);
+                }
+            });
+    }
+
+    
     ///////////////next tool type (idk, image manipulation, fun, some other groups)///////////////
 }

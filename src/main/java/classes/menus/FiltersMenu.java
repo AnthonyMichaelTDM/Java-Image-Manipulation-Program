@@ -19,6 +19,7 @@ public class FiltersMenu extends JMenu  implements ActionListener
     private JMenuItem brighten;
     private JMenuItem darken;
     private JMenuItem simplifyColors;
+    private JMenuItem kMeansSimplify;
 
     /**
      * Constructor for objects of class FiltersMenu
@@ -32,17 +33,21 @@ public class FiltersMenu extends JMenu  implements ActionListener
         edgeDetection = new JMenuItem("Edge Detection");
         brighten = new JMenuItem("Brighten Picture");
         darken = new JMenuItem("Darken Picture");
-        simplifyColors = new JMenuItem("simplify picture colors");
+        simplifyColors = new JMenuItem("Simplify Picture Colors");
+        kMeansSimplify = new JMenuItem("K-Means Color Simplification");
+        
         // add the action listeners
         edgeDetection.addActionListener(this);
         brighten.addActionListener(this);
         darken.addActionListener(this);
         simplifyColors.addActionListener(this);
+        kMeansSimplify.addActionListener(this);
         // add the menu items to the menu
         this.add(edgeDetection);
         this.add(brighten);
         this.add(darken);
         this.add(simplifyColors);
+        this.add(kMeansSimplify);
     }
 
     
@@ -73,6 +78,10 @@ public class FiltersMenu extends JMenu  implements ActionListener
         if (a.getSource() == simplifyColors)
         {
             currentTool[1] = 4;
+        }
+        if (a.getSource() == kMeansSimplify)
+        {
+            currentTool[1] = 5;
         }
 
         pictureExplorer.updateUtilityPanel(currentTool);
