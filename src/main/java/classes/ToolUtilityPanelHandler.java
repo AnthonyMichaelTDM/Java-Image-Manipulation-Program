@@ -821,7 +821,7 @@ public class ToolUtilityPanelHandler extends JPanel
         maxIterationsPanel.add(iterationsField);
 
         JPanel toolConfigPanel = new JPanel(new BorderLayout());
-        toolConfigPanel.setPreferredSize(new Dimension(150,200));
+        toolConfigPanel.setPreferredSize(new Dimension(150,100));
         toolConfigPanel.add(BorderLayout.NORTH, clustersPanel);
         toolConfigPanel.add(BorderLayout.SOUTH, maxIterationsPanel);
 
