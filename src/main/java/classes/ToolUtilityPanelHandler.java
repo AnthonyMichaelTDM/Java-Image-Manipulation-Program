@@ -40,6 +40,9 @@ public class ToolUtilityPanelHandler extends JPanel
         clearPanel();
         this.setBackground(Color.gray); //from parent
         this.setPreferredSize(new Dimension(150,100)); //from parent
+        this.setLayout(new FlowLayout());
+        //this.add(BorderLayout.WEST, Box.createHorizontalStrut(10));//add little gap
+        //this.add(BorderLayout.EAST, Box.createHorizontalStrut(5));
     }
     
     /**
@@ -122,7 +125,7 @@ public class ToolUtilityPanelHandler extends JPanel
         blueRadioButton.setSelected(false);
 
         JPanel toolConfigPanel = new JPanel(new GridLayout(3,1));
-        toolConfigPanel.setPreferredSize(new Dimension(150,300));
+        toolConfigPanel.setPreferredSize(new Dimension(140,300));
         toolConfigPanel.add(redRadioButton);
         toolConfigPanel.add(greenRadioButton);
         toolConfigPanel.add(blueRadioButton);
@@ -194,7 +197,7 @@ public class ToolUtilityPanelHandler extends JPanel
         maxSlider.setMajorTickSpacing(10);
         //slider panel
         JPanel toolConfigPanel = new JPanel(new GridLayout(7,1));
-        toolConfigPanel.setPreferredSize(new Dimension(150,300));
+        toolConfigPanel.setPreferredSize(new Dimension(140,300));
         toolConfigPanel.add(colorBox);
         toolConfigPanel.add(minLabel);
         toolConfigPanel.add(minSlider);
@@ -266,7 +269,7 @@ public class ToolUtilityPanelHandler extends JPanel
         negateBlueRadioButton.setSelected(false);
 
         JPanel toolConfigPanel = new JPanel(new GridLayout(3,1));
-        toolConfigPanel.setPreferredSize(new Dimension(150,300));
+        toolConfigPanel.setPreferredSize(new Dimension(140,300));
         toolConfigPanel.add(negateRedRadioButton);
         toolConfigPanel.add(negateGreebRadioButton);
         toolConfigPanel.add(negateBlueRadioButton);
@@ -384,7 +387,7 @@ public class ToolUtilityPanelHandler extends JPanel
         tolerancePanel.add(toleranceSlider);
 
         JPanel toolConfigPanel = new JPanel(new GridLayout(3,1));
-        toolConfigPanel.setPreferredSize(new Dimension(150,200));
+        toolConfigPanel.setPreferredSize(new Dimension(140,200));
         toolConfigPanel.add(colorToReplacePanel);
         toolConfigPanel.add(colorToSetPanel);
         toolConfigPanel.add(tolerancePanel);
@@ -475,7 +478,7 @@ public class ToolUtilityPanelHandler extends JPanel
         JLabel titleLable = new JLabel();
         //algorithm selection comboBox
         JComboBox<String> algorithmSelection = new JComboBox<String>(new String[]{"algorithm 1", "algorithm 2", "algorithm 3"});
-        JLabel explainationLabel = new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", 150, "algorithm 1 is much slower, but a higher resolution. Algorithm 2 is much faster, but can sometimes appear \"fuzzy\". Algorithm 3 fills area between edges, useful for making light text show up better against a plain background"));
+        JLabel explainationLabel = new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", 135, "algorithm 1 is much slower, but a higher resolution. Algorithm 2 is much faster, but can sometimes appear \"fuzzy\". Algorithm 3 fills area between edges, useful for making light text show up better against a plain background"));
         //tolerance slider
         JSlider toleranceSlider = new JSlider(1,255,5);
         JLabel toleranceLabel = new JLabel("tolerance (0-255):"  + toleranceSlider.getValue());
@@ -522,7 +525,7 @@ public class ToolUtilityPanelHandler extends JPanel
         tolerancePanel.add(toleranceSlider);
 
         JPanel toolConfigPanel = new JPanel(new GridLayout(2,1));
-        toolConfigPanel.setPreferredSize(new Dimension(150,300));
+        toolConfigPanel.setPreferredSize(new Dimension(140,300));
         toolConfigPanel.add(algorithmSelectionPanel);
         toolConfigPanel.add(tolerancePanel);
 
@@ -749,7 +752,7 @@ public class ToolUtilityPanelHandler extends JPanel
         
         //build config panel
         JPanel toolConfigPanel = new JPanel();
-        toolConfigPanel.setPreferredSize(new Dimension(150,300));
+        toolConfigPanel.setPreferredSize(new Dimension(140,300));
         //toolConfigPanel.setLayout(new GridLayout(0,1,5,0));
         toolConfigPanel.add(BorderLayout.NORTH, new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", 150,"this method simplifies an image to five colors depending on the selected parameters")));
         toolConfigPanel.add(BorderLayout.CENTER, sortMethodPanel);
@@ -802,26 +805,26 @@ public class ToolUtilityPanelHandler extends JPanel
         JButton confirmButton = new JButton("confirm");
 
         //config panel components
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "Simplify image with the k-means clustering algorithm");
+        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 140, "Simplify image with the k-means clustering algorithm");
         Font titleFont = new Font(titleLable.getFont().getName(),
                 titleLable.getFont().getStyle(),18);
         titleLable.setFont(titleFont);
         titleLable.setText(titleText);
     
-        JPanel clustersPanel = new JPanel(new GridLayout(2,1));
+        JPanel clustersPanel = new JPanel(new GridLayout(2,1,5,5));
         clustersField.setValue(5);
         clustersField.setColumns(5);
         clustersPanel.add(clustersLabel);
         clustersPanel.add(clustersField);
         
-        JPanel maxIterationsPanel = new JPanel(new GridLayout(2,1));
+        JPanel maxIterationsPanel = new JPanel(new GridLayout(2,1,5,5));
         iterationsField.setValue(5);
         iterationsField.setColumns(5);
         maxIterationsPanel.add(iterationsLabel);
         maxIterationsPanel.add(iterationsField);
 
-        JPanel toolConfigPanel = new JPanel(new BorderLayout());
-        toolConfigPanel.setPreferredSize(new Dimension(150,100));
+        JPanel toolConfigPanel = new JPanel(new BorderLayout(5,5));
+        toolConfigPanel.setPreferredSize(new Dimension(140,100));
         toolConfigPanel.add(BorderLayout.NORTH, clustersPanel);
         toolConfigPanel.add(BorderLayout.SOUTH, maxIterationsPanel);
 
@@ -839,7 +842,7 @@ public class ToolUtilityPanelHandler extends JPanel
         //handle the iterations field
         iterationsField.addPropertyChangeListener("value", new PropertyChangeListener() {
                 public void propertyChange(PropertyChangeEvent e) {
-                    iterationsLabel.setText("iterations: '" + (int) ((Number)iterationsField.getValue()).doubleValue() );
+                    iterationsLabel.setText("max iterations: '" + (int) ((Number)iterationsField.getValue()).doubleValue() );
                 }           
             });
 
@@ -851,7 +854,7 @@ public class ToolUtilityPanelHandler extends JPanel
                     simplified.copyPicture(new SimplePicture(PictureExplorer.picture.getBufferedImage()));
                     
                     simplified.kMeansSimplify(
-                        Integer.parseInt(iterationsLabel.getText().substring(clustersLabel.getText().indexOf("'")+1)),
+                        Integer.parseInt(clustersLabel.getText().substring(clustersLabel.getText().indexOf("'")+1)),
                         Integer.parseInt(iterationsLabel.getText().substring(iterationsLabel.getText().indexOf("'")+1))
                     );
                     

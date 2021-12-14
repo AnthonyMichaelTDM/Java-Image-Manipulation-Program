@@ -4,8 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import classes.util.kmeans.KMeans;
-
+//import classes.util.kmeans.KMeans;
 //import javax.swing.JFileChooser;
 //import java.io.*;
 
@@ -258,7 +257,6 @@ public class PictureTester
             pathName = basePic.getFileName().substring(0, basePic.getFileName().lastIndexOf("."));
         
             //apply filters and save
-            /*
             grayPic.simplifyColors(1);
             grayPic.write(pathName + "-gray-ByJIMP" + extension);
 
@@ -290,10 +288,12 @@ public class PictureTester
 
             zedPlusPic.simplifyColors(8);
             zedPlusPic.write(pathName + "-zed+-ByJIMP" + extension);
-            */
 
             KMeanPic.simplifyColors(9);
-            KMeanPic.write(pathName + "-K-Mean-ByJIMP" + extension);
+            KMeanPic.write(pathName + "-K-Mean1-ByJIMP" + extension);
+            KMeanPic = new Picture(basePic);
+            KMeanPic.kMeansSimplify(10, 20);
+            KMeanPic.write(pathName + "-K-Mean2-ByJIMP" + extension);
 
             n++;
             System.out.println(n + "/" + validPaths.size() + ": done with " + s);
