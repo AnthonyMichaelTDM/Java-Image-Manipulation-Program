@@ -75,7 +75,7 @@ public class DataAnalysisTools {
         // sum((x-mean)^2)
         for (N i : data) {
             // (x-mean)^2
-            sumXMinusMeanSquared += Math.pow((double)i - mean, 2);
+            sumXMinusMeanSquared += Math.pow(i.doubleValue() - mean, 2);
         } // for
         sd = Math.sqrt(sumXMinusMeanSquared / n);
 

@@ -358,9 +358,9 @@ public class PictureTester
         //testSetRedToHalfValueInTopHalf();
         //testClearBlueOverValue(200);
         //testGetAverageForColumn(0);
-        //createWallpapers("" + FileChooser.getMediaDirectory() + "Backgrounds" + System.getProperty("file.separator"));
+        createWallpapers("" + FileChooser.getMediaDirectory() + "Backgrounds" + System.getProperty("file.separator"));
 
-        createWallpapers("" + FileChooser.getMediaDirectory() + "pixlab-images" + System.getProperty("file.separator") + "Backgrounds" + System.getProperty("file.separator"));
+        //createWallpapers("" + FileChooser.getMediaDirectory() + "pixlab-images" + System.getProperty("file.separator") + "Backgrounds" + System.getProperty("file.separator"));
     }
 
     ////////////////////// tester methods i made ///////////////////////////////////////
