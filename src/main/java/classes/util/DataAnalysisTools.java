@@ -35,7 +35,7 @@ public class DataAnalysisTools {
      * @param <N> the Type of data the collection stores
      * @param data collection to trim
      */
-    public static <N extends Number> void removeDuplicates(Collection<N> data) {
+    public static <N> void removeDuplicates(Collection<N> data) {
         //DATA
         Set<N> set;
         // remove duplicates from picture colors using a hashset

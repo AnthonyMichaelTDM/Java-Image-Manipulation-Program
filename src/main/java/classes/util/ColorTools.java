@@ -60,7 +60,7 @@ public class ColorTools {
      * @param b blue channel (0.0f-1.0f)
      * @return float array containing the equivalent HSB values
      */
-    public static float[] getHSB(float r, float g, float b) {
+    public static float[] getHSL(float r, float g, float b) {
         //DATA
         float cmax = Math.max(r, Math.max(g, b));
         float cmin = Math.min(r, Math.min(g, b));

@@ -295,7 +295,7 @@ public class Picture extends SimplePicture {
         
         
         //call to KMeans class passing the images colors
-        clusters = KMeans.fit(super.getPixelsRecord(), k, new EuclideanDistance(), 10);
+        clusters = KMeans.fit(super.getPixelsRecordRGB(), k, new EuclideanDistance(), maxIterations);
         
         //extract the colors from colors
         i=0;
@@ -306,6 +306,62 @@ public class Picture extends SimplePicture {
             b = centroid.getCoordinates().get("blue").intValue();
         
             colors[i] = new Color( r,g,b );
+            i++;
+        }// for
+        
+        for (int row = 0; row < pixels.length; row++) {
+            for (int col = 0; col < pixels[0].length; col++) {
+                currentPixel = pixels[row][col];
+
+                // parse the fiveNumSum colors and compare to background
+                int bestIndex = 0;
+                for (int e = 1; e < colors.length; e++) {
+                    if (colors[e] == null || colors[e].equals(null)) {}
+                    else if (currentPixel.colorDistance(colors[e]) < currentPixel.colorDistance(colors[bestIndex])) {
+                        bestIndex = e;
+                    } // if
+                } // for
+
+                currentPixel.setColor(colors[bestIndex]);
+            } // for
+        } // for
+    } // kMeansSimplify
+    /**
+     * simplifies an image to a given number of colors using the k-means clustering algorithm, finds its own value for k, much slower :(
+     * @param maxIterations maximum number of iterations of k-means to do
+     * @param maxK maximum k, num of clusters
+     * @param removeDuplicates wether or not to remove duplicate colors
+     */
+    public void kMeansSimplifyAutoKHsb(int maxIterations, int maxK, boolean removeDuplicates) {
+        //data
+        int k;
+        Pixel currentPixel = null;
+        Pixel[][] pixels = this.getPixels2D();
+        List<Record<Float>> records = super.getPixelsRecordHSL(); //dataset of all pixels in the image
+        Map<Centroid, List<Record<Float>>> clusters; //most prevalant color groups as returned by KMeans
+        Color[] colors; //most prevalent colors
+        int i; //used as in a later for loop
+        
+        //remove duplicate records
+        if (removeDuplicates) {
+            DataAnalysisTools.removeDuplicates(records);
+        }
+        //call to KMeans class passing the images colors
+        clusters = KMeans.fit(records, new EuclideanDistance(), maxIterations, maxK); //this version of the fit method calculates the optimal k
+        k = clusters.size();
+        System.out.println("K: " + k);
+        colors = new Color[k];
+        
+        //extract the colors from colors
+        i=0;
+        for (Centroid centroid : clusters.keySet()) {
+            //found out that when you use HSL values rather than HSB values, the clustering algorithm clusters much more like a person would 
+            float h,s,b;
+            h = centroid.getCoordinates().get("hue").floatValue();
+            s = centroid.getCoordinates().get("saturation").floatValue();
+            b = centroid.getCoordinates().get("lightness").floatValue();
+        
+            colors[i] = new Color(Color.HSBtoRGB(h, s, b));
             i++;
         }// for
         
@@ -446,7 +502,7 @@ public class Picture extends SimplePicture {
                         for (int c : pictureColors) {
                             Color color = new Color(c);
                             float r=color.getRed()/255.0f,g=color.getGreen()/255.0f,b=color.getBlue()/255.0f;
-                            float[] hsl = ColorTools.getHSB(r, g, b);
+                            float[] hsl = ColorTools.getHSL(r, g, b);
                             //add to lists for reference later
                             hueList.add(hsl[0]);
                             saturationList.add(hsl[1]);
@@ -601,7 +657,7 @@ public class Picture extends SimplePicture {
      * depend on the algorithm choosen uses the 5 number summary of all the pixels
      * color values (as integers) to balance the image better
      * 
-     * @param mode which mode to use, 0 = equidistant from color wheel, 1 = grayscale, 2 = faithful, 3 = faithful+, 4 = balance, 5 = balance+, 6 = SD+mean, 7 = Zed, 8 = Zed+
+     * @param mode which mode to use, 0 = equidistant from color wheel, 1 = grayscale, 2 = faithful, 3 = faithful+, 4 = balance, 5 = balance+, 6 = SD+mean, 7 = Zed, 8 = Zed+, 9 = kmeans
      */
     public void simplifyColors(int mode) {
         // data
@@ -617,6 +673,7 @@ public class Picture extends SimplePicture {
         Color[] colors = new Color[5];
         
         //TODO: remove the k-means stuff from this once the implementation in KMeansSimplify() is as good as or better than this one
+        //current difference, complexity wise, comes down to this being I*N faster as it doesn't stop early if the state doesn't change
         
         // if the background colors saturation, or brightness is really low, increase it
         /*

@@ -58,29 +58,117 @@ public class KMeans {
         Map<Centroid, List<Record<N>>> lastState = new HashMap<>();
 
         // iterate for a pre-defined number of times
-        for (int i = 0; i < maxIterations; i++) {
+        for (int i = 0; i < maxIterations; i++) { //O(i)
             boolean isLastIteration = i == maxIterations - 1;
 
             // in each iteration we should find the nearest centroid for each record
-            for (Record<N> record : records) {
+            for (Record<N> record : records) { //O(N) 
                 Centroid centroid = nearestCentroid(record, centroids, distance);
-                assignToCluster(clusters, record, centroid);
+                assignToCluster(clusters, record, centroid); //O(K)
             }
 
             // if the assignment does not change, then the algorithm terminates
-            boolean shouldTerminate = isLastIteration || clusters.equals(lastState);
+            boolean shouldTerminate = isLastIteration || clusters.equals(lastState); //O(N)
             lastState = clusters;
             if (shouldTerminate) {
                 break;
             }
 
             // at the end of each iteration we should relocate the centroids
-            centroids = relocateCentroids(clusters);
+            centroids = relocateCentroids(clusters); //O(N)
             clusters = new HashMap<>();
-        }
+        } // O(I*N*K + I*2*N) ))
 
         return lastState;
     }
+    /**
+     * Performs the K-Means clustering algorithm on the given dataset, finding the optimal value for k with silhouette analysis
+     *
+     * @param records       The dataset.
+     * @param distance      To calculate the distance between two items.
+     * @param maxIterations Upper bound for the number of iterations, and l.
+     * @return K clusters along with their features.
+     */
+    public static <N extends Number> Map<Centroid, List<Record<N>>> fit(List<Record<N>> records, Distance distance, int maxIterations, int maxK) {
+        //DATA
+        int k = 2;
+        Map<Centroid, List<Record<N>>> state = new HashMap<>();
+        Map<Centroid, List<Record<N>>> lastState = new HashMap<>();
+        ArrayList<Double> scores = new ArrayList<>();
+        scores.add(0.0); //imaginary result for 0 clusters
+        scores.add(0.0); //imaginary result for 1 cluster
+
+        //TODO: while technically linear complexity, this shit takes forever, please find out how to multithread parts of it in the future ffs
+
+        while (k<=maxK) { //O(I)
+            //do k-means algorithm w/ k and i
+            lastState = state;
+            state = fit(records, k, distance, maxIterations); //  O(I*N*K + I*2*N) ))
+            
+            //find average silhouette score and add to scores
+            scores.add(meanSilhouette(state, distance)); // O(N)
+
+            //compare with previous 2 scores
+            if (scores.size()-1-2 > 2 && (scores.get(k-2) < scores.get(k-1) && scores.get(k-1) > scores.get(k)) ) { //last one is a local max, terminate
+                k=k-1;
+                break;
+            }
+            
+            //iterate and prep for next loop
+            k++;
+        } // O( 2*I(N*K + 2*N)+I*N)))    this is 2 times + I*N slower than knowing k before hand
+
+        //if k==maxK, there was no local max, so use one of the ends
+        if (k==maxK) {
+            if (scores.get(2) >= scores.get(k)) {
+                lastState = fit(records, 2, distance, maxIterations); //start was best
+            } else {
+                lastState = state; //end was best
+            }
+        }
+        
+        return lastState;
+    }
+    /**
+     * calculates and returns the average silhouette score of a map of centroids
+     * @param <N>
+     * @param centroids centroids
+     * @param distance distance calculation algoritm to use
+     * @return average silhouette score, a measure of how good a clustering is
+     */
+    private static <N extends Number> double meanSilhouette(Map<Centroid, List<Record<N>>> centroids, Distance distance) {
+        //DATA
+        double aveSilhouette = 0.0;
+        double a = 0;
+        double b = 0;
+        //formula => S(i) = (b(i)-a(i))/max(a(i),b(i))
+        //a = average distance between i and all datapoints assigned to it
+        //b = average distance between the cluster i and all other clusters
+
+        for (Centroid centroid : centroids.keySet()) {
+            //calc a(i)
+            for (Record<N> datapoint : centroids.get(centroid)) {
+                a += distance.calculate(datapoint.getFeatures(), centroid.getCoordinates()); //sum
+            }
+            a /= (double)centroids.get(centroid).size(); //ave
+
+            //calc b(i)
+            for (Centroid otherCentroid : centroids.keySet()) { //only comparing to other centroids is equivalent, but MUCH faster than comparing to entire dataset
+                b += distance.calculate(otherCentroid.getCoordinates(), centroid.getCoordinates()); //sum
+            }
+            b /= (double)(centroids.keySet().size()-1); //sum
+
+            //calc and sum S(i)
+            aveSilhouette += (b-a)/Math.max(a, b);
+            a=0;
+            b=0;
+        }
+        // divide aveSilhouette by number of clusters to get actual mean
+        aveSilhouette /= (double)(centroids.keySet().size());
+        //System.out.println(aveSilhouette);
+        return aveSilhouette;
+    }
+
 
     /**
      * Move all cluster centroids to the average of all assigned features.

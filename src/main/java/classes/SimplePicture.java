@@ -3,6 +3,7 @@ package classes;
 
 import javax.imageio.ImageIO;
 
+import classes.util.ColorTools;
 import classes.util.kmeans.Record;
 
 import java.awt.image.BufferedImage;
@@ -352,9 +353,9 @@ public class SimplePicture implements DigitalPicture
 
     /**
      * method to get a list of records representing the pixels for this simple picture
-     * @return list of Records, records are used as another way to store pixel color data
+     * @return list of Records, records are used as another way to store pixel color data, stored as RGB
      */
-    public List<Record<Integer>> getPixelsRecord() {
+    public List<Record<Integer>> getPixelsRecordRGB() {
         //DATA
         List<Record<Integer>> pixelList = new ArrayList<Record<Integer>>();
         int width = getWidth();
@@ -370,6 +371,36 @@ public class SimplePicture implements DigitalPicture
                 pixelMap.put("green",curPix.getGreen());
                 pixelMap.put("blue", curPix.getBlue());
                 Record<Integer> pixelRecord = new Record<Integer>("("+col+","+row+")" ,pixelMap);
+
+                //add record to list
+                pixelList.add(pixelRecord);
+            }
+        }
+
+        return pixelList;
+    }
+    /**
+     * method to get a list of records representing the pixels for this simple picture
+     * @return list of Records, records are used as another way to store pixel color data, stored as RGB
+     */
+    public List<Record<Float>> getPixelsRecordHSL() {
+        //DATA
+        List<Record<Float>> pixelList = new ArrayList<Record<Float>>();
+        float hsl[] = new float[3];
+        int width = getWidth();
+        int height = getHeight();
+
+        //loop through height rows from top to bottom
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+                //create the record
+                Pixel curPix = new Pixel(this,col,row);
+                hsl = Color.RGBtoHSB(curPix.getRed(), curPix.getGreen(), curPix.getBlue(), null);
+                Map<String, Float> pixelMap = new HashMap<String, Float>();
+                pixelMap.put("hue",  hsl[0]);
+                pixelMap.put("saturation",hsl[1]);
+                pixelMap.put("lightness", hsl[2]);
+                Record<Float> pixelRecord = new Record<Float>("("+col+","+row+")" ,pixelMap);
 
                 //add record to list
                 pixelList.add(pixelRecord);

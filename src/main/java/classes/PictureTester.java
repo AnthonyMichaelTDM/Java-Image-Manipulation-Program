@@ -20,6 +20,7 @@ package classes;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.awt.Color;
 
 //import classes.util.kmeans.KMeans;
 //import javax.swing.JFileChooser;
@@ -35,6 +36,62 @@ import java.util.Arrays;
  */
 public class PictureTester
 {
+    
+    /** method to test keepOnlyBlue()*/
+    public static void testKeepOnlyBlue()
+    {
+        Picture beach = new Picture("beach.jpg");
+        beach.explore();
+        beach.keepOnlyBlue();
+        beach.explore();
+    }
+
+    /** method to test negate()*/
+    public static void testNegate()
+    {
+        Picture beach = new Picture("beach.jpg");
+        beach.explore();
+        beach.negate();
+        beach.explore();
+    }
+
+    /** method to test grayscale()*/
+    public static void testGrayscale()
+    {
+        Picture beach = new Picture("beach.jpg");
+        beach.explore();
+        beach.grayscale();
+        beach.explore();
+    }
+
+    /** method to test mirrorHorizontal */
+    public static void testMirrorHorizontal()
+    {
+        Picture redMotorcycle = new Picture("redMotorcycle.jpg");
+        redMotorcycle.explore();
+        redMotorcycle.mirrorHorizontal();
+        redMotorcycle.explore();
+    }
+
+    /** method to test mirrorHorizontalBotToTop() */
+    public static void testMirrorHorizontalBotToTop()
+    {
+        Picture beach = new Picture("redMotorcycle.jpg");
+        beach.explore();
+        beach.mirrorHorizontalBotToTop();
+        beach.explore();
+    }
+
+    /** method to test copy2() */
+    public static void testCopy2()
+    {
+        Picture beach = new Picture("beach.jpg");
+        Picture water = new Picture("water.jpg");
+
+        beach.explore();
+        beach.copy2(water, 252,454,290,600);
+        beach.explore();
+    }
     /** Method to test mirrorVertical */
     public static void testMirrorVertical()
     {
@@ -140,6 +197,34 @@ public class PictureTester
         test.explore();
     }
     
+    /** test hsb - rbg conversion */
+    public static void testHSBConversion() {
+        //open a color
+        Picture basePic;
+        try {
+            basePic=new Picture(FileChooser.pickAFile());
+            if (basePic.getFileName().isBlank()) throw new Exception();
+        } catch (Exception e) {
+            return;
+        }
+        Picture copyPicture = new Picture(basePic);
+        Pixel pixels[][] = basePic.getPixels2D();
+        Pixel curPix;
+        
+        for (int row = 0; row < pixels.length; row++) {
+            for (int col = 0; col < pixels[0].length; col++) {
+                curPix = pixels[row][col];
+
+                float hsl[]  = Color.RGBtoHSB(curPix.getRed(), curPix.getGreen(), curPix.getBlue(), null);
+
+                curPix.setColor( new Color(Color.HSBtoRGB(hsl[0], hsl[1], hsl[2])));
+            }
+        }
+
+        copyPicture.show();
+        basePic.show();
+    }
+
     /** Method to test all the simplify colors modes*/
     public static void testSimplifyColors() {
         //open a file of the users choice, then apply the 4 simplify color filters to it, and save each one
@@ -205,6 +290,87 @@ public class PictureTester
         return;
     }
 
+/**
+     * applies various filters and whatnot to given image, or all .jpg/.png images in given directory
+     */
+    public static void testKMeansSimplify(String fileOrDirectoryPath) {
+        //data
+        File file = new File(fileOrDirectoryPath);
+        ArrayList<String> names = new ArrayList<String>(), validPaths = new ArrayList<String>();
+        boolean isDirectory = false;
+        Picture basePic, KMeanPic;
+        String extension, pathName;
+        int n=0;
+        double scaleFactor = 0.5;
+
+        System.out.println(fileOrDirectoryPath);
+
+        //find out if a file or directory was given
+        if (file.isDirectory()) {
+            isDirectory=true;
+            //fill names arraylist with contents of the directory
+            names.addAll(Arrays.asList(file.list()));
+        }
+        else if (file.isFile()) {
+            //just have the file in the names arraylist
+            names.add(fileOrDirectoryPath);
+        }
+        else {
+            System.out.println("error accessing " + fileOrDirectoryPath);
+            return;
+        }
+        //fill validNames arraylist with all image files in names
+        for (String s : names) {
+            //System.out.println(s);
+            //data
+            File f;
+
+            if (isDirectory) {
+                f = new File(fileOrDirectoryPath + s);
+            }
+            else {
+                f = new File(fileOrDirectoryPath);                
+            }
+            //figure out if f is a file, if it is, is it an image?, only add it if the answer to both questions is yess
+            if (f.isFile()) {
+                extension = f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf(".")).toLowerCase();
+
+                if ((extension.equals(".jpg") || extension.equals(".png") || extension.equals(".jpeg") || extension.equals(".bmp"))
+                        && !f.getAbsolutePath().contains("-ByJIMP")) {
+                    // valid image file
+                    validPaths.add(f.getAbsolutePath());
+                    // System.out.println(s);
+                } /* else if (f.getAbsolutePath().contains("-ByJIMP")) {
+                    //delete file
+                    f.delete();
+                }*/
+            }
+        }
+
+        System.out.println("starting");
+        
+        //apply filters to remaining valid images
+        for (String s : validPaths) {
+            //data
+            basePic = new Picture (s);
+            KMeanPic = new Picture(basePic.scale(scaleFactor, scaleFactor)); //scale image down to save time, we're reducing the colors anyway so resolution doesn't matter much tbh
+            extension = basePic.getFileName().substring(basePic.getFileName().lastIndexOf("."));
+            pathName = basePic.getFileName().substring(0, basePic.getFileName().lastIndexOf("."));
+            
+            //apply filters and save
+            
+            KMeanPic.kMeansSimplifyAutoKHsb(16, 20,true);
+            KMeanPic = KMeanPic.scale(1.0/scaleFactor, 1.0/scaleFactor);
+            KMeanPic.write(pathName + "-K-Mean-auto-k-HSB-ByJIMP" + extension);
+
+            n++;
+            System.out.println(n + "/" + validPaths.size() + ": done with " + s);
+            System.out.println("");
+        }
+        System.out.println("done with all :D\nenjoy!");
+        return;
+    }
+
     /**
      * applies various filters and whatnot to given image, or all .jpg/.png images in given directory
      */
@@ -252,10 +418,13 @@ public class PictureTester
                     //valid image file
                     validPaths.add(f.getAbsolutePath());
                     //System.out.println(s);
-                } 
+                } else if (f.getAbsolutePath().contains("-ByJIMP")) {
+                    //delete file
+                    f.delete();
+                }
             }
         }
-
+        
         //apply filters to remaining valid images
         for (String s : validPaths) {
             //data
@@ -297,8 +466,8 @@ public class PictureTester
 
             sdMeanPic.simplifyColors(6);
             sdMeanPic.write(pathName + "-SD+mean-ByJIMP" + extension);
-            sdMeanPic.grayscale();
-            sdMeanPic.write(pathName + "-SD+mean-grayscaled-ByJIMP" + extension);
+            //sdMeanPic.grayscale();
+            //sdMeanPic.write(pathName + "-SD+mean-grayscaled-ByJIMP" + extension);
 
             zedPic.simplifyColors(7);
             zedPic.write(pathName + "-zed-ByJIMP" + extension);
@@ -306,11 +475,14 @@ public class PictureTester
             zedPlusPic.simplifyColors(8);
             zedPlusPic.write(pathName + "-zed+-ByJIMP" + extension);
 
-            KMeanPic.simplifyColors(9);
-            KMeanPic.write(pathName + "-K-Mean1-ByJIMP" + extension);
-            KMeanPic = new Picture(basePic);
-            KMeanPic.kMeansSimplify(10, 20);
+            //KMeanPic.simplifyColors(9);
+            //KMeanPic.write(pathName + "-K-Mean1-ByJIMP" + extension);
+            //KMeanPic = new Picture(basePic);
+            KMeanPic.kMeansSimplify(10, 10);
             KMeanPic.write(pathName + "-K-Mean2-ByJIMP" + extension);
+            KMeanPic = new Picture(basePic);
+            KMeanPic.kMeansSimplifyAutoKHsb(20, 16, true);
+            KMeanPic.write(pathName + "-K-Mean-ByJIMP" + extension);
 
             n++;
             System.out.println(n + "/" + validPaths.size() + ": done with " + s);
@@ -337,6 +509,7 @@ public class PictureTester
         // uncomment a call here to run a test
         // and comment out the ones you don't want
         // to run
+        //testHSBConversion();
         //testNegate();
         //testGrayscale();
         //testFixUnderwater();
@@ -358,65 +531,8 @@ public class PictureTester
         //testSetRedToHalfValueInTopHalf();
         //testClearBlueOverValue(200);
         //testGetAverageForColumn(0);
+        //testKMeansSimplify(""+FileChooser.getMediaDirectory() + "k-mean-clustering" + System.getProperty("file.separator"));
         createWallpapers("" + FileChooser.getMediaDirectory() + "Backgrounds" + System.getProperty("file.separator"));
-
-        //createWallpapers("" + FileChooser.getMediaDirectory() + "pixlab-images" + System.getProperty("file.separator") + "Backgrounds" + System.getProperty("file.separator"));
     }
 
-    ////////////////////// tester methods i made ///////////////////////////////////////
-    /** method to test keepOnlyBlue()*/
-    public static void testKeepOnlyBlue()
-    {
-        Picture beach = new Picture("beach.jpg");
-        beach.explore();
-        beach.keepOnlyBlue();
-        beach.explore();
-    }
-
-    /** method to test negate()*/
-    public static void testNegate()
-    {
-        Picture beach = new Picture("beach.jpg");
-        beach.explore();
-        beach.negate();
-        beach.explore();
-    }
-
-    /** method to test grayscale()*/
-    public static void testGrayscale()
-    {
-        Picture beach = new Picture("beach.jpg");
-        beach.explore();
-        beach.grayscale();
-        beach.explore();
-    }
-
-    /** method to test mirrorHorizontal */
-    public static void testMirrorHorizontal()
-    {
-        Picture redMotorcycle = new Picture("redMotorcycle.jpg");
-        redMotorcycle.explore();
-        redMotorcycle.mirrorHorizontal();
-        redMotorcycle.explore();
-    }
-
-    /** method to test mirrorHorizontalBotToTop() */
-    public static void testMirrorHorizontalBotToTop()
-    {
-        Picture beach = new Picture("redMotorcycle.jpg");
-        beach.explore();
-        beach.mirrorHorizontalBotToTop();
-        beach.explore();
-    }
-
-    /** method to test copy2() */
-    public static void testCopy2()
-    {
-        Picture beach = new Picture("beach.jpg");
-        Picture water = new Picture("water.jpg");
-
-        beach.explore();
-        beach.copy2(water, 252,454,290,600);
-        beach.explore();
-    }
 } 
