@@ -872,7 +872,8 @@ public class ToolUtilityPanelHandler extends JPanel
                     
                     simplified.kMeansSimplify(
                         Integer.parseInt(clustersLabel.getText().substring(clustersLabel.getText().indexOf("'")+1)),
-                        Integer.parseInt(iterationsLabel.getText().substring(iterationsLabel.getText().indexOf("'")+1))
+                        Integer.parseInt(iterationsLabel.getText().substring(iterationsLabel.getText().indexOf("'")+1)),
+                        false
                     );
                     
                     //save the new image (ask first)

@@ -3,7 +3,7 @@ package classes;
 
 import javax.imageio.ImageIO;
 
-import classes.util.ColorTools;
+//import classes.util.ColorTools;
 import classes.util.kmeans.Record;
 
 import java.awt.image.BufferedImage;

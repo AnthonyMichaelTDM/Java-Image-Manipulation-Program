@@ -478,7 +478,7 @@ public class PictureTester
             //KMeanPic.simplifyColors(9);
             //KMeanPic.write(pathName + "-K-Mean1-ByJIMP" + extension);
             //KMeanPic = new Picture(basePic);
-            KMeanPic.kMeansSimplify(10, 10);
+            KMeanPic.kMeansSimplify(10, 10, false);
             KMeanPic.write(pathName + "-K-Mean2-ByJIMP" + extension);
             KMeanPic = new Picture(basePic);
             KMeanPic.kMeansSimplifyAutoKHsb(20, 16, true);

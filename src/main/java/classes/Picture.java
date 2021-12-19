@@ -283,19 +283,24 @@ public class Picture extends SimplePicture {
      * @param k number of clusters
      * @param maxIterations maximum number of iterations of k-means to do
      */
-    public void kMeansSimplify(int k, int maxIterations) {
+    public void kMeansSimplify(int k, int maxIterations, boolean removeDuplicates) {
         //data
         // data
         Pixel currentPixel = null;
         Pixel[][] pixels = this.getPixels2D();
+        List<Record<Integer>> records = super.getPixelsRecordRGB(); //dataset of all pixels in the image
         Map<Centroid, List<Record<Integer>>> clusters; //most prevalant color groups as returned by KMeans
         Color[] colors = new Color[k]; //most prevalent colors
         int i; //used as in a later for loop
         
+        //remove duplicate records
+        if (removeDuplicates) {
+            DataAnalysisTools.removeDuplicates(records);
+        }
         
         
         //call to KMeans class passing the images colors
-        clusters = KMeans.fit(super.getPixelsRecordRGB(), k, new EuclideanDistance(), maxIterations);
+        clusters = KMeans.fit(records, k, new EuclideanDistance(), maxIterations);
         
         //extract the colors from colors
         i=0;
@@ -326,6 +331,7 @@ public class Picture extends SimplePicture {
             } // for
         } // for
     } // kMeansSimplify
+    //TODO: add this to the gui, either in its own panel, or combined with the current one
     /**
      * simplifies an image to a given number of colors using the k-means clustering algorithm, finds its own value for k, much slower :(
      * @param maxIterations maximum number of iterations of k-means to do
