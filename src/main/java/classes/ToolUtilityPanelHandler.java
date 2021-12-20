@@ -900,11 +900,13 @@ public class ToolUtilityPanelHandler extends JPanel
                     );
                     simplified = simplified.scale(2, 2); //scale back up
                 } else {
+                    simplified = simplified.scale(0.5, 0.5); //scale down to save time
                     simplified.kMeansSimplify(
                         Integer.parseInt(kLabel.getText().substring(kLabel.getText().indexOf("'")+1)),
                         Integer.parseInt(iLabel.getText().substring(iLabel.getText().indexOf("'")+1)),
                         false
                     );
+                    simplified = simplified.scale(2, 2); //scale back up
                 }
                 //save the new image (ask first)
                 PictureExplorer.pictureConfirmation.updateConfPanelImage(simplified);
