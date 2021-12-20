@@ -445,41 +445,39 @@ public class PictureTester
             pathName = basePic.getFileName().substring(0, basePic.getFileName().lastIndexOf("."));
         
             //apply filters and save
+            KMeanPic.kMeansSimplifyAutoK(20, 10, false);
+            KMeanPic = KMeanPic.scale(1.0/scaleFactor, 1.0/scaleFactor);
+            KMeanPic.write(pathName + "-0-K-Mean-ByJIMP" + extension);
+
             grayPic.simplifyColors(1);
-            grayPic.write(pathName + "-gray-ByJIMP" + extension);
+            grayPic.write(pathName + "-1-gray-ByJIMP" + extension);
 
             grayscalePic.grayscale();
-            grayscalePic.write(pathName + "-grayscale-ByJIMP" + extension);
+            grayscalePic.write(pathName + "-2-grayscale-ByJIMP" + extension);
 
             faithfulPic.simplifyColors(2);
-            faithfulPic.write(pathName + "-faithful-ByJIMP" + extension);
-
-            faithfulPic.simplifyColors(2);
-            faithfulPic.write(pathName + "-faithful-ByJIMP" + extension);
+            faithfulPic.write(pathName + "-3-faithful-ByJIMP" + extension);
 
             faithfullPlusPic.simplifyColors(3);
-            faithfullPlusPic.write(pathName + "-faithful+-ByJIMP" + extension);
+            faithfullPlusPic.write(pathName + "-4-faithful+-ByJIMP" + extension);
 
             BalancePic.simplifyColors(4);
-            BalancePic.write(pathName + "-balance-ByJIMP" + extension);
+            BalancePic.write(pathName + "-5-balance-ByJIMP" + extension);
 
             BalancePlusPic.simplifyColors(5);
-            BalancePlusPic.write(pathName + "-balance+-ByJIMP" + extension);
+            BalancePlusPic.write(pathName + "-6-balance+-ByJIMP" + extension);
 
             sdMeanPic.simplifyColors(6);
-            sdMeanPic.write(pathName + "-SD+mean-ByJIMP" + extension);
+            sdMeanPic.write(pathName + "-7-SD+mean-ByJIMP" + extension);
             //sdMeanPic.grayscale();
             //sdMeanPic.write(pathName + "-SD+mean-grayscaled-ByJIMP" + extension);
 
             zedPic.simplifyColors(7);
-            zedPic.write(pathName + "-zed-ByJIMP" + extension);
+            zedPic.write(pathName + "-8-zed-ByJIMP" + extension);
 
             zedPlusPic.simplifyColors(8);
-            zedPlusPic.write(pathName + "-zed+-ByJIMP" + extension);
+            zedPlusPic.write(pathName + "-9-zed+-ByJIMP" + extension);
 
-            KMeanPic.kMeansSimplifyAutoK(20, 10, false);
-            KMeanPic = KMeanPic.scale(1.0/scaleFactor, 1.0/scaleFactor);
-            KMeanPic.write(pathName + "-K-Mean-ByJIMP" + extension);
 
             n++;
             System.out.println(n + "/" + validPaths.size() + ": done with " + s);
@@ -528,8 +526,8 @@ public class PictureTester
         //testSetRedToHalfValueInTopHalf();
         //testClearBlueOverValue(200);
         //testGetAverageForColumn(0);
-        testKMeansSimplify(""+FileChooser.getMediaDirectory() + "k-mean-clustering" + System.getProperty("file.separator"));
-        //createWallpapers("" + FileChooser.getMediaDirectory() + "Backgrounds" + System.getProperty("file.separator"));
+        //testKMeansSimplify(""+FileChooser.getMediaDirectory() + "k-mean-clustering" + System.getProperty("file.separator"));
+        createWallpapers("" + FileChooser.getMediaDirectory() + "Backgrounds" + System.getProperty("file.separator"));
     }
 
 } 
