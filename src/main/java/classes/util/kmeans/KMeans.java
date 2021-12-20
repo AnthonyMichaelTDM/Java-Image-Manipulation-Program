@@ -97,19 +97,24 @@ public class KMeans {
         ArrayList<Double> scores = new ArrayList<>();
         scores.add(0.0); //imaginary result for 0 clusters
         scores.add(0.0); //imaginary result for 1 cluster
+        double score = 0.0;
+        double prevScore;
 
         //TODO: while technically linear complexity, this shit takes forever, please find out how to multithread parts of it in the future ffs
 
-        while (k<=maxK) { //O(I)
+        while (k<maxK) { //O(I)
             //do k-means algorithm w/ k and i
             lastState = state;
             state = fit(records, k, distance, maxIterations); //  O(I*N*K + I*2*N) ))
             
             //find average silhouette score and add to scores
-            scores.add(meanSilhouette(state, distance)); // O(N)
+            prevScore = score;
+            score = meanSilhouette(state, distance); // O(N)
+            scores.add(score); 
 
             //compare with previous 2 scores
-            if (scores.size()-1-2 > 2 && (scores.get(k-2) < scores.get(k-1) && scores.get(k-1) > scores.get(k)) ) { //last one is a local max, terminate
+            //conditions ensure that 1) enough have been tested, 2) the results are good enough quality 3) previous k is a maximum
+            if (scores.size()-1-2 > 2 && prevScore > 0.7 && (scores.get(k-2) < scores.get(k-1) && scores.get(k-1) > scores.get(k)) ) { //last one is a local max, terminate
                 k=k-1;
                 break;
             }
@@ -146,6 +151,7 @@ public class KMeans {
         //b = average distance between the cluster i and all other clusters
 
         for (Centroid centroid : centroids.keySet()) {
+            int sizeB = 0;
             //calc a(i)
             for (Record<N> datapoint : centroids.get(centroid)) {
                 a += distance.calculate(datapoint.getFeatures(), centroid.getCoordinates()); //sum
@@ -154,9 +160,10 @@ public class KMeans {
 
             //calc b(i)
             for (Centroid otherCentroid : centroids.keySet()) { //only comparing to other centroids is equivalent, but MUCH faster than comparing to entire dataset
-                b += distance.calculate(otherCentroid.getCoordinates(), centroid.getCoordinates()); //sum
+                b += (distance.calculate(otherCentroid.getCoordinates(), centroid.getCoordinates()) * centroids.get(otherCentroid).size()); //sum and scale
+                sizeB+=centroids.get(otherCentroid).size();
             }
-            b /= (double)(centroids.keySet().size()-1); //sum
+            b /= (double)(sizeB); //sum
 
             //calc and sum S(i)
             aveSilhouette += (b-a)/Math.max(a, b);
@@ -165,7 +172,7 @@ public class KMeans {
         }
         // divide aveSilhouette by number of clusters to get actual mean
         aveSilhouette /= (double)(centroids.keySet().size());
-        //System.out.println(aveSilhouette);
+        System.out.println(aveSilhouette);
         return aveSilhouette;
     }
 

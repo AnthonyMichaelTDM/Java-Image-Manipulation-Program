@@ -20,6 +20,9 @@ package classes;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import javax.security.sasl.SaslClient;
+
 import java.awt.Color;
 
 //import classes.util.kmeans.KMeans;
@@ -340,10 +343,10 @@ public class PictureTester
                     // valid image file
                     validPaths.add(f.getAbsolutePath());
                     // System.out.println(s);
-                } /* else if (f.getAbsolutePath().contains("-ByJIMP")) {
+                } else if (f.getAbsolutePath().contains("-ByJIMP")) {
                     //delete file
                     f.delete();
-                }*/
+                }
             }
         }
 
@@ -359,9 +362,9 @@ public class PictureTester
             
             //apply filters and save
             
-            KMeanPic.kMeansSimplifyAutoKHsb(16, 20,true);
+            KMeanPic.kMeansSimplifyAutoK(16, 20, false);
             KMeanPic = KMeanPic.scale(1.0/scaleFactor, 1.0/scaleFactor);
-            KMeanPic.write(pathName + "-K-Mean-auto-k-HSB-ByJIMP" + extension);
+            KMeanPic.write(pathName + "-K-Mean-auto-k-ByJIMP" + extension);
 
             n++;
             System.out.println(n + "/" + validPaths.size() + ": done with " + s);
@@ -382,6 +385,7 @@ public class PictureTester
         Picture basePic, grayPic, grayscalePic, faithfulPic, faithfullPlusPic, BalancePic, BalancePlusPic, sdMeanPic, zedPic, zedPlusPic,KMeanPic;
         String extension, pathName;
         int n=0;
+        double scaleFactor = 0.5; //factor to scale images by before performing costly operations on them
 
         System.out.println(fileOrDirectoryPath);
 
@@ -438,7 +442,7 @@ public class PictureTester
             sdMeanPic = new Picture(basePic);
             zedPic = new Picture(basePic);
             zedPlusPic = new Picture(basePic);
-            KMeanPic = new Picture(basePic);
+            KMeanPic = new Picture(basePic.scale(scaleFactor, scaleFactor));
             extension = basePic.getFileName().substring(basePic.getFileName().lastIndexOf("."));
             pathName = basePic.getFileName().substring(0, basePic.getFileName().lastIndexOf("."));
         
@@ -475,13 +479,8 @@ public class PictureTester
             zedPlusPic.simplifyColors(8);
             zedPlusPic.write(pathName + "-zed+-ByJIMP" + extension);
 
-            //KMeanPic.simplifyColors(9);
-            //KMeanPic.write(pathName + "-K-Mean1-ByJIMP" + extension);
-            //KMeanPic = new Picture(basePic);
-            KMeanPic.kMeansSimplify(10, 10, false);
-            KMeanPic.write(pathName + "-K-Mean2-ByJIMP" + extension);
-            KMeanPic = new Picture(basePic);
-            KMeanPic.kMeansSimplifyAutoKHsb(20, 16, true);
+            KMeanPic.kMeansSimplifyAutoK(20, 10, false);
+            KMeanPic = KMeanPic.scale(1.0/scaleFactor, 1.0/scaleFactor);
             KMeanPic.write(pathName + "-K-Mean-ByJIMP" + extension);
 
             n++;
@@ -531,8 +530,8 @@ public class PictureTester
         //testSetRedToHalfValueInTopHalf();
         //testClearBlueOverValue(200);
         //testGetAverageForColumn(0);
-        //testKMeansSimplify(""+FileChooser.getMediaDirectory() + "k-mean-clustering" + System.getProperty("file.separator"));
-        createWallpapers("" + FileChooser.getMediaDirectory() + "Backgrounds" + System.getProperty("file.separator"));
+        testKMeansSimplify(""+FileChooser.getMediaDirectory() + "k-mean-clustering" + System.getProperty("file.separator"));
+        //createWallpapers("" + FileChooser.getMediaDirectory() + "Backgrounds" + System.getProperty("file.separator"));
     }
 
 } 

@@ -288,8 +288,8 @@ public class Picture extends SimplePicture {
         // data
         Pixel currentPixel = null;
         Pixel[][] pixels = this.getPixels2D();
-        List<Record<Integer>> records = super.getPixelsRecordRGB(); //dataset of all pixels in the image
-        Map<Centroid, List<Record<Integer>>> clusters; //most prevalant color groups as returned by KMeans
+        List<Record<Float>> records = super.getPixelsRecordHSL(); //dataset of all pixels in the image
+        Map<Centroid, List<Record<Float>>> clusters; //most prevalant color groups as returned by KMeans
         Color[] colors = new Color[k]; //most prevalent colors
         int i; //used as in a later for loop
         
@@ -298,19 +298,19 @@ public class Picture extends SimplePicture {
             DataAnalysisTools.removeDuplicates(records);
         }
         
-        
         //call to KMeans class passing the images colors
         clusters = KMeans.fit(records, k, new EuclideanDistance(), maxIterations);
         
         //extract the colors from colors
         i=0;
         for (Centroid centroid : clusters.keySet()) {
-            int r,g,b;
-            r = centroid.getCoordinates().get("red").intValue();
-            g = centroid.getCoordinates().get("green").intValue();
-            b = centroid.getCoordinates().get("blue").intValue();
+            //found out that when you use HSL values rather than HSB values, the clustering algorithm clusters much more like a person would 
+            float h,s,b;
+            h = centroid.getCoordinates().get("hue").floatValue();
+            s = centroid.getCoordinates().get("saturation").floatValue();
+            b = centroid.getCoordinates().get("lightness").floatValue();
         
-            colors[i] = new Color( r,g,b );
+            colors[i] = new Color(Color.HSBtoRGB(h, s, b));
             i++;
         }// for
         
@@ -334,11 +334,11 @@ public class Picture extends SimplePicture {
     //TODO: add this to the gui, either in its own panel, or combined with the current one
     /**
      * simplifies an image to a given number of colors using the k-means clustering algorithm, finds its own value for k, much slower :(
-     * @param maxIterations maximum number of iterations of k-means to do
      * @param maxK maximum k, num of clusters
+     * @param maxIterations maximum number of iterations of k-means to do
      * @param removeDuplicates wether or not to remove duplicate colors
      */
-    public void kMeansSimplifyAutoKHsb(int maxIterations, int maxK, boolean removeDuplicates) {
+    public void kMeansSimplifyAutoK(int maxK, int maxIterations, boolean removeDuplicates) {
         //data
         int k;
         Pixel currentPixel = null;

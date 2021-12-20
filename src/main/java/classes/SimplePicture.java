@@ -148,9 +148,17 @@ public class SimplePicture implements DigitalPicture
 
     /**
      * Method to get the extension for this picture
-     * @return the extendsion (jpg, bmp, giff, etc)
+     * @return the extension (jpg, bmp, giff, etc)
      */
     public String getExtension() { return extension; }
+    /**
+     * Method to set the extension for the picture
+     * @param extension the extension (jpg, bmp, giff, etc)
+     */
+    public void setExtension(String extension) 
+    {
+        this.extension = extension;
+    }
 
     /**
      * Method that will copy all of the passed source picture into
@@ -629,6 +637,10 @@ public class SimplePicture implements DigitalPicture
 
         // draw the current image onto the result image scaled
         g2.drawImage(this.getImage(),scaleTransform,null);
+        
+        //copy some data from the old picture to the new one
+        result.setFileName(this.getFileName());
+        result.setExtension(this.getExtension());
 
         return result;
     }
