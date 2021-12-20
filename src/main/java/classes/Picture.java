@@ -331,7 +331,6 @@ public class Picture extends SimplePicture {
             } // for
         } // for
     } // kMeansSimplify
-    //TODO: add this to the gui, either in its own panel, or combined with the current one
     /**
      * simplifies an image to a given number of colors using the k-means clustering algorithm, finds its own value for k, much slower :(
      * @param maxK maximum k, num of clusters

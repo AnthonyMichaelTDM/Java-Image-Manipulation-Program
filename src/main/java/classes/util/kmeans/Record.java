@@ -71,7 +71,8 @@ public class Record<N extends Number> {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Record record = (Record) o;
+        
+        Record<?> record = (Record<?>) o;
         return Objects.equals(getDescription(), record.getDescription()) && Objects.equals(getFeatures(), record.getFeatures());
     }
 
