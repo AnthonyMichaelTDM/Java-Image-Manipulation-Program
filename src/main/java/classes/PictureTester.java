@@ -445,10 +445,10 @@ public class PictureTester
             pathName = basePic.getFileName().substring(0, basePic.getFileName().lastIndexOf("."));
         
             //apply filters and save
-            KMeanPic.kMeansSimplifyAutoK(20, 16, false);
-            KMeanPic = KMeanPic.scale(1.0/scaleFactor, 1.0/scaleFactor);
-            KMeanPic.write(pathName + "-0-K-Mean-ByJIMP" + extension);
 
+            KMeanPic.write(pathName + "-0-K-Mean-ByJIMP" + extension);
+            KMeanPic = KMeanPic.scale(1.0/scaleFactor, 1.0/scaleFactor);
+            KMeanPic.kMeansSimplifyAutoK(20, 16, false);
             grayPic.simplifyColors(1);
             grayPic.write(pathName + "-1-gray-ByJIMP" + extension);
 
