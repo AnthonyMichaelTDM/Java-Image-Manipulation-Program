@@ -502,7 +502,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         pictureFrame.repaint();
     }
     //*************************************************//
-    //               Tool Utility Panel Management          //
+    //               Tool Utility Panel Management     //
     //*************************************************//
 
     /**
@@ -516,7 +516,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         pictureFrame.getContentPane().remove(toolUtilityPanel);
         toolUtilityPanel.updateToolUtilityPanel(tool);
         pictureFrame.getContentPane().add(BorderLayout.WEST,toolUtilityPanel);
-        pictureFrame.pack();
+        //pictureFrame.pack();
         repaint();
     }
 
@@ -760,18 +760,19 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
          */
         public void updateConfPanelImage(SimplePicture temp)
         {
+            tempFrame.dispose();
+            tempPicture = temp;
+
             //if the ask for confirmation box is unchecked, update the image, and return
             if (!askForConfirmationCheckBox.isSelected()) {
-                picture.copyPicture(temp);//copy the images pixels, but keep the other data
-                undoRedoButtons.updateCache(temp); //update undoRedo cache
+                picture.copyPicture(tempPicture);//copy the images pixels, but keep the other data
+                undoRedoButtons.updateCache(tempPicture); //update undoRedo cache
                 tempFrame.setVisible(false);
                 updateImage();
-                tempFrame.dispose();
+                
                 return;
             }
-            tempFrame.dispose();
             this.initFrame();
-            tempPicture = temp;
             //only do this if there is a picture
             if (tempPicture != null)
             {
