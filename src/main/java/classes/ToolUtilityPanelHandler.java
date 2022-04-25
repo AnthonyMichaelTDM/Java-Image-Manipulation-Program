@@ -335,7 +335,7 @@ public class ToolUtilityPanelHandler extends JPanel
         JButton confirmButton = new JButton("confirm");
 
         //config panel components
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "greyscale the image");
+        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "grayscale the image");
         Font titleFont = new Font(titleLable.getFont().getName(),
                 titleLable.getFont().getStyle(),18);
         titleLable.setFont(titleFont);
