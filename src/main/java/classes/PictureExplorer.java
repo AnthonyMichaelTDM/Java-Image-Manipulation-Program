@@ -516,6 +516,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
         pictureFrame.getContentPane().remove(toolUtilityPanel);
         toolUtilityPanel.updateToolUtilityPanel(tool);
         pictureFrame.getContentPane().add(BorderLayout.WEST,toolUtilityPanel);
+        pictureFrame.validate();
         //pictureFrame.pack();
         repaint();
     }
