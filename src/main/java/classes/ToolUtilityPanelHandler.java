@@ -763,8 +763,6 @@ public class ToolUtilityPanelHandler extends JPanel
         additionalFiltersPanel.add(BorderLayout.CENTER, grayscaleCheckBox);
         additionalFiltersPanel.add(BorderLayout.SOUTH, invertCheckBox);
         
- 
- 
         //config panel components
         String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", TOOL_CONFIG_WIDTH-5, "simplify image to 5 colors:");
         Font titleFont = new Font(titleLable.getFont().getName(),
@@ -809,22 +807,24 @@ public class ToolUtilityPanelHandler extends JPanel
      */
     private void kMeansSimplifyToolPanel() {
         //DATA
-        String kText = "max colors (k): ";
-        String iText = "max iterations (i): ";
+        String kText = "max colors (k)";
+        String iText = "max iterations (i)";
         //panels
         defaultToolUtilityPanel();
         //title label
         JLabel titleLable = new JLabel();
         //clusters text box
         NumberFormatter clustersFormat = new NumberFormatter(NumberFormat.getNumberInstance());
+        clustersFormat.setMinimum(2);
         JFormattedTextField kField = new JFormattedTextField(clustersFormat);
         kField.setSize(20, 100);
-        JLabel kLabel = new JLabel(kText + "'5");
+        
         //max iterations text box
         NumberFormatter iterationsFormat = new NumberFormatter(NumberFormat.getNumberInstance());
+        iterationsFormat.setMinimum(2);
         JFormattedTextField iField = new JFormattedTextField(iterationsFormat);
         iField.setSize(20, 100);
-        JLabel iLabel = new JLabel(iText + "'5");
+
         //checkboxes
         JCheckBox removeDupesCheckbox = new JCheckBox("remove duplicates?");
         removeDupesCheckbox.setSelected(false);
@@ -871,19 +871,6 @@ public class ToolUtilityPanelHandler extends JPanel
         this.add(BorderLayout.CENTER, toolConfigPanel);
         this.add(BorderLayout.SOUTH, confirmButton);
 
-        //handle the clusters field
-        kField.addPropertyChangeListener("value", new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent e) {
-                kLabel.setText(kText + "'" + (int) ((Number)kField.getValue()).doubleValue() );
-            }           
-        });
-        //handle the iterations field
-        iField.addPropertyChangeListener("value", new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent e) {
-                iLabel.setText(iText + "'" + (int) ((Number)iField.getValue()).doubleValue() );
-            }           
-        });
-
         //handle confirm button press
         confirmButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -894,16 +881,16 @@ public class ToolUtilityPanelHandler extends JPanel
                 if (autoKCheckBox.isSelected()) {
                     simplified = simplified.scale(0.5, 0.5); //scale down to save time
                     simplified.kMeansSimplifyAutoK(
-                        Integer.parseInt(kLabel.getText().substring(kLabel.getText().indexOf("'")+1)),
-                        Integer.parseInt(iLabel.getText().substring(iLabel.getText().indexOf("'")+1)),
+                        kLabel.setText(kText + "'" + (int) ((Number)kField.getValue()).doubleValue() ),
+                        iLabel.setText(iText + "'" + (int) ((Number)iField.getValue()).doubleValue() ),
                         false
                     );
                     simplified = simplified.scale(2, 2); //scale back up
                 } else {
                     simplified = simplified.scale(0.5, 0.5); //scale down to save time
                     simplified.kMeansSimplify(
-                        Integer.parseInt(kLabel.getText().substring(kLabel.getText().indexOf("'")+1)),
-                        Integer.parseInt(iLabel.getText().substring(iLabel.getText().indexOf("'")+1)),
+                        kLabel.setText(kText + "'" + (int) ((Number)kField.getValue()).doubleValue() ),
+                        iLabel.setText(iText + "'" + (int) ((Number)iField.getValue()).doubleValue() ),
                         false
                     );
                     simplified = simplified.scale(2, 2); //scale back up

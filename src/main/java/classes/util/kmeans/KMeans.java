@@ -125,7 +125,7 @@ public class KMeans {
 
         //if k==maxK, there was no local max, so use one of the ends
         if (k==maxK) {
-            if (scores.get(2) >= scores.get(k)) {
+            if (scores.get( maxK>2 ? 2 : 1) >= scores.get(k-1)) {
                 lastState = fit(records, 2, distance, maxIterations); //start was best
             } else {
                 lastState = state; //end was best
