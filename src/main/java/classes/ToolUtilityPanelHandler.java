@@ -128,34 +128,40 @@ public class ToolUtilityPanelHandler extends JPanel
      */
     private void removeColorToolPanel() 
     {
-        //panels
-        defaultToolUtilityPanel();
-        //title label
-        JLabel titleLable = new JLabel();
-        //radio buttons, to select the channels
+        //DATA 
+        JLabel titleLable = new JLabel(); // title label
+        String titleText;
+        Font titleFont;
+        JButton confirmButton = new JButton("confirm"); // button to confirm changes
+        //
+        JPanel toolConfigPanel;
+        // radio buttons to select the channels
         JRadioButton redRadioButton = new JRadioButton("remove red");
         JRadioButton greenRadioButton = new JRadioButton("remove green");
         JRadioButton blueRadioButton = new JRadioButton("remove blue");
-        //button to confirm changes
-        JButton confirmButton = new JButton("confirm");
 
-        //config panel components
+        //panels
+        defaultToolUtilityPanel();
+
+        //configure panel components
         redRadioButton.setSelected(false);
         greenRadioButton.setSelected(false);
         blueRadioButton.setSelected(false);
 
-        JPanel toolConfigPanel = new JPanel(new GridLayout(3,1));
+        //build config panel
+        toolConfigPanel = new JPanel(new GridLayout(3,1));
         toolConfigPanel.setPreferredSize(new Dimension(TOOL_CONFIG_WIDTH,150));
         toolConfigPanel.add(redRadioButton);
         toolConfigPanel.add(greenRadioButton);
         toolConfigPanel.add(blueRadioButton);
 
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", TOOL_CONFIG_WIDTH, "remove one or more color channels");
-        Font titleFont = new Font(titleLable.getFont().getName(),
+        //title
+        titleText = String.format("<html><div WIDTH=%d>%s</div></html>", TOOL_CONFIG_WIDTH, "remove one or more color channels");
+        titleFont = new Font(titleLable.getFont().getName(),
                 titleLable.getFont().getStyle(),18);
         titleLable.setFont(titleFont);
         titleLable.setText(titleText);
-        //add components to the panel
+        //add components to the main panel
         this.add(BorderLayout.NORTH, titleLable);
         this.add(BorderLayout.CENTER, toolConfigPanel);
         this.add(BorderLayout.SOUTH, confirmButton);
@@ -183,30 +189,30 @@ public class ToolUtilityPanelHandler extends JPanel
      */
     private void trimColorToolPanel() 
     {
-        //panels
-        defaultToolUtilityPanel();
-
-        // panel components
-
-        //title label
-        JLabel titleLable = new JLabel();
-        //color comboBox
-        JComboBox<String> colorBox = new JComboBox<String>(new String[]{"red","green","blue"});
-        //confirm button
-        JButton confirmButton = new JButton("confirm");
-        //min slider
+        //DATA 
+        JLabel titleLable = new JLabel();//title label
+        String titleText;
+        Font titleFont;
+        JButton confirmButton = new JButton("confirm");//button to confirm changes
+        //
+        JPanel toolConfigPanel;
+        JComboBox<String> colorBox= new JComboBox<String>(new String[]{"red","green","blue"}); //color comboBox
+        // min slider
         JLabel minLabel = new JLabel("min value (0-255)");
         JSlider minSlider = new JSlider(0,255,0);
         JLabel minValueLabel = new JLabel();
-        //max slider
+        // max slider
         JLabel maxLabel = new JLabel("max value (0-255)");
         JSlider maxSlider = new JSlider(0,255,255);
         JLabel maxValueLabel = new JLabel();
 
-        // config panel components
+        //panels
+        defaultToolUtilityPanel();
+
+        // configure panel components
         //title
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", TOOL_CONFIG_WIDTH, "trim a color channel");
-        Font titleFont = new Font(titleLable.getFont().getName(),
+        titleText = String.format("<html><div WIDTH=%d>%s</div></html>", TOOL_CONFIG_WIDTH, "trim a color channel");
+        titleFont = new Font(titleLable.getFont().getName(),
                 titleLable.getFont().getStyle(),18);
         titleLable.setFont(titleFont);
         titleLable.setText(titleText);
@@ -215,8 +221,9 @@ public class ToolUtilityPanelHandler extends JPanel
         minSlider.setMajorTickSpacing(10);
         maxSlider.setMinorTickSpacing(5);
         maxSlider.setMajorTickSpacing(10);
-        //slider panel
-        JPanel toolConfigPanel = new JPanel(new GridLayout(7,1));
+
+        //build config panel
+        toolConfigPanel = new JPanel(new GridLayout(7,1));
         toolConfigPanel.setPreferredSize(new Dimension(TOOL_CONFIG_WIDTH,200));
         toolConfigPanel.add(colorBox);
         toolConfigPanel.add(minLabel);
@@ -226,7 +233,7 @@ public class ToolUtilityPanelHandler extends JPanel
         toolConfigPanel.add(maxSlider);
         toolConfigPanel.add(maxValueLabel);
 
-        // add components to panel
+        // add components to main panel
         this.add(BorderLayout.NORTH, titleLable);
         this.add(BorderLayout.CENTER, toolConfigPanel);
         this.add(BorderLayout.SOUTH, confirmButton);
@@ -272,34 +279,42 @@ public class ToolUtilityPanelHandler extends JPanel
      */
     private void negateToolPanel() 
     {
-        //panels
-        defaultToolUtilityPanel();
-        //title label
-        JLabel titleLable = new JLabel();
-        //radio buttons, to select the channels
+        //DATA 
+        JLabel titleLable = new JLabel();//title label
+        String titleText;
+        Font titleFont;
+        JButton confirmButton = new JButton("confirm");//button to confirm changes
+        //
+        JPanel toolConfigPanel;
+        // radio buttons, to select the channels to negate
         JRadioButton negateRedRadioButton = new JRadioButton("negate red");
         JRadioButton negateGreebRadioButton = new JRadioButton("negate green");
         JRadioButton negateBlueRadioButton = new JRadioButton("negate blue");
-        //button to confirm changes
-        JButton confirmButton = new JButton("confirm");
+        
 
-        //config panel components
+        //panels
+        defaultToolUtilityPanel();
+        
+        //configure panel components
+        //title
+        titleText = String.format("<html><div WIDTH=%d>%s</div></html>", TOOL_CONFIG_WIDTH, "negate one or more color channels");
+        titleFont = new Font(titleLable.getFont().getName(),
+                titleLable.getFont().getStyle(),18);
+        titleLable.setFont(titleFont);
+        titleLable.setText(titleText);
+        //radio buttons
         negateRedRadioButton.setSelected(false);
         negateGreebRadioButton.setSelected(false);
         negateBlueRadioButton.setSelected(false);
 
-        JPanel toolConfigPanel = new JPanel(new GridLayout(3,1));
+        //build config panel
+        toolConfigPanel = new JPanel(new GridLayout(3,1));
         toolConfigPanel.setPreferredSize(new Dimension(TOOL_CONFIG_WIDTH,150));
         toolConfigPanel.add(negateRedRadioButton);
         toolConfigPanel.add(negateGreebRadioButton);
         toolConfigPanel.add(negateBlueRadioButton);
 
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", TOOL_CONFIG_WIDTH, "negate one or more color channels");
-        Font titleFont = new Font(titleLable.getFont().getName(),
-                titleLable.getFont().getStyle(),18);
-        titleLable.setFont(titleFont);
-        titleLable.setText(titleText);
-        //add components to the panel
+        //add components to main panel
         this.add(BorderLayout.NORTH, titleLable);
         this.add(BorderLayout.CENTER, toolConfigPanel);
         this.add(BorderLayout.SOUTH, confirmButton);
@@ -327,21 +342,24 @@ public class ToolUtilityPanelHandler extends JPanel
      */
     private void grayscaleToolPanel() 
     {
+        //DATA 
+        JLabel titleLable = new JLabel();//title label
+        String titleText;
+        Font titleFont;
+        JButton confirmButton = new JButton("confirm");//button to confirm changes
+        
         //panels
         defaultToolUtilityPanel();
-        //title label
-        JLabel titleLable = new JLabel();
-        //button to confirm changes
-        JButton confirmButton = new JButton("confirm");
 
-        //config panel components
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "grayscale the image");
-        Font titleFont = new Font(titleLable.getFont().getName(),
+        //configure panel components
+        //title
+        titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "grayscale the image");
+        titleFont = new Font(titleLable.getFont().getName(),
                 titleLable.getFont().getStyle(),18);
         titleLable.setFont(titleFont);
         titleLable.setText(titleText);
 
-        //add components to the panel
+        //add components to the main panel
         this.add(BorderLayout.NORTH, titleLable);
         this.add(BorderLayout.SOUTH, confirmButton);
 
@@ -364,56 +382,67 @@ public class ToolUtilityPanelHandler extends JPanel
      */
     private void replaceColorWithColorToolPanel() 
     {
-        //panels
-        defaultToolUtilityPanel();
-        //title label
-        JLabel titleLable = new JLabel();
+        //DATA
+        JLabel titleLable = new JLabel();//title label
+        String titleText;
+        Font titleFont;
+        JButton confirmButton = new JButton("confirm");//button to confirm changes
+        //
+        JPanel toolConfigPanel;
+        ///
         //label, button and panel to display the currently selected color to replace
+        JPanel colorToReplacePanel;
         JLabel colorToReplaceLabel = new JLabel();
         JButton colorToReplaceButton = new JButton("update color to replace");
         JPanel replaceColorPanel = new JPanel(); //displays the replace color
-        //label, button and panel to display the currently selected color to set
+        ///
+        // label, button and panel to display the currently selected color to set
+        JPanel colorToSetPanel;
         JLabel colorToSetLabel = new JLabel();
         JButton colorToSetButton = new JButton("select color to set");
         JPanel setColorPanel = new JPanel(); //displays the set color
-        //tolerance slider
+        ///
+        // label, slider, and panel to select the tolerance
+        JPanel tolerancePanel;
         JSlider toleranceSlider = new JSlider(1,255,15);
         JLabel toleranceLabel = new JLabel("tolerance (0-255):"  + toleranceSlider.getValue());
-        //button to confirm changes
-        JButton confirmButton = new JButton("confirm");
 
-        //config panel components
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "replace color with color");
-        Font titleFont = new Font(titleLable.getFont().getName(),
+        //panels
+        defaultToolUtilityPanel();
+
+        //configure panel components
+        //title
+        titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "replace color with color");
+        titleFont = new Font(titleLable.getFont().getName(),
                 titleLable.getFont().getStyle(),18);
         titleLable.setFont(titleFont);
         titleLable.setText(titleText);
-
-        JPanel colorToReplacePanel = new JPanel();
+        //label, button and panel to display the currently selected color to replace
+        colorToReplacePanel = new JPanel();
         colorToReplaceLabel.setText("color to replace");
         replaceColorPanel.setBackground(PictureExplorer.selectedPixelColor);
         colorToReplacePanel.add(BorderLayout.WEST, colorToReplaceLabel);
         colorToReplacePanel.add(BorderLayout.EAST, replaceColorPanel);
         colorToReplacePanel.add(BorderLayout.SOUTH, colorToReplaceButton);
-
-        JPanel colorToSetPanel = new JPanel();
+        //label, button and panel to display the currently selected color to set
+        colorToSetPanel = new JPanel();
         colorToSetLabel.setText("color to set");
         colorToSetPanel.add(BorderLayout.WEST, colorToSetLabel);
         colorToSetPanel.add(BorderLayout.EAST, setColorPanel);
         colorToSetPanel.add(BorderLayout.SOUTH, colorToSetButton);
-
-        JPanel tolerancePanel = new JPanel(new GridLayout(2,1));
+        //slider for tolerance
+        tolerancePanel = new JPanel(new GridLayout(2,1));
         tolerancePanel.add(toleranceLabel);
         tolerancePanel.add(toleranceSlider);
 
-        JPanel toolConfigPanel = new JPanel(new GridLayout(3,1));
+        //build config panel 
+        toolConfigPanel = new JPanel(new GridLayout(3,1));
         toolConfigPanel.setPreferredSize(new Dimension(TOOL_CONFIG_WIDTH,200));
         toolConfigPanel.add(colorToReplacePanel);
         toolConfigPanel.add(colorToSetPanel);
         toolConfigPanel.add(tolerancePanel);
 
-        confirmButton.setEnabled(false);
-        //add components to the panel
+        //add components to the main panel
         this.add(BorderLayout.NORTH, titleLable);
         this.add(BorderLayout.CENTER, toolConfigPanel);
         this.add(BorderLayout.SOUTH, confirmButton);
@@ -492,65 +521,75 @@ public class ToolUtilityPanelHandler extends JPanel
      */
     private void edgeDetectionToolPanel() 
     {
-        //panels
-        defaultToolUtilityPanel();
-        //title label
-        JLabel titleLable = new JLabel();
+        //DATA
+        JLabel titleLable = new JLabel();//title label
+        String titleText;
+        Font titleFont;
+        JButton confirmButton = new JButton("confirm");//button to confirm changes
+        //
+        JPanel toolConfigPanel;
+        ///
+        JPanel algorithmSelectionPanel;
+        JLabel explainationLabel = new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", TOOL_CONFIG_WIDTH-5, "algorithm 1 is much slower, but a higher resolution. Algorithm 2 is much faster, but can sometimes appear \"fuzzy\". Algorithm 3 fills area between edges, useful for making light text show up better against a plain background"));
         //algorithm selection comboBox
         JComboBox<String> algorithmSelection = new JComboBox<String>(new String[]{"algorithm 1", "algorithm 2", "algorithm 3"});
-        JLabel explainationLabel = new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", TOOL_CONFIG_WIDTH-5, "algorithm 1 is much slower, but a higher resolution. Algorithm 2 is much faster, but can sometimes appear \"fuzzy\". Algorithm 3 fills area between edges, useful for making light text show up better against a plain background"));
-        //tolerance slider
-        JSlider toleranceSlider = new JSlider(1,255,5);
-        JLabel toleranceLabel = new JLabel("tolerance (0-255):"  + toleranceSlider.getValue());
-        //iterations text box
-        NumberFormatter iterationsFormat = new NumberFormatter(NumberFormat.getNumberInstance());
-        JFormattedTextField iterationsField = new JFormattedTextField(iterationsFormat);
-        JLabel iterationsLabel = new JLabel("iterations: '1");
         //auto tolerance radiobutton
-        JCheckBox autoTolerance = new JCheckBox(String.format("<html><div WIDTH=%d>%s</div></html>", 100, "automatically find a decent tolerance?"));
-        //button to confirm changes
-        JButton confirmButton = new JButton("confirm");
+        JCheckBox autoTolerance = new JCheckBox(String.format("<html><div WIDTH=%d>%s</div></html>", 100, "automatically find tolerance?"));
+        ////
+        JPanel algorithmSpecificPanel;
+        //iterations text box
+        JLabel iterationsLabel = new JLabel("iterations: '1");
+        NumberFormatter iterationsFormat  = new NumberFormatter(NumberFormat.getNumberInstance());
+        iterationsFormat.setMinimum(0);
+        JFormattedTextField iterationsField = new JFormattedTextField(iterationsFormat);
+        ////
+        //tolerance slider
+        JPanel tolerancePanel;
+        JSlider toleranceSlider = new JSlider(1,255,5);
+        JLabel toleranceLabel = new JLabel("tolerance (0-255): "  + toleranceSlider.getValue());
         //checkbox, toggle grayscaling
         JCheckBox grayscaleCheckBox = new JCheckBox("grayscale output?");
 
-        //config panel components
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "detect edges with 1 of 3 algorithms");
-        Font titleFont = new Font(titleLable.getFont().getName(),
+        //panels
+        defaultToolUtilityPanel();
+
+        //configure panel components
+        //title
+        titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "detect edges with 1 of 3 algorithms");
+        titleFont = new Font(titleLable.getFont().getName(),
                 titleLable.getFont().getStyle(),18);
         titleLable.setFont(titleFont);
         titleLable.setText(titleText);
-
-        explainationLabel.setFont(new Font(explainationLabel.getFont().getName(),explainationLabel.getFont().getStyle(),9));
-
-        JPanel algorithmPanels = new JPanel(new GridLayout(2,1));
+        //build algorithm panel
+        algorithmSpecificPanel = new JPanel(new GridLayout(2,1));
         iterationsField.setValue(1);
         iterationsField.setColumns(10);
-        algorithmPanels.add(iterationsLabel);
-        algorithmPanels.add(iterationsField);
-        algorithmPanels.setVisible(false);
+        algorithmSpecificPanel.add(iterationsLabel);
+        algorithmSpecificPanel.add(iterationsField);
+        algorithmSpecificPanel.setVisible(false);
         autoTolerance.setVisible(false);
-
+        //build algorithm selection panel
+        explainationLabel.setFont(new Font(explainationLabel.getFont().getName(),explainationLabel.getFont().getStyle(),9));
         algorithmSelection.setSelectedIndex(0);
-        JPanel algorithmSelectionPanel = new JPanel();
-        algorithmSelectionPanel.setPreferredSize(new Dimension(TOOL_CONFIG_WIDTH, 200));
+        algorithmSelectionPanel = new JPanel();
+        algorithmSelectionPanel.setPreferredSize(new Dimension(TOOL_CONFIG_WIDTH, 175));
         algorithmSelectionPanel.add(BorderLayout.NORTH, algorithmSelection);
-        algorithmSelectionPanel.add(BorderLayout.SOUTH, algorithmPanels);
+        algorithmSelectionPanel.add(BorderLayout.SOUTH, algorithmSpecificPanel);
         algorithmSelectionPanel.add(BorderLayout.SOUTH, autoTolerance);
         algorithmSelectionPanel.add(BorderLayout.SOUTH, explainationLabel);
-
+        //build tolerance panel 
+        tolerancePanel = new JPanel(new GridLayout(3,1));
         grayscaleCheckBox.setVisible(false);
-        grayscaleCheckBox.setSelected(false);
-        JPanel tolerancePanel = new JPanel(new GridLayout(3,1));
         tolerancePanel.add(grayscaleCheckBox);
         tolerancePanel.add(toleranceLabel);
         tolerancePanel.add(toleranceSlider);
-
-        JPanel toolConfigPanel = new JPanel(new BorderLayout());
+        //build tool config panel
+        toolConfigPanel = new JPanel(new BorderLayout());
         toolConfigPanel.setPreferredSize(new Dimension(TOOL_CONFIG_WIDTH,250));
         toolConfigPanel.add(BorderLayout.NORTH, algorithmSelectionPanel);
         toolConfigPanel.add(BorderLayout.SOUTH, tolerancePanel);
 
-        //add components to the panel
+        //add components to the main panel
         this.add(BorderLayout.NORTH, titleLable);
         this.add(BorderLayout.CENTER, toolConfigPanel);
         this.add(BorderLayout.SOUTH, confirmButton);
@@ -558,7 +597,7 @@ public class ToolUtilityPanelHandler extends JPanel
         //handle the iterations field
         iterationsField.addPropertyChangeListener("value", new PropertyChangeListener() {
                 public void propertyChange(PropertyChangeEvent e) {
-                    iterationsLabel.setText("iterations: '" + (int) ((Number)iterationsField.getValue()).doubleValue() );
+                    iterationsLabel.setText("iterations: " + (int) ((Number)iterationsField.getValue()).doubleValue() );
                 }           
             });
         //handle the toggle auto tolerance checkbox
@@ -569,7 +608,7 @@ public class ToolUtilityPanelHandler extends JPanel
                         toleranceSlider.setEnabled(false);
                     }
                     else {
-                        toleranceLabel.setText("tolerance: " + toleranceSlider.getValue());
+                        toleranceLabel.setText("tolerance (0-255): " + toleranceSlider.getValue());
                         toleranceSlider.setEnabled(true);
                     }
                 }
@@ -585,7 +624,7 @@ public class ToolUtilityPanelHandler extends JPanel
                     {
                         case 1: 
                         try {
-                            edged.edgeDetection2(toleranceSlider.getValue(), Integer.parseInt(iterationsLabel.getText().substring(iterationsLabel.getText().indexOf("'")+1)));
+                            edged.edgeDetection2(toleranceSlider.getValue(), (int) ((Number)iterationsField.getValue()).doubleValue());
                         } catch (Exception e) {JOptionPane.showMessageDialog(null, "an error occured, please try again", e.toString(), JOptionPane.ERROR_MESSAGE);} 
                         break;
                         case 2:
@@ -608,23 +647,30 @@ public class ToolUtilityPanelHandler extends JPanel
         algorithmSelection.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     //update the panel as needed
-                    algorithmPanels.setVisible(false);
-                    explainationLabel.setVisible(true);
-                    autoTolerance.setVisible(false);
-                    autoTolerance.setSelected(false);
-                    grayscaleCheckBox.setVisible(false);
-
-                    if (algorithmSelection.getSelectedIndex() == 1) { //add the things for the second edge detection algorithm
-                        algorithmPanels.setVisible(true);
-                        explainationLabel.setVisible(false);
-                        autoTolerance.setVisible(false);
-                        autoTolerance.setSelected(false);
-                        grayscaleCheckBox.setVisible(false);
-                    } else if (algorithmSelection.getSelectedIndex() == 2) {
-                        algorithmPanels.setVisible(false);
-                        explainationLabel.setVisible(false);
-                        autoTolerance.setVisible(true);
-                        grayscaleCheckBox.setVisible(true);
+                    switch (algorithmSelection.getSelectedIndex()) {
+                        case 2: //algorithm 3 selected
+                            algorithmSpecificPanel.setVisible(false);
+                            explainationLabel.setVisible(false);
+                            autoTolerance.setVisible(true);
+                            autoTolerance.setSelected(false);
+                            grayscaleCheckBox.setVisible(true);
+                            break;
+                        case 1: //algorithm 2 selected 
+                            algorithmSpecificPanel.setVisible(true);
+                            explainationLabel.setVisible(false);
+                            autoTolerance.setVisible(false);
+                            autoTolerance.setSelected(false);
+                            grayscaleCheckBox.setVisible(false);
+                            break;
+                        case 0: //algorithm 1 selected
+                            algorithmSpecificPanel.setVisible(false);
+                            explainationLabel.setVisible(true);
+                            autoTolerance.setVisible(false);
+                            autoTolerance.setSelected(false);
+                            grayscaleCheckBox.setVisible(false);
+                            break;
+                        default:
+                            break;
                     }
                     repaint();
                 }
@@ -633,7 +679,7 @@ public class ToolUtilityPanelHandler extends JPanel
         toleranceSlider.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent evt) {
                     //update maxValueLabel
-                    toleranceLabel.setText("tolerance: " + toleranceSlider.getValue());
+                    toleranceLabel.setText("tolerance (0-255): " + toleranceSlider.getValue());
                 }
             });
         
@@ -645,21 +691,23 @@ public class ToolUtilityPanelHandler extends JPanel
      */
     private void brightenToolPanel() 
     {
+        //DATA 
+        JLabel titleLable = new JLabel();//title label
+        String titleText;
+        Font titleFont;
+        JButton confirmButton = new JButton("confirm");//button to confirm changes
+        
         //panels
         defaultToolUtilityPanel();
-        //title label
-        JLabel titleLable = new JLabel();
-        //button to confirm changes
-        JButton confirmButton = new JButton("confirm");
-
-        //config panel components
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "brighten the image");
-        Font titleFont = new Font(titleLable.getFont().getName(),
+        
+        //configure panel components
+        titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "brighten the image");
+        titleFont = new Font(titleLable.getFont().getName(),
                 titleLable.getFont().getStyle(),18);
         titleLable.setFont(titleFont);
         titleLable.setText(titleText);
 
-        //add components to the panel
+        //add components to the main panel
         this.add(BorderLayout.NORTH, titleLable);
         this.add(BorderLayout.SOUTH, confirmButton);
 
@@ -682,21 +730,23 @@ public class ToolUtilityPanelHandler extends JPanel
      */
     private void darkenToolPanel() 
     {
+        //DATA 
+        JLabel titleLable = new JLabel();//title label
+        String titleText;
+        Font titleFont;
+        JButton confirmButton = new JButton("confirm");//button to confirm changes
+
         //panels
         defaultToolUtilityPanel();
-        //title label
-        JLabel titleLable = new JLabel();
-        //button to confirm changes
-        JButton confirmButton = new JButton("confirm");
-
-        //config panel components
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "darken the image");
-        Font titleFont = new Font(titleLable.getFont().getName(),
+        
+        //configure panel components
+        titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "darken the image");
+        titleFont = new Font(titleLable.getFont().getName(),
                 titleLable.getFont().getStyle(),18);
         titleLable.setFont(titleFont);
         titleLable.setText(titleText);
 
-        //add components to the panel
+        //add components to the main panel
         this.add(BorderLayout.NORTH, titleLable);
         this.add(BorderLayout.SOUTH, confirmButton);
 
@@ -719,61 +769,64 @@ public class ToolUtilityPanelHandler extends JPanel
      */
     private void simplifyColorToolPanel() 
     {
-        //panels
-        defaultToolUtilityPanel();
-        //title label
-        JLabel titleLable = new JLabel();
-        //button to confirm changes
-        JButton confirmButton = new JButton("confirm");
-        //combo box to select the mode   0 = equidistant from color wheel, 1 = grayscale, 2 = faithful, 3 = faithful+, 4= balance, 5=balance+
-        //JComboBox<String> modeSelection = new JComboBox<String>(new String[]{"rainbow", "grayscale", "faithful", "faithful+", "balance", "balance+", "SD+mean", "Zed", "Zed+"});
-
-        // configuration stuff
-        //sort method
-        JPanel sortMethodPanel = new JPanel();
+        //DATA
+        JLabel titleLable = new JLabel();//title label;
+        String titleText;
+        Font titleFont;
+        JButton confirmButton = new JButton("confirm");//button to confirm changes;
+        //
+        JPanel toolConfigPanel;
+        ///
+        //sort method config stuff
+        JPanel sortMethodPanel;
         JLabel sortMethodLabel = new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", TOOL_CONFIG_WIDTH-5,"select sort method:"));
         JComboBox<String> sortMethodSelection = new JComboBox<String>(new String[]{"Hue","z-score","integer rgb"});
-        sortMethodPanel.setPreferredSize(new Dimension(TOOL_CONFIG_WIDTH, 90));
-        sortMethodSelection.setSelectedIndex(0);
-        sortMethodPanel.add(BorderLayout.NORTH, sortMethodLabel);
-        sortMethodPanel.add(BorderLayout.CENTER, sortMethodSelection);
-        //remove duplicates
         JCheckBox removeDuplicatesCheckBox = new JCheckBox("trim duplicates?");
-        removeDuplicatesCheckBox.setSelected(false);
-        sortMethodPanel.add(BorderLayout.SOUTH, removeDuplicatesCheckBox);
-
-        //generation method
-        JPanel genMethodPanel = new JPanel(new BorderLayout());
+        ///
+        //generation method config stuff
+        JPanel genMethodPanel;
         JLabel genMethodLabel = new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", TOOL_CONFIG_WIDTH-5, " \nselect color gen method:"));
         JComboBox<String> genMethodSelection = new JComboBox<String>(new String[]{"5 num sum", "mean + SD"});
-        //genMethodPanel.setPreferredSize(new Dimension(150, 90));
-        genMethodSelection.setSelectedIndex(0);
-        genMethodPanel.add(BorderLayout.NORTH, genMethodLabel);
-        genMethodPanel.add(BorderLayout.CENTER, genMethodSelection);
-        //genMethodPanel.add(BorderLayout.SOUTH, new JLabel("__________________"));
-
+        ///
         //additional filters
-        JPanel additionalFiltersPanel = new JPanel(new BorderLayout());
+        JPanel additionalFiltersPanel;
         JLabel additionalFiltersLabel = new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", TOOL_CONFIG_WIDTH-5, "select additional filters:"));
         JCheckBox grayscaleCheckBox = new JCheckBox("grayscale output");
         JCheckBox invertCheckBox = new JCheckBox("invert output");
+
+        //panels
+        defaultToolUtilityPanel();
+        
+        //configure panel components
+        //title
+        titleText = String.format("<html><div WIDTH=%d>%s</div></html>", TOOL_CONFIG_WIDTH-5, "simplify image to 5 colors:");
+        titleFont = new Font(titleLable.getFont().getName(),
+        titleLable.getFont().getStyle(),18);
+        titleLable.setFont(titleFont);
+        titleLable.setText(titleText);
+        //build sort method panel
+        sortMethodPanel = new JPanel();
+        sortMethodPanel.setPreferredSize(new Dimension(TOOL_CONFIG_WIDTH, 90));
+        removeDuplicatesCheckBox.setSelected(false);
+        sortMethodSelection.setSelectedIndex(0);
+        sortMethodPanel.add(BorderLayout.NORTH, sortMethodLabel);
+        sortMethodPanel.add(BorderLayout.CENTER, sortMethodSelection);
+        sortMethodPanel.add(BorderLayout.SOUTH, removeDuplicatesCheckBox);
+        //build generation method panel
+        genMethodPanel = new JPanel(new BorderLayout());
+        genMethodSelection.setSelectedIndex(0);
+        genMethodPanel.add(BorderLayout.NORTH, genMethodLabel);
+        genMethodPanel.add(BorderLayout.CENTER, genMethodSelection);
+        //build additional filters panel
+        additionalFiltersPanel = new JPanel(new BorderLayout());
         grayscaleCheckBox.setSelected(false);
         invertCheckBox.setSelected(false);
         additionalFiltersPanel.add(BorderLayout.NORTH, additionalFiltersLabel);
         additionalFiltersPanel.add(BorderLayout.CENTER, grayscaleCheckBox);
         additionalFiltersPanel.add(BorderLayout.SOUTH, invertCheckBox);
-        
-        //config panel components
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", TOOL_CONFIG_WIDTH-5, "simplify image to 5 colors:");
-        Font titleFont = new Font(titleLable.getFont().getName(),
-                titleLable.getFont().getStyle(),18);
-        titleLable.setFont(titleFont);
-        titleLable.setText(titleText);
-        
         //build config panel
-        JPanel toolConfigPanel = new JPanel();
+        toolConfigPanel = new JPanel();
         toolConfigPanel.setPreferredSize(new Dimension(TOOL_CONFIG_WIDTH,300));
-        //toolConfigPanel.setLayout(new GridLayout(0,1,5,0));
         toolConfigPanel.add(BorderLayout.NORTH, new JLabel(String.format("<html><div WIDTH=%d>%s</div></html>", TOOL_CONFIG_WIDTH-5,"this method simplifies an image to five colors depending on the selected parameters")));
         toolConfigPanel.add(BorderLayout.CENTER, sortMethodPanel);
         toolConfigPanel.add(BorderLayout.CENTER, genMethodPanel);
@@ -807,66 +860,75 @@ public class ToolUtilityPanelHandler extends JPanel
      */
     private void kMeansSimplifyToolPanel() {
         //DATA
-        String kText = "max colors (k)";
-        String iText = "max iterations (i)";
+        //
+        JPanel toolConfigPanel;
+        JLabel titleLable = new JLabel(); //title label
+        String titleText;
+        Font titleFont;
+        JButton confirmButton = new JButton("confirm"); //button to confirm changes
+        ///
+        JPanel checkboxPanel;
+        JCheckBox autoKCheckBox = new JCheckBox("automatically find k");
+        JCheckBox removeDupesCheckbox = new JCheckBox("remove duplicates?");
+        ///
+        JPanel kPanel;
+        JLabel kLabel = new JLabel("max colors (k)");
+        NumberFormatter clustersFormat = new NumberFormatter(NumberFormat.getNumberInstance());
+        JFormattedTextField kField;
+        ///
+        JPanel iPanel;
+        JLabel iLabel = new JLabel("max iterations (i)");
+        NumberFormatter iterationsFormat;
+        JFormattedTextField iField;
+
         //panels
         defaultToolUtilityPanel();
-        //title label
-        JLabel titleLable = new JLabel();
-        //clusters text box
-        NumberFormatter clustersFormat = new NumberFormatter(NumberFormat.getNumberInstance());
-        clustersFormat.setMinimum(2);
-        JFormattedTextField kField = new JFormattedTextField(clustersFormat);
-        kField.setSize(20, 100);
         
-        //max iterations text box
-        NumberFormatter iterationsFormat = new NumberFormatter(NumberFormat.getNumberInstance());
-        iterationsFormat.setMinimum(2);
-        JFormattedTextField iField = new JFormattedTextField(iterationsFormat);
-        iField.setSize(20, 100);
-
-        //checkboxes
-        JCheckBox removeDupesCheckbox = new JCheckBox("remove duplicates?");
-        removeDupesCheckbox.setSelected(false);
-        removeDupesCheckbox.setToolTipText("ignore multiple occurances of the same color");
-        JCheckBox autoKCheckBox = new JCheckBox("automatically find k");
-        autoKCheckBox.setSelected(false);
-        autoKCheckBox.setToolTipText("warning, very slow");
-
-        
-        //button to confirm changes
-        JButton confirmButton = new JButton("confirm");
-
         //config panel components
-        String titleText = String.format("<html><div WIDTH=%d>%s</div></html>", TOOL_CONFIG_WIDTH, "Simplify image with the k-means clustering algorithm");
-        Font titleFont = new Font(titleLable.getFont().getName(),
+        //title
+        titleText = String.format("<html><div WIDTH=%d>%s</div></html>", TOOL_CONFIG_WIDTH, "Simplify image with the k-means clustering algorithm");
+        titleFont = new Font(titleLable.getFont().getName(),
                 titleLable.getFont().getStyle(),18);
         titleLable.setFont(titleFont);
         titleLable.setText(titleText);
-    
-        JPanel kPanel = new JPanel(new GridLayout(2,1,5,5));
+        //clusters text box
+        clustersFormat.setMinimum(2);
+        kField = new JFormattedTextField(clustersFormat);
+        kField.setSize(20, 100);
+        //max iterations text box
+        iterationsFormat = new NumberFormatter(NumberFormat.getNumberInstance());
+        iterationsFormat.setMinimum(2);
+        iField = new JFormattedTextField(iterationsFormat);
+        iField.setSize(20, 100);
+        //checkboxes
+        removeDupesCheckbox.setSelected(false);
+        removeDupesCheckbox.setToolTipText("ignore multiple occurances of the same color");
+        autoKCheckBox.setSelected(false);
+        autoKCheckBox.setToolTipText("warning, very slow");
+        //build k panel
+        kPanel = new JPanel(new GridLayout(2,1,5,5));
         kField.setValue(5);
         kField.setColumns(5);
         kPanel.add(kLabel);
         kPanel.add(kField);
-        
-        JPanel iPanel = new JPanel(new GridLayout(2,1,5,5));
+        //build i panel
+        iPanel = new JPanel(new GridLayout(2,1,5,5));
         iField.setValue(5);
         iField.setColumns(5);
         iPanel.add(iLabel);
         iPanel.add(iField);
-
-        JPanel checkboxPanel = new JPanel(new GridLayout(2,1,5,5));
+        //build checkboxes pannel
+        checkboxPanel = new JPanel(new GridLayout(2,1,5,5));
         checkboxPanel.add(autoKCheckBox);
         checkboxPanel.add(removeDupesCheckbox);
-
-        JPanel toolConfigPanel = new JPanel(new BorderLayout(5,5));
+        //build tool config panel
+        toolConfigPanel = new JPanel(new BorderLayout(5,5));
         toolConfigPanel.setPreferredSize(new Dimension(TOOL_CONFIG_WIDTH,150));
         toolConfigPanel.add(BorderLayout.NORTH, kPanel);
         toolConfigPanel.add(BorderLayout.CENTER, iPanel);
         toolConfigPanel.add(BorderLayout.SOUTH, checkboxPanel);
 
-        //add components to the panel
+        //add components to the main panel
         this.add(BorderLayout.NORTH, titleLable);
         this.add(BorderLayout.CENTER, toolConfigPanel);
         this.add(BorderLayout.SOUTH, confirmButton);
@@ -880,19 +942,24 @@ public class ToolUtilityPanelHandler extends JPanel
                 
                 if (autoKCheckBox.isSelected()) {
                     simplified = simplified.scale(0.5, 0.5); //scale down to save time
-                    simplified.kMeansSimplifyAutoK(
-                        kLabel.setText(kText + "'" + (int) ((Number)kField.getValue()).doubleValue() ),
-                        iLabel.setText(iText + "'" + (int) ((Number)iField.getValue()).doubleValue() ),
-                        false
-                    );
+                    try { 
+                        simplified.kMeansSimplifyAutoK(
+                            (int) ((Number)kField.getValue()).doubleValue(),
+                            (int) ((Number)iField.getValue()).doubleValue(),
+                            false
+                        );
+                    } catch (Exception e) {JOptionPane.showMessageDialog(null, "an error occured, please try again", e.toString(), JOptionPane.ERROR_MESSAGE);}
+
                     simplified = simplified.scale(2, 2); //scale back up
                 } else {
                     simplified = simplified.scale(0.5, 0.5); //scale down to save time
-                    simplified.kMeansSimplify(
-                        kLabel.setText(kText + "'" + (int) ((Number)kField.getValue()).doubleValue() ),
-                        iLabel.setText(iText + "'" + (int) ((Number)iField.getValue()).doubleValue() ),
-                        false
-                    );
+                    try { 
+                       simplified.kMeansSimplify(
+                           (int) ((Number)kField.getValue()).doubleValue(),
+                           (int) ((Number)iField.getValue()).doubleValue(),
+                           false
+                       );
+                    } catch (Exception e) {JOptionPane.showMessageDialog(null, "an error occured, please try again", e.toString(), JOptionPane.ERROR_MESSAGE);}
                     simplified = simplified.scale(2, 2); //scale back up
                 }
                 //save the new image (ask first)
