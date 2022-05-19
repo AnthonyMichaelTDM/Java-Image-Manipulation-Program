@@ -18,6 +18,7 @@
 package classes;
 
 import classes.menus.*;
+import classes.tool.Tool;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -510,7 +511,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
      * the panel associated with the passed tool
      * @param tool the integer array representing the tool currently selected
      */
-    public void updateUtilityPanel(int[] tool)
+    public void updateUtilityPanel(Tool tool)
     {
         //set that created panel to the utilityPanel
         pictureFrame.getContentPane().remove(toolUtilityPanel);

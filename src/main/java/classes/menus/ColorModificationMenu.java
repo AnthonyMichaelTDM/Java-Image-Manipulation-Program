@@ -18,6 +18,7 @@
 package classes.menus;
 
 import classes.PictureExplorer;
+import classes.tool.Tool;
 
 import java.awt.event.*;
 import javax.swing.*;
@@ -73,30 +74,27 @@ public class ColorModificationMenu extends JMenu  implements ActionListener
      */
     public void actionPerformed(ActionEvent a)
     {
-        int[] currentTool = new int[2];
-        //update the current tool to this tool group
-        currentTool[0] = 1;
-        currentTool[1]=0;
+        Tool currentTool = new Tool();
 
         if (a.getSource() == removeColor) 
         {
-            currentTool[1]=1;
+            currentTool.setTool(Tool.ToolTitle.REMOVE_COLOR);
         }
         if (a.getSource() == trimColor) 
         {
-            currentTool[1]=2;
+            currentTool.setTool(Tool.ToolTitle.TRIM_COLOR);
         }
         if (a.getSource() == negate) 
         {
-            currentTool[1]=3;
+            currentTool.setTool(Tool.ToolTitle.NEGATE_COLOR);
         }
         if (a.getSource() == grayscale) 
         {
-            currentTool[1]=4;
+            currentTool.setTool(Tool.ToolTitle.GRAYSCALE);
         }
         if (a.getSource() == replaceColorWithColor)
         {
-            currentTool[1]=5;
+            currentTool.setTool(Tool.ToolTitle.REPLACE_COLOR);
         }
 
         pictureExplorer.updateUtilityPanel(currentTool);

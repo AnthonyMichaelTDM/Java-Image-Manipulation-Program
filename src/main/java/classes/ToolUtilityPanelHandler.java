@@ -25,6 +25,9 @@ import javax.swing.*;
 //import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
+
+import classes.tool.Tool;
+
 import java.text.NumberFormat;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
@@ -42,6 +45,8 @@ import java.beans.PropertyChangeEvent;
  */
 public class ToolUtilityPanelHandler extends JPanel
 {
+    //TODO: make this an interface/superclass and refactor all the tool panels into different classes
+    //TODO: Use an enum instead of a 2d array to differenciate the tool and stuff
     //DATA
     final private int SIDE_PANEL_WIDTH = 150;
     final private int TOOL_CONFIG_WIDTH = 140;
@@ -79,15 +84,15 @@ public class ToolUtilityPanelHandler extends JPanel
      * the panel associated with the passed tool
      * @param tool the integer array representing the tool currently selected
      */
-    public void updateToolUtilityPanel(int[] tool)
+    public void updateToolUtilityPanel(Tool tool)
     {
         //create the appropriate panel based on the passed tool
-        switch (tool[0]) {
-            case 1: //color management tool is selected
-            colorModificationToolUtilityPanel(tool[1]);
+        switch (tool.getType()) {
+            case COLOR_MODIFICATION: //color management tool is selected
+            colorModificationToolUtilityPanel(tool);
             break;
-            case 2: // filters tool is selected
-            filtersToolUtilityPanel(tool[1]);
+            case FILTER: // filters tool is selected
+            filtersToolUtilityPanel(tool);
             break;
             default: defaultToolUtilityPanel();
         }
@@ -98,22 +103,22 @@ public class ToolUtilityPanelHandler extends JPanel
      * creates the panel associated with the passed integer
      * @param tool the integer associated with the color tool the panel is being created for
      */
-    private void colorModificationToolUtilityPanel(int tool)
+    private void colorModificationToolUtilityPanel(Tool tool)
     {
-        switch (tool) {
-            case 1: //Remove Color Channel tool selected
+        switch (tool.getTool()) {
+            case REMOVE_COLOR: //Remove Color Channel tool selected
             removeColorToolPanel();
             break;
-            case 2: //Trim Color Channel tool selected
+            case TRIM_COLOR: //Trim Color Channel tool selected
             trimColorToolPanel();
             break;
-            case 3: //Negate Color Channel tool selected
+            case NEGATE_COLOR: //Negate Color Channel tool selected
             negateToolPanel();
             break;
-            case 4: //Gray Scale tool selected
+            case GRAYSCALE: //Gray Scale tool selected
             grayscaleToolPanel();
             break;
-            case 5: //set color to color tool selected
+            case REPLACE_COLOR: //set color to color tool selected
             replaceColorWithColorToolPanel();
             break;
             default: //a tool not accounted for selected
@@ -338,46 +343,6 @@ public class ToolUtilityPanelHandler extends JPanel
     }
 
     /**
-     * method to handle the grayscale tool panel,
-     * as well as ActionEvents having to do with the UI of this panel
-     */
-    private void grayscaleToolPanel() 
-    {
-        //DATA 
-        JLabel titleLable = new JLabel();//title label
-        String titleText;
-        Font titleFont;
-        JButton confirmButton = new JButton("confirm");//button to confirm changes
-        
-        //panels
-        defaultToolUtilityPanel();
-
-        //configure panel components
-        //title
-        titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "grayscale the image");
-        titleFont = new Font(titleLable.getFont().getName(),
-                titleLable.getFont().getStyle(),18);
-        titleLable.setFont(titleFont);
-        titleLable.setText(titleText);
-
-        //add components to the main panel
-        this.add(BorderLayout.NORTH, titleLable);
-        this.add(BorderLayout.SOUTH, confirmButton);
-
-        //handle confirm button press
-        confirmButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    //use the grayscale method from the Picture class
-                    Picture grayscaled = new Picture(PictureExplorer.picture.getHeight(), PictureExplorer.picture.getWidth());
-                    grayscaled.copyPicture(new SimplePicture(PictureExplorer.picture.getBufferedImage()));
-                    grayscaled.grayscale();
-                    PictureExplorer.pictureConfirmation.updateConfPanelImage(grayscaled);
-                }
-            });
-
-    }
-
-    /**
      * method to handle the replace color with color tool panel,
      * as well as ActionEvents having to do with the UI of this panel
      */
@@ -483,6 +448,45 @@ public class ToolUtilityPanelHandler extends JPanel
                     toleranceLabel.setText("tolerance: " + toleranceSlider.getValue());
                 }
             });
+    }
+
+    /**
+     * method to handle the grayscale tool panel,
+     * as well as ActionEvents having to do with the UI of this panel
+     */
+    private void grayscaleToolPanel() 
+    {
+        //DATA 
+        JLabel titleLable = new JLabel();//title label
+        String titleText;
+        Font titleFont;
+        JButton confirmButton = new JButton("confirm");//button to confirm changes
+        
+        //panels
+        defaultToolUtilityPanel();
+
+        //configure panel components
+        //title
+        titleText = String.format("<html><div WIDTH=%d>%s</div></html>", 100, "grayscale the image");
+        titleFont = new Font(titleLable.getFont().getName(),
+                titleLable.getFont().getStyle(),18);
+        titleLable.setFont(titleFont);
+        titleLable.setText(titleText);
+
+        //add components to the main panel
+        this.add(BorderLayout.NORTH, titleLable);
+        this.add(BorderLayout.SOUTH, confirmButton);
+
+        //handle confirm button press
+        confirmButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    //use the grayscale method from the Picture class
+                    Picture grayscaled = new Picture(PictureExplorer.picture.getHeight(), PictureExplorer.picture.getWidth());
+                    grayscaled.copyPicture(new SimplePicture(PictureExplorer.picture.getBufferedImage()));
+                    grayscaled.grayscale();
+                    PictureExplorer.pictureConfirmation.updateConfPanelImage(grayscaled);
+                }
+            });
 
     }
 
@@ -491,22 +495,22 @@ public class ToolUtilityPanelHandler extends JPanel
      * creates the panel associated with the passed integer
      * @param tool the integer associated with the filter tool the panel is being created for
      */
-    private void filtersToolUtilityPanel(int tool)
+    private void filtersToolUtilityPanel(Tool tool)
     {
-        switch (tool) {
-            case 1: //Edge Detection tool selected
+        switch (tool.getTool()) {
+            case EDGE_DETECTION: //Edge Detection tool selected
             edgeDetectionToolPanel();
             break;
-            case 2: //brighten tool selected
+            case BRIGHTEN: //brighten tool selected
             brightenToolPanel();
             break;
-            case 3: //darken tool selected
+            case DARKEN: //darken tool selected
             darkenToolPanel();
             break;
-            case 4: //simplify tool selected
+            case SIMPLIFY_COLOR: //simplify tool selected
             simplifyColorToolPanel();
             break;
-            case 5: //k-means color simplification
+            case KMEANS_SIMPLIFY: //k-means color simplification
             kMeansSimplifyToolPanel();
             break;
             default: //a tool not accounted for selected

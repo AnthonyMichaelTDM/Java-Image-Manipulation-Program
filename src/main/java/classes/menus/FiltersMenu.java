@@ -18,6 +18,7 @@
 package classes.menus;
 
 import classes.PictureExplorer;
+import classes.tool.Tool;
 
 import java.awt.event.*;
 import javax.swing.*;
@@ -75,30 +76,27 @@ public class FiltersMenu extends JMenu  implements ActionListener
      */
     public void actionPerformed(ActionEvent a)
     {
-        int[] currentTool = new int[2];
-        //update the current tool to this tool group
-        currentTool[0] = 2;
-        currentTool[1] = 0;
+        Tool currentTool = new Tool();
 
         if (a.getSource() == edgeDetection)
         {
-            currentTool[1] = 1;
+            currentTool.setTool(Tool.ToolTitle.EDGE_DETECTION);
         }
         if (a.getSource() == brighten)
         {
-            currentTool[1] = 2;
+            currentTool.setTool(Tool.ToolTitle.BRIGHTEN);
         }
         if (a.getSource() == darken)
         {
-            currentTool[1] = 3;
+            currentTool.setTool(Tool.ToolTitle.DARKEN);
         }
         if (a.getSource() == simplifyColors)
         {
-            currentTool[1] = 4;
+            currentTool.setTool(Tool.ToolTitle.SIMPLIFY_COLOR);
         }
         if (a.getSource() == kMeansSimplify)
         {
-            currentTool[1] = 5;
+            currentTool.setTool(Tool.ToolTitle.KMEANS_SIMPLIFY);
         }
 
         pictureExplorer.updateUtilityPanel(currentTool);
