@@ -620,11 +620,8 @@ public class Picture extends SimplePicture {
                 // parse the fiveNumSum colors and compare to background
                 int bestIndex = 0;
                 for (int e = 1; e < colors.length; e++) {
-                    if (currentPixel == null || colors[e] == null) {
-                        //TODO: this is just a hack to stop it from crashing 
-                    }
-                    else if (currentPixel.colorDistance(colors[e]) < currentPixel
-                            .colorDistance(colors[bestIndex])) {
+                    if (currentPixel != null && colors[e] != null && 
+                    currentPixel.colorDistance(colors[e]) < currentPixel.colorDistance(colors[bestIndex])) {
                                 bestIndex = e;
                     } // if
                 } // for

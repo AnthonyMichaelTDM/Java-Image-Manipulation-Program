@@ -100,7 +100,8 @@ public class KMeans {
         double score = 0.0;
         double prevScore;
 
-        //TODO: while technically linear complexity, this shit takes forever, please find out how to multithread parts of it in the future ffs
+        //TODO: while technically linear time complexity, this shit takes forever, please find out how to multithread parts of it in the future ffs 
+        // (1 thread for every k between 2 and maxK, when all threads finish running compare the results to find best K)
 
         while (k<maxK) { //O(I)
             //do k-means algorithm w/ k and i

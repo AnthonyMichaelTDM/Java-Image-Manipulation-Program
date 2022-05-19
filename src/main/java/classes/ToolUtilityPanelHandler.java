@@ -46,7 +46,6 @@ import java.beans.PropertyChangeEvent;
 public class ToolUtilityPanelHandler extends JPanel
 {
     //TODO: make this an interface/superclass and refactor all the tool panels into different classes
-    //TODO: Use an enum instead of a 2d array to differenciate the tool and stuff
     //DATA
     final private int SIDE_PANEL_WIDTH = 150;
     final private int TOOL_CONFIG_WIDTH = 140;
