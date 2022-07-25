@@ -115,13 +115,13 @@ public class KMeans {
             //compare with previous 2 scores
             //conditions ensure that 1) enough have been tested, 2) the results are good enough quality 3) previous k is a maximum
             if (scores.size()-1-2 > 2 && prevScore > 0.7 && (scores.get(k-2) < scores.get(k-1) && scores.get(k-1) > scores.get(k)) ) { //last one is a local max, terminate
-                k=k-1;
                 break;
             }
             
             //iterate and prep for next loop
             k++;
         } // O( 2*I(N*K + 2*N)+I*N)))    this is 2 times + I*N slower than knowing k before hand
+        k=k-1;
 
         //if k==maxK, there was no local max, so use one of the ends
         if (k==maxK) {
