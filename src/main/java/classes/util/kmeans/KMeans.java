@@ -100,7 +100,8 @@ public class KMeans {
         double score = 0.0;
         double prevScore;
 
-        //TODO: while technically linear complexity, this shit takes forever, please find out how to multithread parts of it in the future ffs
+        //TODO: while technically linear time complexity, this shit takes forever, please find out how to multithread parts of it in the future ffs 
+        // (1 thread for every k between 2 and maxK, when all threads finish running compare the results to find best K)
 
         while (k<maxK) { //O(I)
             //do k-means algorithm w/ k and i
@@ -125,7 +126,7 @@ public class KMeans {
 
         //if k==maxK, there was no local max, so use one of the ends
         if (k==maxK) {
-            if (scores.get(2) >= scores.get(k)) {
+            if (scores.get( maxK>2 ? 2 : 1) >= scores.get(k-1)) {
                 lastState = fit(records, 2, distance, maxIterations); //start was best
             } else {
                 lastState = state; //end was best

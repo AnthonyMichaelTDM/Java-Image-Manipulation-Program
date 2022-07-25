@@ -85,8 +85,6 @@ public class Picture extends SimplePicture {
     } // Picture
 
     /**
-     * Constructor that takes a buffered image
-     *    /**
      * Constructor that takes a simple picture and creates a copy of that picture
      * 
      * @param copyPicture the SimplePicture to copy
@@ -107,9 +105,13 @@ public class Picture extends SimplePicture {
     
     
     ///////////////////// utility methods //////////////////////////////////
+    /** small hack, lets Picture use the getExtension method from SimplePicture */
+    public String getExtension() {
+        return super.getExtension();
+    } // getExtension
     
-    
-    ////////////////////// //////////////////////
+    ////////////////////// tools //////////////////////
+    //TODO: refactor all these tools into separate classes
     /**
      * remove, remove one or more color channels by setting the values to 0
      * 
@@ -231,9 +233,7 @@ public class Picture extends SimplePicture {
      * 
      * @param colorToReplace the color to replace
      * @param colorToSet     the color to replace with
-     * @param tolerance      (FUTURE) will allow the user to set a tolerance,
-     *                       replacing all colors within this distance of
-     *                       colorToReplace
+     * @param tolerance      replaces all colors within this distance of colorToReplace with colorToSet
      */
     public void replaceColorWithColor(Color colorToReplace, Color colorToSet, int tolerance) {
         Pixel[][] pixels = this.getPixels2D();
@@ -620,11 +620,8 @@ public class Picture extends SimplePicture {
                 // parse the fiveNumSum colors and compare to background
                 int bestIndex = 0;
                 for (int e = 1; e < colors.length; e++) {
-                    if (currentPixel == null || colors[e] == null) {
-                        //TODO: this is just a hack to stop it from crashing 
-                    }
-                    else if (currentPixel.colorDistance(colors[e]) < currentPixel
-                            .colorDistance(colors[bestIndex])) {
+                    if (currentPixel != null && colors[e] != null && 
+                    currentPixel.colorDistance(colors[e]) < currentPixel.colorDistance(colors[bestIndex])) {
                                 bestIndex = e;
                     } // if
                 } // for
@@ -1542,10 +1539,5 @@ public class Picture extends SimplePicture {
         } // else
         return;
     }// bolden2Iter
-
-    /** small hack, lets Picture use the getExtension method from SimplePicture */
-    public String getExtension() {
-        return super.getExtension();
-    } // getExtension
 
 } // this } is the end of class Picture, put all new methods before this
